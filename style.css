@@ -158,11 +158,62 @@ img { display: block; max-width: 100%; }
   max-width: 110px;
 }
 
-.stamp.is-nudging { z-index: 2; animation: gallery-stamp-nudge 680ms cubic-bezier(.2, .7, .25, 1); }
-@keyframes gallery-stamp-nudge {
+.stamp.is-nudging {
+  z-index: 2;
+  animation-duration: 700ms;
+  animation-timing-function: cubic-bezier(.2, .7, .25, 1);
+  animation-fill-mode: both;
+}
+
+.stamp:nth-child(5n + 1).is-nudging {
+  animation-name: gallery-nudge-1;
+  animation-delay: 0ms;
+}
+.stamp:nth-child(5n + 2).is-nudging {
+  animation-name: gallery-nudge-2;
+  animation-delay: 70ms;
+}
+.stamp:nth-child(5n + 3).is-nudging {
+  animation-name: gallery-nudge-3;
+  animation-delay: 140ms;
+}
+.stamp:nth-child(5n + 4).is-nudging {
+  animation-name: gallery-nudge-4;
+  animation-delay: 40ms;
+}
+.stamp:nth-child(5n + 5).is-nudging {
+  animation-name: gallery-nudge-5;
+  animation-delay: 100ms;
+}
+
+@keyframes gallery-nudge-1 {
   0%, 100% { translate: 0 0; rotate: 0deg; scale: 1; }
-  32% { translate: 0 -8px; rotate: -1.5deg; scale: 1.035; }
-  68% { translate: 0 -4px; rotate: 1deg; scale: 1.02; }
+  32% { translate: -4px -9px; rotate: -2.5deg; scale: 1.04; }
+  68% { translate: -1px -3px; rotate: 1deg; scale: 1.015; }
+}
+
+@keyframes gallery-nudge-2 {
+  0%, 100% { translate: 0 0; rotate: 0deg; scale: 1; }
+  32% { translate: 4px -8px; rotate: 2.5deg; scale: 1.035; }
+  68% { translate: 1px -2px; rotate: -1deg; scale: 1.01; }
+}
+
+@keyframes gallery-nudge-3 {
+  0%, 100% { translate: 0 0; rotate: 0deg; scale: 1; }
+  30% { translate: 0 -11px; rotate: 1.2deg; scale: 1.045; }
+  65% { translate: 0 -3px; rotate: -0.8deg; scale: 1.02; }
+}
+
+@keyframes gallery-nudge-4 {
+  0%, 100% { translate: 0 0; rotate: 0deg; scale: 1; }
+  30% { translate: 5px -7px; rotate: -2deg; scale: 1.035; }
+  65% { translate: 2px -2px; rotate: 1.2deg; scale: 1.01; }
+}
+
+@keyframes gallery-nudge-5 {
+  0%, 100% { translate: 0 0; rotate: 0deg; scale: 1; }
+  34% { translate: -5px -8px; rotate: 2deg; scale: 1.04; }
+  70% { translate: -2px -3px; rotate: -1deg; scale: 1.015; }
 }
 
 .stamp img { width: 100%; height: auto; object-fit: contain; }

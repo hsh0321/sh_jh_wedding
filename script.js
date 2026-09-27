@@ -227,7 +227,7 @@ function setupGalleryMotion() {
     stamps.forEach((stamp) => stamp.classList.remove("is-nudging"));
     void galleryGrid.offsetWidth;
     stamps.forEach((stamp) => stamp.classList.add("is-nudging"));
-  }, 1000);
+  }, 2000);
 }
 
 function updateLightboxCaption() {

@@ -3,198 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f8f5f1">
-
-  <title>성현 ♥ 지현</title>
+  <meta name="theme-color" content="#F7F2E5">
   <meta name="description" content="성현과 지현의 결혼식에 초대합니다.">
-
+  <title>성현 ♥ 지현, 결혼합니다</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <main class="invitation">
+    <section class="cover" aria-label="대문사진">
+      <img src="images/cover.jpg" alt="성현과 지현의 대문 사진">
+    </section>
 
-  <!-- COVER -->
-  <section class="cover">
-    <div class="cover-overlay"></div>
-
-    <div class="cover-content">
-      <p class="small-title">WEDDING INVITATION</p>
-
-      <h1>
-        성현<br>
-        <span>♥</span><br>
-        지현
-      </h1>
-
-      <p class="date">2027. 05. 15 SATURDAY</p>
-    </div>
-  </section>
-
-
-  <!-- INTRO -->
-  <section class="section intro">
-    <p class="eyebrow">OUR STORY</p>
-
-    <h2>
-      서로의 가장 좋은 친구가 되어<br>
-      함께 살아가려 합니다.
-    </h2>
-
-    <p class="description">
-      처음 만났던 날의 설렘부터<br>
-      함께 웃고 여행했던 수많은 순간들까지.<br><br>
-
-      이제는 연인이 아닌 부부로서<br>
-      더 많은 계절을 함께하려 합니다.<br><br>
-
-      저희의 새로운 시작을<br>
-      따뜻한 마음으로 축복해주세요.
-    </p>
-  </section>
-
-
-  <!-- PHOTO -->
-  <section class="photo-section">
-    <img src="images/main.jpg" alt="성현과 지현의 사진">
-  </section>
-
-
-  <!-- DATE -->
-  <section class="section date-section">
-    <p class="eyebrow">WEDDING DAY</p>
-
-    <h2>2027. 05. 15</h2>
-
-    <p>토요일 오후 12시</p>
-
-    <div class="calendar">
-      <div class="week">
-        <span>일</span>
-        <span>월</span>
-        <span>화</span>
-        <span>수</span>
-        <span>목</span>
-        <span>금</span>
-        <span>토</span>
+    <section class="wedding section-dark" id="wedding">
+      <div class="section-inner wedding-inner">
+        <span class="heart" aria-hidden="true">♥︎</span>
+        <h1 class="script-title">Our Wedding day</h1>
+        <div class="asset-placeholder date-art-placeholder" role="img" aria-label="일시 및 장소 이미지 자리"></div>
+        <p class="family-line">황석한 · 백미자의 아들 황성현</p>
+        <p class="family-line">육근봉 · 윤혜리의 장녀 육지현</p>
+        <div class="asset-placeholder heart-frame-placeholder" role="img" aria-label="하트 프레임 이미지 자리"></div>
+        <div class="vows">
+          <div class="asset-placeholder handwriting-placeholder" role="img" aria-label="손글씨 배경 이미지 자리"></div>
+          <p class="quote-source">- 「물고기는 존재하지 않는다」 中</p>
+          <p>세상의 냉기를 막아주는<br>서로의 안식처가 되어주기로 했습니다.</p>
+          <p>그 약속이 영원이 되는 날,<br>저희의 증인이 되어주세요.</p>
+        </div>
       </div>
+    </section>
 
-      <div class="days">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span>1</span>
-        <span>2</span>
+    <section class="decoration" aria-label="장식 이미지">
+      <div class="asset-placeholder decoration-placeholder" role="img" aria-label="장식 이미지 자리"></div>
+    </section>
 
-        <span>3</span>
-        <span>4</span>
-        <span>5</span>
-        <span>6</span>
-        <span>7</span>
-        <span>8</span>
-        <span>9</span>
-
-        <span>10</span>
-        <span>11</span>
-        <span>12</span>
-        <span>13</span>
-        <span>14</span>
-        <span class="wedding-day">15</span>
-        <span>16</span>
-
-        <span>17</span>
-        <span>18</span>
-        <span>19</span>
-        <span>20</span>
-        <span>21</span>
-        <span>22</span>
-        <span>23</span>
-
-        <span>24</span>
-        <span>25</span>
-        <span>26</span>
-        <span>27</span>
-        <span>28</span>
-        <span>29</span>
-        <span>30</span>
-
-        <span>31</span>
+    <section class="gallery-section section-dark" id="gallery">
+      <div class="section-inner">
+        <span class="heart" aria-hidden="true">♥︎</span>
+        <h2 class="script-title">Gallery</h2>
+        <p class="section-subtitle">우리의 순간</p>
+        <p class="script-title gallery-repeat" aria-hidden="true">Gallery</p>
+        <div class="gallery-paper" id="gallery-grid" aria-label="사진 갤러리"></div>
       </div>
-    </div>
-  </section>
+    </section>
 
+    <section class="date-section section-light" id="date">
+      <div class="section-inner">
+        <span class="heart" aria-hidden="true">♥︎</span>
+        <h2 class="script-title">Save the Date</h2>
+        <p class="section-subtitle">예식 안내</p>
+        <div class="calendar" aria-label="2027년 1월 달력">
+          <h3>2027. 01</h3>
+          <div class="week" aria-hidden="true">
+            <span class="sunday">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="saturday">토</span>
+          </div>
+          <div class="days" id="calendar-days"></div>
+        </div>
+        <p class="wedding-date">2027년 1월 17일(일) 오후 3시 10분</p>
+        <div class="countdown" aria-label="결혼식까지 남은 시간">
+          <div class="time-unit"><span class="time-value" id="count-days">00</span><span class="time-label">Days</span></div>
+          <span class="time-separator">:</span>
+          <div class="time-unit"><span class="time-value" id="count-hours">00</span><span class="time-label">Hours</span></div>
+          <span class="time-separator">:</span>
+          <div class="time-unit"><span class="time-value" id="count-minutes">00</span><span class="time-label">Min</span></div>
+          <span class="time-separator">:</span>
+          <div class="time-unit"><span class="time-value" id="count-seconds">00</span><span class="time-label">Sec</span></div>
+        </div>
+        <p class="countdown-copy">신랑<span class="inline-heart">♥︎</span>신부 결혼식이 <strong id="days-remaining">00</strong>일 남았습니다.</p>
+      </div>
+    </section>
 
-  <!-- GALLERY -->
-  <section class="section">
-    <p class="eyebrow">OUR MOMENTS</p>
-    <h2>함께한 순간들</h2>
+    <section class="location-section section-light" id="location">
+      <div class="section-inner">
+        <span class="heart" aria-hidden="true">♥︎</span>
+        <h2 class="script-title">Location</h2>
+        <p class="section-subtitle">오시는길</p>
+        <iframe class="map-frame" title="라마다 서울 신도림 호텔 지도" src="https://maps.google.com/maps?q=%EB%9D%BC%EB%A7%88%EB%8B%A4%20%EC%84%9C%EC%9A%B8%20%EC%8B%A0%EB%8F%84%EB%A6%BC%20%ED%98%B8%ED%85%94%20%EC%84%B8%EC%9D%B8%ED%8A%B8%EA%B7%B8%EB%A0%88%EC%9D%B4%EC%8A%A4%ED%99%80&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <nav class="map-links" aria-label="지도 서비스">
+          <a href="https://map.naver.com/p/search/%EB%9D%BC%EB%A7%88%EB%8B%A4%20%EC%84%9C%EC%9A%B8%20%EC%8B%A0%EB%8F%84%EB%A6%BC%20%ED%98%B8%ED%85%94%20%EC%84%B8%EC%9D%B8%ED%8A%B8%EA%B7%B8%EB%A0%88%EC%9D%B4%EC%8A%A4%ED%99%80" target="_blank" rel="noopener noreferrer">네이버지도</a>
+          <span aria-hidden="true">|</span>
+          <a href="https://map.kakao.com/link/search/%EB%9D%BC%EB%A7%88%EB%8B%A4%20%EC%84%9C%EC%9A%B8%20%EC%8B%A0%EB%8F%84%EB%A6%BC%20%ED%98%B8%ED%85%94%20%EC%84%B8%EC%9D%B8%ED%8A%B8%EA%B7%B8%EB%A0%88%EC%9D%B4%EC%8A%A4%ED%99%80" target="_blank" rel="noopener noreferrer">카카오맵</a>
+        </nav>
+        <p class="address">서울특별시 구로구 경인로 624<br>라마다 서울 신도림 호텔 5층 세인트그레이스홀</p>
+      </div>
+    </section>
 
-    <div class="gallery">
-      <img src="images/photo1.jpg" alt="">
-      <img src="images/photo2.jpg" alt="">
-      <img src="images/photo3.jpg" alt="">
-      <img src="images/photo4.jpg" alt="">
-      <img src="images/photo5.jpg" alt="">
-      <img src="images/photo6.jpg" alt="">
-    </div>
-  </section>
+    <section class="detail-section section-dark" id="detail">
+      <div class="section-inner">
+        <span class="heart" aria-hidden="true">♥︎</span>
+        <h2 class="script-title">Detail</h2>
+        <p class="section-subtitle">안내사항</p>
+        <div class="detail-carousel" id="detail-carousel" aria-label="안내사항 이미지 캐러셀">
+          <button class="carousel-arrow previous" type="button" aria-label="이전 안내사항">‹</button>
+          <div class="detail-slide" id="detail-slide" aria-live="polite"></div>
+          <button class="carousel-arrow next" type="button" aria-label="다음 안내사항">›</button>
+        </div>
+        <div class="carousel-dots" id="carousel-dots" aria-label="안내사항 페이지"></div>
+      </div>
+    </section>
 
+    <section class="gift-section section-light" id="gift">
+      <div class="section-inner">
+        <span class="heart" aria-hidden="true">♥︎</span>
+        <h2 class="script-title">Gift</h2>
+        <p class="section-subtitle">마음 전하실 곳</p>
+        <div class="account-list" id="account-list"></div>
+        <p class="gift-note">참석이 어려우신 분들을 위해 조심스럽게 안내드립니다.<br>보내주시는 따뜻한 마음, 감사히 간직하겠습니다.</p>
+      </div>
+    </section>
 
-  <!-- LOCATION -->
-  <section class="section location">
-    <p class="eyebrow">LOCATION</p>
+    <footer class="thanks section-dark" id="thanks">
+      <div class="section-inner">
+        <p>저희 두 사람의 새로운 시작을<br>따뜻한 마음으로 축복해 주시면<br>감사하겠습니다.</p>
+        <p class="thanks-final">행복하게 잘 살겠습니다.</p>
+        <p class="signature">신랑 · 신부 올림</p>
+      </div>
+    </footer>
+  </main>
 
-    <h2>오시는 길</h2>
-
-    <h3>○○ 호텔 웨딩홀</h3>
-
-    <p>
-      서울특별시 ○○구 ○○로 123<br>
-      ○○호텔 3층 그랜드볼룸
-    </p>
-
-    <a
-      class="map-button"
-      href="https://map.kakao.com/"
-      target="_blank"
-    >
-      카카오맵으로 보기
-    </a>
-  </section>
-
-
-  <!-- ACCOUNT -->
-  <section class="section account">
-    <p class="eyebrow">ACCOUNT</p>
-
-    <h2>마음 전하실 곳</h2>
-
-    <p class="description">
-      참석이 어려우신 분들을 위해<br>
-      마음을 전하실 수 있는 계좌를 안내드립니다.
-    </p>
-
-    <button onclick="copyAccount()">
-      신랑 계좌번호 복사
-    </button>
-
-    <p class="account-number" id="account">
-      국민은행 123456-78-123456
-    </p>
-  </section>
-
-
-  <!-- FOOTER -->
-  <footer>
-    <p>성현 ♥ 지현</p>
-    <small>Thank you for celebrating with us.</small>
-  </footer>
-
-
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="갤러리 사진" hidden>
+    <button class="lightbox-close" id="lightbox-close" type="button" aria-label="닫기">×</button>
+    <button class="lightbox-arrow lightbox-previous" id="lightbox-previous" type="button" aria-label="이전 사진">‹</button>
+    <figure class="lightbox-figure">
+      <img id="lightbox-image" src="" alt="">
+      <figcaption id="lightbox-caption"></figcaption>
+    </figure>
+    <button class="lightbox-arrow lightbox-next" id="lightbox-next" type="button" aria-label="다음 사진">›</button>
+    <div class="lightbox-thumbnails" id="lightbox-thumbnails" aria-label="사진 썸네일"></div>
+  </div>
   <script src="script.js"></script>
-
 </body>
 </html>
-
-

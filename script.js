@@ -305,6 +305,20 @@ function loadNaverMap() {
   document.head.append(mapScript);
 }
 
+function showIntroScreen() {
+  const introScreen = document.getElementById("intro-screen");
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.body.classList.add("intro-active");
+
+  window.setTimeout(() => {
+    introScreen.classList.add("is-fading");
+    introScreen.addEventListener("transitionend", () => {
+      introScreen.remove();
+      document.body.classList.remove("intro-active");
+    }, { once: true });
+  }, prefersReducedMotion ? 650 : 1700);
+}
+
 function setMusicState(isPlaying) {
   musicToggle.setAttribute("aria-pressed", String(isPlaying));
   musicToggle.setAttribute("aria-label", `배경음악 ${isPlaying ? "끄기" : "켜기"}`);
@@ -342,3 +356,4 @@ setupGalleryControls();
 setupDetailCarousel();
 renderAccounts();
 loadNaverMap();
+showIntroScreen();

@@ -1,6 +1,6 @@
 const accountDetails = [
   { side: "신랑 측", bank: "카카오뱅크", number: "3333 05 0183009", holder: "황성현" },
-  { side: "신부 측", bank: "은행명 입력", number: "", holder: "예금주 입력" }
+  { side: "신부 측", bank: "우리은행", number: "1002 948 015 989", holder: "육지현" }
 ];
 const NAVER_MAP_CLIENT_ID = "pdxf1mih2z";
 const backgroundMusic = document.getElementById("background-music");

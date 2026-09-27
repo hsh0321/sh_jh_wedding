@@ -1,5 +1,5 @@
 const accountDetails = [
-  { side: "신랑 측", bank: "은행명 입력", number: "", holder: "예금주 입력" },
+  { side: "신랑 측", bank: "카카오뱅크", number: "3333 05 0183009", holder: "황성현" },
   { side: "신부 측", bank: "은행명 입력", number: "", holder: "예금주 입력" }
 ];
 const NAVER_MAP_CLIENT_ID = "pdxf1mih2z";
@@ -172,7 +172,7 @@ function updateCountdown() {
   updateCountdownNumber(document.getElementById("count-hours"), String(hours).padStart(2, "0"));
   updateCountdownNumber(document.getElementById("count-minutes"), String(minutes).padStart(2, "0"));
   updateCountdownNumber(document.getElementById("count-seconds"), String(seconds).padStart(2, "0"));
-  updateCountdownNumber(document.getElementById("days-remaining"), String(days).padStart(2, "0"));
+  document.getElementById("days-remaining").textContent = String(days).padStart(2, "0");
 }
 
 function photoPath(number) {

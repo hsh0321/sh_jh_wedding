@@ -128,9 +128,6 @@ img { display: block; max-width: 100%; }
 .vows { margin-top: 32px; }
 .handwriting-image { width: min(100%, 320px); height: auto; margin: 0 auto; }
 
-.decoration { display: grid; min-height: 210px; place-items: center; background: var(--light); }
-.decoration-placeholder { width: min(72%, 300px); height: 160px; color: var(--wine); opacity: .2; }
-
 .gallery-section .section-inner { padding-top: 72px; padding-bottom: 78px; }
 .gallery-repeat { margin-top: 4px; font-size: 28px; }
 .gallery-paper {
@@ -225,8 +222,6 @@ img { display: block; max-width: 100%; }
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
-.countdown-number { font-variant-numeric: tabular-nums; }
-.countdown-copy strong.countdown-number { display: inline-flex; vertical-align: baseline; }
 .count-digit { position: relative; display: block; width: .62em; height: 1.12em; overflow: hidden; font-variant-numeric: tabular-nums; line-height: 1.12; text-align: center; }
 .count-digit-static { display: grid; place-items: center; }
 .count-digit-old, .count-digit-new { position: absolute; inset: 0; display: grid; place-items: center; }

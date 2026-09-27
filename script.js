@@ -210,6 +210,26 @@ function buildGallery() {
   loadPhoto(1);
 }
 
+function setupGalleryMotion() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  galleryGrid.addEventListener("animationend", (event) => {
+    if (event.target.classList.contains("stamp")) event.target.classList.remove("is-nudging");
+  });
+
+  window.setInterval(() => {
+    if (document.visibilityState !== "visible" || !lightbox.hidden) return;
+    const galleryBounds = galleryGrid.getBoundingClientRect();
+    if (galleryBounds.bottom <= 0 || galleryBounds.top >= window.innerHeight) return;
+
+    const stamps = galleryGrid.querySelectorAll(".stamp");
+    if (!stamps.length) return;
+    stamps.forEach((stamp) => stamp.classList.remove("is-nudging"));
+    void galleryGrid.offsetWidth;
+    stamps.forEach((stamp) => stamp.classList.add("is-nudging"));
+  }, 1000);
+}
+
 function updateLightboxCaption() {
   const photo = galleryPhotos[activePhotoIndex];
   if (photo) lightboxCaption.textContent = `${photo.number}번째 사진`;
@@ -476,6 +496,11 @@ function setMusicState(isPlaying) {
   musicToggle.title = `배경음악 ${isPlaying ? "끄기" : "켜기"}`;
 }
 
+function startMusicFromPageGesture(event) {
+  if (!(event.target instanceof Element) || event.target.closest("#music-toggle")) return;
+  if (backgroundMusic.paused) backgroundMusic.play().catch(() => setMusicState(false));
+}
+
 musicToggle.addEventListener("click", async () => {
   if (backgroundMusic.paused) {
     try {
@@ -489,9 +514,14 @@ musicToggle.addEventListener("click", async () => {
 });
 
 backgroundMusic.volume = 0.4;
-backgroundMusic.addEventListener("play", () => setMusicState(true));
+document.addEventListener("pointerdown", startMusicFromPageGesture, { passive: true });
+backgroundMusic.addEventListener("play", () => {
+  setMusicState(true);
+  document.removeEventListener("pointerdown", startMusicFromPageGesture);
+});
 backgroundMusic.addEventListener("pause", () => setMusicState(false));
 backgroundMusic.addEventListener("error", () => {
+  document.removeEventListener("pointerdown", startMusicFromPageGesture);
   setMusicState(false);
   musicToggle.disabled = true;
   musicToggle.setAttribute("aria-label", "음악 파일을 재생할 수 없습니다");
@@ -505,6 +535,7 @@ updateCountdown();
 window.setInterval(updateCountdown, 1000);
 setupScrollReveals();
 buildGallery();
+setupGalleryMotion();
 setupGalleryControls();
 setupDetailCarousel();
 renderAccounts();

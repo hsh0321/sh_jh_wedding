@@ -5,7 +5,6 @@ const accountDetails = [
 const NAVER_MAP_CLIENT_ID = "pdxf1mih2z";
 const backgroundMusic = document.getElementById("background-music");
 const musicToggle = document.getElementById("music-toggle");
-const musicToggleLabel = document.getElementById("music-toggle-label");
 
 const galleryPhotos = [];
 const galleryGrid = document.getElementById("gallery-grid");
@@ -15,6 +14,32 @@ const lightboxCaption = document.getElementById("lightbox-caption");
 const thumbnailStrip = document.getElementById("lightbox-thumbnails");
 let activePhotoIndex = 0;
 let lastFocusedElement = null;
+let scrollRevealObserver = null;
+
+function observeScrollReveal(element, delay = 0) {
+  if (!scrollRevealObserver) return;
+  element.classList.add("scroll-reveal");
+  element.style.setProperty("--reveal-delay", `${delay}ms`);
+  scrollRevealObserver.observe(element);
+}
+
+function setupScrollReveals() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+
+  scrollRevealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-revealed");
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+
+  document.querySelectorAll(".section-inner").forEach((section) => {
+    [...section.children].forEach((element, index) => {
+      observeScrollReveal(element, Math.min(index * 70, 280));
+    });
+  });
+}
 
 function renderCalendar() {
   const daysContainer = document.getElementById("calendar-days");
@@ -34,6 +59,66 @@ function renderCalendar() {
     }
     daysContainer.append(dateCell);
   }
+}
+
+function escapeCalendarText(value) {
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/\r?\n/g, "\\n")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,");
+}
+
+function foldCalendarLine(line) {
+  const segments = [];
+  let currentSegment = "";
+  let currentBytes = 0;
+
+  for (const character of line) {
+    const characterBytes = new TextEncoder().encode(character).length;
+    if (currentBytes + characterBytes > 75) {
+      segments.push(currentSegment);
+      currentSegment = character;
+      currentBytes = characterBytes + 1;
+    } else {
+      currentSegment += character;
+      currentBytes += characterBytes;
+    }
+  }
+
+  segments.push(currentSegment);
+  return segments.join("\r\n ");
+}
+
+function downloadWeddingCalendarEvent() {
+  const timestamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const eventLines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Wedding Invitation//KO",
+    "CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT",
+    "UID:wedding-20270117T061000Z@sh-jh-wedding",
+    `DTSTAMP:${timestamp}`,
+    "DTSTART:20270117T061000Z",
+    `SUMMARY:${escapeCalendarText("황성현 · 육지현 결혼식")}`,
+    `LOCATION:${escapeCalendarText("서울특별시 구로구 경인로 624, 라마다 서울 신도림 호텔 5층 세인트그레이스홀")}`,
+    `DESCRIPTION:${escapeCalendarText("황성현과 육지현의 결혼식에 초대합니다.")}`,
+    "URL:https://naver.me/G9r5RXWh",
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ];
+  const calendarFile = new Blob(["\uFEFF", `${eventLines.map(foldCalendarLine).join("\r\n")}\r\n`], {
+    type: "text/calendar;charset=utf-8"
+  });
+  const downloadLink = document.createElement("a");
+  const downloadUrl = URL.createObjectURL(calendarFile);
+  downloadLink.href = downloadUrl;
+  downloadLink.download = "wedding-2027-01-17.ics";
+  document.body.append(downloadLink);
+  downloadLink.click();
+  downloadLink.remove();
+  window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 60000);
 }
 
 function updateCountdown() {
@@ -77,6 +162,7 @@ function buildGallery() {
       stamp.append(image);
       stamp.addEventListener("click", () => openLightbox(photoIndex, stamp));
       galleryGrid.append(stamp);
+      observeScrollReveal(stamp, ((number - 1) % 5) * 55);
       loadPhoto(number + 1);
     }, { once: true });
 
@@ -323,7 +409,6 @@ function setMusicState(isPlaying) {
   musicToggle.setAttribute("aria-pressed", String(isPlaying));
   musicToggle.setAttribute("aria-label", `배경음악 ${isPlaying ? "끄기" : "켜기"}`);
   musicToggle.title = `배경음악 ${isPlaying ? "끄기" : "켜기"}`;
-  musicToggleLabel.textContent = `음악 ${isPlaying ? "끄기" : "켜기"}`;
 }
 
 musicToggle.addEventListener("click", async () => {
@@ -342,15 +427,18 @@ backgroundMusic.volume = 0.4;
 backgroundMusic.addEventListener("play", () => setMusicState(true));
 backgroundMusic.addEventListener("pause", () => setMusicState(false));
 backgroundMusic.addEventListener("error", () => {
+  setMusicState(false);
   musicToggle.disabled = true;
-  musicToggleLabel.textContent = "음악 파일 확인";
   musicToggle.setAttribute("aria-label", "음악 파일을 재생할 수 없습니다");
+  musicToggle.title = "음악 파일을 재생할 수 없습니다";
 });
 backgroundMusic.play().catch(() => setMusicState(false));
 
 renderCalendar();
+document.getElementById("calendar-add-button").addEventListener("click", downloadWeddingCalendarEvent);
 updateCountdown();
 window.setInterval(updateCountdown, 1000);
+setupScrollReveals();
 buildGallery();
 setupGalleryControls();
 setupDetailCarousel();

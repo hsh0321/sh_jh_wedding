@@ -2,6 +2,10 @@ const accountDetails = [
   { side: "신랑 측", bank: "은행명 입력", number: "", holder: "예금주 입력" },
   { side: "신부 측", bank: "은행명 입력", number: "", holder: "예금주 입력" }
 ];
+const NAVER_MAP_CLIENT_ID = "pdxf1mih2z";
+const backgroundMusic = document.getElementById("background-music");
+const musicToggle = document.getElementById("music-toggle");
+const musicToggleLabel = document.getElementById("music-toggle-label");
 
 const galleryPhotos = [];
 const galleryGrid = document.getElementById("gallery-grid");
@@ -56,57 +60,31 @@ function photoPath(number) {
 function buildGallery() {
   const rotations = [-4, 2, -2, 3, -3, 1, 4, -1, 2, -3, 1, -2, 3, -1, 2, -4, 1, -2];
 
-  for (let number = 1; number <= 18; number += 1) {
-    const stamp = document.createElement("div");
-    stamp.className = "stamp";
-    stamp.style.transform = `rotate(${rotations[number - 1]}deg)`;
-
-    if (number > 10) {
-      const placeholder = document.createElement("div");
-      const landscape = number % 3 === 0;
-      placeholder.className = `stamp-placeholder${landscape ? " stamp-placeholder--landscape" : ""}`;
-      placeholder.textContent = String(number).padStart(2, "0");
-      placeholder.setAttribute("aria-label", `${number}번 사진 자리`);
-      stamp.classList.add(landscape ? "stamp--landscape" : "stamp--portrait");
-      stamp.setAttribute("aria-hidden", "true");
-      stamp.style.cursor = "default";
-      stamp.append(placeholder);
-      galleryGrid.append(stamp);
-      continue;
-    }
-
+  const loadPhoto = (number) => {
     const image = document.createElement("img");
-    image.src = photoPath(number);
     image.alt = `${number}번 사진`;
     image.loading = "eager";
 
     image.addEventListener("load", () => {
+      const stamp = document.createElement("div");
       const landscape = image.naturalWidth > image.naturalHeight;
+      const photoIndex = galleryPhotos.length;
+      stamp.className = "stamp";
+      stamp.style.transform = `rotate(${rotations[(number - 1) % rotations.length]}deg)`;
       stamp.classList.add(landscape ? "stamp--landscape" : "stamp--portrait");
       stamp.dataset.photoNumber = String(number);
       galleryPhotos.push({ number, source: image.src, alt: image.alt });
-      galleryPhotos.sort((left, right) => left.number - right.number);
+      stamp.append(image);
+      stamp.addEventListener("click", () => openLightbox(photoIndex, stamp));
+      galleryGrid.append(stamp);
+      loadPhoto(number + 1);
     }, { once: true });
 
-    image.addEventListener("error", () => {
-      const placeholder = document.createElement("div");
-      const landscape = number % 3 === 0;
-      placeholder.className = `stamp-placeholder${landscape ? " stamp-placeholder--landscape" : ""}`;
-      placeholder.textContent = String(number).padStart(2, "0");
-      placeholder.setAttribute("aria-label", `${number}번 사진 자리`);
-      image.replaceWith(placeholder);
-      stamp.classList.add(landscape ? "stamp--landscape" : "stamp--portrait");
-      stamp.setAttribute("aria-hidden", "true");
-      stamp.style.cursor = "default";
-    }, { once: true });
+    image.addEventListener("error", () => {}, { once: true });
+    image.src = photoPath(number);
+  };
 
-    stamp.append(image);
-    stamp.addEventListener("click", () => {
-      const index = galleryPhotos.findIndex((photo) => photo.number === number);
-      if (index !== -1) openLightbox(index, stamp);
-    });
-    galleryGrid.append(stamp);
-  }
+  loadPhoto(1);
 }
 
 function renderLightbox() {
@@ -292,6 +270,70 @@ function renderAccounts() {
   });
 }
 
+function showNaverMapFallback() {
+  document.getElementById("map-fallback").hidden = false;
+}
+
+function initNaverMap() {
+  if (!window.naver?.maps) {
+    showNaverMapFallback();
+    return;
+  }
+
+  const venuePosition = new naver.maps.LatLng(37.506227, 126.88545);
+  const map = new naver.maps.Map("naver-map", {
+    center: venuePosition,
+    zoom: 16,
+    zoomControl: true,
+    zoomControlOptions: { position: naver.maps.Position.TOP_RIGHT }
+  });
+
+  new naver.maps.Marker({
+    map,
+    position: venuePosition,
+    title: "라마다 서울 신도림 호텔 5층 세인트그레이스홀"
+  });
+}
+
+function loadNaverMap() {
+  window.navermap_authFailure = showNaverMapFallback;
+  const mapScript = document.createElement("script");
+  mapScript.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(NAVER_MAP_CLIENT_ID)}`;
+  mapScript.async = true;
+  mapScript.addEventListener("load", initNaverMap, { once: true });
+  mapScript.addEventListener("error", showNaverMapFallback, { once: true });
+  document.head.append(mapScript);
+}
+
+function setMusicState(isPlaying) {
+  musicToggle.setAttribute("aria-pressed", String(isPlaying));
+  musicToggle.setAttribute("aria-label", `배경음악 ${isPlaying ? "끄기" : "켜기"}`);
+  musicToggle.title = `배경음악 ${isPlaying ? "끄기" : "켜기"}`;
+  musicToggleLabel.textContent = `음악 ${isPlaying ? "끄기" : "켜기"}`;
+}
+
+musicToggle.addEventListener("click", async () => {
+  if (backgroundMusic.paused) {
+    try {
+      await backgroundMusic.play();
+    } catch {
+      setMusicState(false);
+    }
+    return;
+  }
+  backgroundMusic.pause();
+});
+
+backgroundMusic.volume = 0.4;
+backgroundMusic.addEventListener("play", () => setMusicState(true));
+backgroundMusic.addEventListener("pause", () => setMusicState(false));
+backgroundMusic.addEventListener("error", () => {
+  musicToggle.disabled = true;
+  musicToggleLabel.textContent = "음악 파일 확인";
+  musicToggle.setAttribute("aria-label", "음악 파일을 재생할 수 없습니다");
+});
+backgroundMusic.play().catch(() => setMusicState(false));
+
 renderCalendar();
 updateCountdown();
 window.setInterval(updateCountdown, 1000);
@@ -299,3 +341,4 @@ buildGallery();
 setupGalleryControls();
 setupDetailCarousel();
 renderAccounts();
+loadNaverMap();

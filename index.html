@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -25,15 +26,11 @@
       <div class="section-inner wedding-inner">
         <span class="heart" aria-hidden="true">♥︎</span>
         <h1 class="script-title">Our Wedding day</h1>
-        <div class="asset-placeholder date-art-placeholder" role="img" aria-label="일시 및 장소 이미지 자리"></div>
+        <img class="date-art-image" src="images/일시 및 장소.png" alt="2027년 1월 17일 오후 3시 10분, 라마다 서울 신도림 호텔 5층 세인트그레이스홀">
         <p class="family-line">황석한 · 백미자의 아들 황성현</p>
         <p class="family-line">육근봉 · 윤혜리의 장녀 육지현</p>
-        <div class="asset-placeholder heart-frame-placeholder" role="img" aria-label="하트 프레임 이미지 자리"></div>
         <div class="vows">
-          <div class="asset-placeholder handwriting-placeholder" role="img" aria-label="손글씨 배경 이미지 자리"></div>
-          <p class="quote-source">- 「물고기는 존재하지 않는다」 中</p>
-          <p>세상의 냉기를 막아주는<br>서로의 안식처가 되어주기로 했습니다.</p>
-          <p>그 약속이 영원이 되는 날,<br>저희의 증인이 되어주세요.</p>
+          <img class="handwriting-image" src="images/손글씨 배경.png" alt="「물고기는 존재하지 않는다」 중. 세상의 냉기를 막아주는 서로의 안식처가 되어주기로 했습니다. 그 약속이 영원이 되는 날, 저희의 증인이 되어주세요.">
         </div>
       </div>
     </section>
@@ -140,17 +137,20 @@
 
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="갤러리 사진" hidden>
     <button class="lightbox-close" id="lightbox-close" type="button" aria-label="닫기">×</button>
-    <button class="lightbox-arrow lightbox-previous" id="lightbox-previous" type="button" aria-label="이전 사진">‹</button>
-    <figure class="lightbox-figure">
-      <img id="lightbox-image" src="" alt="">
-      <figcaption id="lightbox-caption"></figcaption>
-    </figure>
-    <button class="lightbox-arrow lightbox-next" id="lightbox-next" type="button" aria-label="다음 사진">›</button>
-    <div class="lightbox-thumbnails" id="lightbox-thumbnails" aria-label="사진 썸네일"></div>
+    <div class="lightbox-stage">
+      <div class="swiper gallery-swiper" id="gallery-swiper" aria-label="갤러리 사진 슬라이더">
+        <div class="swiper-wrapper" id="gallery-swiper-wrapper"></div>
+      </div>
+      <div class="lightbox-pagination" id="lightbox-pagination" aria-label="사진 순서"></div>
+      <p class="visually-hidden" id="lightbox-caption" aria-live="polite"></p>
+      <button class="lightbox-arrow lightbox-previous" id="lightbox-previous" type="button" aria-label="이전 사진">‹</button>
+      <button class="lightbox-arrow lightbox-next" id="lightbox-next" type="button" aria-label="다음 사진">›</button>
+    </div>
   </div>
   <button class="music-toggle" id="music-toggle" type="button" aria-label="배경음악 끄기" aria-pressed="true" title="배경음악 끄기">
     <span class="music-equalizer" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
   </button>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

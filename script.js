@@ -9,12 +9,15 @@ const musicToggle = document.getElementById("music-toggle");
 const galleryPhotos = [];
 const galleryGrid = document.getElementById("gallery-grid");
 const lightbox = document.getElementById("lightbox");
-const lightboxImage = document.getElementById("lightbox-image");
 const lightboxCaption = document.getElementById("lightbox-caption");
-const thumbnailStrip = document.getElementById("lightbox-thumbnails");
+const gallerySwiperElement = document.getElementById("gallery-swiper");
+const gallerySwiperWrapper = document.getElementById("gallery-swiper-wrapper");
+const galleryPagination = document.getElementById("lightbox-pagination");
 let activePhotoIndex = 0;
 let lastFocusedElement = null;
 let scrollRevealObserver = null;
+let lightboxCloseTimer = null;
+let gallerySwiper = null;
 
 function observeScrollReveal(element, delay = 0) {
   if (!scrollRevealObserver) return;
@@ -121,6 +124,40 @@ function downloadWeddingCalendarEvent() {
   window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 60000);
 }
 
+function updateCountdownNumber(element, value) {
+  const hasPreviousValue = element.dataset.countInitialized === "true";
+  const previousDigits = (element.dataset.countValue || value).padStart(value.length, "0").split("");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const digitColumns = [...value].map((digit, index) => {
+    const column = document.createElement("span");
+    column.className = "count-digit";
+
+    if (!hasPreviousValue || reduceMotion || previousDigits[index] === digit) {
+      column.classList.add("count-digit-static");
+      column.textContent = digit;
+      column.setAttribute("aria-hidden", "true");
+      return column;
+    }
+
+    const previousDigit = document.createElement("span");
+    previousDigit.className = "count-digit-old";
+    previousDigit.textContent = previousDigits[index];
+    previousDigit.setAttribute("aria-hidden", "true");
+    const nextDigit = document.createElement("span");
+    nextDigit.className = "count-digit-new";
+    nextDigit.textContent = digit;
+    nextDigit.setAttribute("aria-hidden", "true");
+    column.append(previousDigit, nextDigit);
+    return column;
+  });
+
+  element.replaceChildren(...digitColumns);
+  element.dataset.countValue = value;
+  element.dataset.countInitialized = "true";
+  element.setAttribute("role", "img");
+  element.setAttribute("aria-label", value);
+}
+
 function updateCountdown() {
   const now = new Date();
   const wedding = new Date(2027, 0, 17, 15, 10, 0);
@@ -131,11 +168,11 @@ function updateCountdown() {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
-  document.getElementById("count-days").textContent = String(days).padStart(2, "0");
-  document.getElementById("count-hours").textContent = String(hours).padStart(2, "0");
-  document.getElementById("count-minutes").textContent = String(minutes).padStart(2, "0");
-  document.getElementById("count-seconds").textContent = String(seconds).padStart(2, "0");
-  document.getElementById("days-remaining").textContent = String(days).padStart(2, "0");
+  updateCountdownNumber(document.getElementById("count-days"), String(days).padStart(2, "0"));
+  updateCountdownNumber(document.getElementById("count-hours"), String(hours).padStart(2, "0"));
+  updateCountdownNumber(document.getElementById("count-minutes"), String(minutes).padStart(2, "0"));
+  updateCountdownNumber(document.getElementById("count-seconds"), String(seconds).padStart(2, "0"));
+  updateCountdownNumber(document.getElementById("days-remaining"), String(days).padStart(2, "0"));
 }
 
 function photoPath(number) {
@@ -173,53 +210,90 @@ function buildGallery() {
   loadPhoto(1);
 }
 
-function renderLightbox() {
+function updateLightboxCaption() {
   const photo = galleryPhotos[activePhotoIndex];
-  if (!photo) return;
-
-  lightboxImage.src = photo.source;
-  lightboxImage.alt = photo.alt;
-  lightboxCaption.textContent = `${photo.number} / ${galleryPhotos.length}`;
-  thumbnailStrip.replaceChildren();
-
-  galleryPhotos.forEach((item, index) => {
-    const thumbnailButton = document.createElement("button");
-    thumbnailButton.type = "button";
-    thumbnailButton.className = "lightbox-thumbnail";
-    thumbnailButton.setAttribute("aria-label", `${item.number}번 사진 보기`);
-    thumbnailButton.setAttribute("aria-current", String(index === activePhotoIndex));
-    const thumbnailImage = document.createElement("img");
-    thumbnailImage.src = item.source;
-    thumbnailImage.alt = "";
-    thumbnailButton.append(thumbnailImage);
-    thumbnailButton.addEventListener("click", () => {
-      activePhotoIndex = index;
-      renderLightbox();
-    });
-    thumbnailStrip.append(thumbnailButton);
+  if (photo) lightboxCaption.textContent = `${photo.number}번째 사진`;
+  const selectedIndex = gallerySwiper?.realIndex ?? activePhotoIndex;
+  galleryPagination.querySelectorAll(".swiper-pagination-bullet").forEach((bullet, index) => {
+    bullet.setAttribute("aria-current", String(index === selectedIndex));
   });
+}
 
-  thumbnailStrip.querySelector('[aria-current="true"]')?.scrollIntoView({ block: "nearest", inline: "center" });
+function renderLightbox() {
+  if (!galleryPhotos.length || !window.Swiper) return;
+
+  if (!gallerySwiper) {
+    galleryPhotos.forEach((photo) => {
+      const slide = document.createElement("div");
+      const image = document.createElement("img");
+      slide.className = "swiper-slide";
+      image.src = photo.source;
+      image.alt = photo.alt;
+      image.draggable = false;
+      slide.append(image);
+      gallerySwiperWrapper.append(slide);
+    });
+
+    gallerySwiper = new window.Swiper(gallerySwiperElement, {
+      effect: "cards",
+      grabCursor: true,
+      loop: true,
+      speed: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 150 : 520,
+      cardsEffect: {
+        perSlideOffset: 12,
+        perSlideRotate: 2,
+        rotate: true,
+        slideShadows: false
+      },
+      pagination: {
+        el: galleryPagination,
+        clickable: true,
+        renderBullet(index, className) {
+          return `<button class="${className}" type="button" aria-label="${index + 1}번째 사진 보기"></button>`;
+        }
+      },
+      on: {
+        slideChange(swiper) {
+          activePhotoIndex = swiper.realIndex;
+          updateLightboxCaption();
+        }
+      }
+    });
+    gallerySwiper.slideToLoop(activePhotoIndex, 0, false);
+  } else {
+    gallerySwiper.update();
+    gallerySwiper.slideToLoop(activePhotoIndex, 0, false);
+  }
+
+  updateLightboxCaption();
 }
 
 function openLightbox(index, focusedElement) {
+  window.clearTimeout(lightboxCloseTimer);
   activePhotoIndex = index;
   lastFocusedElement = focusedElement;
-  renderLightbox();
   lightbox.hidden = false;
   document.body.style.overflow = "hidden";
+  renderLightbox();
+  window.setTimeout(() => lightbox.classList.add("is-open"), 20);
   document.getElementById("lightbox-close").focus();
 }
 
 function closeLightbox() {
-  lightbox.hidden = true;
-  document.body.style.overflow = "";
-  lastFocusedElement?.focus();
+  if (lightbox.hidden || !lightbox.classList.contains("is-open")) return;
+  lightbox.classList.remove("is-open");
+  lightboxCloseTimer = window.setTimeout(() => {
+    if (lightbox.classList.contains("is-open")) return;
+    lightbox.hidden = true;
+    document.body.style.overflow = "";
+    lastFocusedElement?.focus();
+  }, 320);
 }
 
 function movePhoto(direction) {
-  activePhotoIndex = (activePhotoIndex + direction + galleryPhotos.length) % galleryPhotos.length;
-  renderLightbox();
+  if (!gallerySwiper) return;
+  if (direction > 0) gallerySwiper.slideNext();
+  else gallerySwiper.slidePrev();
 }
 
 function setupGalleryControls() {
@@ -237,15 +311,6 @@ function setupGalleryControls() {
     if (event.key === "ArrowLeft") movePhoto(-1);
     if (event.key === "ArrowRight") movePhoto(1);
   });
-
-  let touchStartX = 0;
-  lightbox.addEventListener("touchstart", (event) => {
-    touchStartX = event.changedTouches[0].clientX;
-  }, { passive: true });
-  lightbox.addEventListener("touchend", (event) => {
-    const distance = event.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(distance) > 45) movePhoto(distance < 0 ? 1 : -1);
-  }, { passive: true });
 }
 
 const detailTitles = ["안내 1", "안내 2", "안내 3", "안내 4"];
@@ -255,11 +320,11 @@ let activeDetailIndex = 0;
 function renderDetailSlide() {
   const slide = document.getElementById("detail-slide");
   const fileNumber = activeDetailIndex + 1;
-  const placeholder = document.createElement("div");
-  placeholder.className = "detail-placeholder";
-  placeholder.textContent = `${detailTitles[activeDetailIndex]} 이미지 자리`;
-  placeholder.style.transform = `rotate(${detailRotations[activeDetailIndex]}deg)`;
-  slide.replaceChildren(placeholder);
+  const image = document.createElement("img");
+  image.src = `images/안내${fileNumber}.png`;
+  image.alt = `${detailTitles[activeDetailIndex]} 이미지`;
+  image.style.transform = `rotate(${detailRotations[activeDetailIndex]}deg)`;
+  slide.replaceChildren(image);
 
   document.querySelectorAll(".carousel-dot").forEach((dot, index) => {
     dot.setAttribute("aria-current", String(index === activeDetailIndex));

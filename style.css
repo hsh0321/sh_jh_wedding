@@ -122,14 +122,11 @@ img { display: block; max-width: 100%; }
   opacity: .5;
 }
 
-.date-art-placeholder { width: min(100%, 310px); height: 72px; transform: rotate(-3deg); }
+.date-art-image { width: min(100%, 340px); height: auto; margin: 0 auto 18px; transform: rotate(-3deg); }
 .family-line { margin: 19px 0 0; font-size: 13px; }
 .family-line + .family-line { margin-top: 2px; }
-.heart-frame-placeholder { width: 152px; height: 142px; margin-top: 28px; border-radius: 48% 48% 45% 45%; }
-.vows { margin-top: 36px; font-size: 14px; line-height: 2.05; }
-.handwriting-placeholder { width: min(100%, 320px); height: 74px; margin-bottom: 15px; border: 0; }
-.quote-source { margin: 0 0 16px; font-size: 12px; font-style: italic; }
-.vows p:not(.quote-source) { margin: 0 0 13px; }
+.vows { margin-top: 32px; }
+.handwriting-image { width: min(100%, 320px); height: auto; margin: 0 auto; }
 
 .decoration { display: grid; min-height: 210px; place-items: center; background: var(--light); }
 .decoration-placeholder { width: min(72%, 300px); height: 160px; color: var(--wine); opacity: .2; }
@@ -215,10 +212,11 @@ img { display: block; max-width: 100%; }
 .countdown { display: flex; align-items: center; justify-content: center; gap: 7px; }
 .time-unit { display: grid; justify-items: center; gap: 5px; }
 .time-value {
-  display: grid;
+  display: flex;
   width: 61px;
   height: 70px;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
   background: var(--wine);
   color: white;
@@ -226,6 +224,20 @@ img { display: block; max-width: 100%; }
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
+}
+.countdown-number { font-variant-numeric: tabular-nums; }
+.countdown-copy strong.countdown-number { display: inline-flex; vertical-align: baseline; }
+.count-digit { position: relative; display: block; width: .62em; height: 1.12em; overflow: hidden; font-variant-numeric: tabular-nums; line-height: 1.12; text-align: center; }
+.count-digit-static { display: grid; place-items: center; }
+.count-digit-old, .count-digit-new { position: absolute; inset: 0; display: grid; place-items: center; }
+.count-digit-old { animation: countdown-digit-out .34s cubic-bezier(.2, .7, .25, 1) both; }
+.count-digit-new { animation: countdown-digit-in .34s cubic-bezier(.2, .7, .25, 1) both; }
+@keyframes countdown-digit-out {
+  to { opacity: 0; transform: translateY(-100%); }
+}
+@keyframes countdown-digit-in {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .time-label { font-size: 10px; }
 .time-separator { align-self: start; margin-top: 20px; font-size: 19px; }
@@ -328,23 +340,32 @@ img { display: block; max-width: 100%; }
   z-index: 20;
   inset: 0;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   justify-items: center;
-  padding: 52px 16px 20px;
+  overflow: hidden;
+  padding: 52px 16px 24px;
   background: rgb(0 0 0 / 91%);
   color: white;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
 }
+.lightbox.is-open { opacity: 1; pointer-events: auto; }
 .lightbox-close { position: absolute; top: 10px; right: max(14px, calc((100vw - 480px) / 2 + 14px)); width: 42px; height: 42px; border: 0; background: transparent; color: white; cursor: pointer; font-size: 33px; font-weight: 200; line-height: 1; }
-.lightbox-figure { display: grid; min-height: 0; width: 100%; margin: 0; place-content: center; justify-items: center; }
-.lightbox-figure img { max-width: min(100%, 440px); max-height: calc(100dvh - 154px); object-fit: contain; }
-.lightbox-figure figcaption { margin-top: 8px; font-size: 12px; }
-.lightbox-arrow { position: absolute; top: 48%; color: white; }
-.lightbox-previous { left: max(2px, calc((100vw - 480px) / 2)); }
-.lightbox-next { right: max(2px, calc((100vw - 480px) / 2)); }
-.lightbox-thumbnails { display: flex; width: min(100%, 440px); justify-content: safe center; gap: 6px; overflow-x: auto; padding: 8px 2px; }
-.lightbox-thumbnail { flex: 0 0 42px; width: 42px; height: 54px; padding: 2px; border: 2px solid transparent; background: #fff; cursor: pointer; }
-.lightbox-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-.lightbox-thumbnail[aria-current="true"] { border-color: #fff; outline: 1px solid var(--wine); }
+.lightbox-stage { position: relative; display: grid; width: min(100%, 480px); min-width: 0; height: min(72dvh, 640px); min-height: 300px; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; align-items: center; justify-items: center; }
+.gallery-swiper { width: min(78%, 370px); height: min(58dvh, 500px); overflow: visible; touch-action: pan-y; }
+.gallery-swiper .swiper-wrapper { align-items: center; }
+.gallery-swiper .swiper-slide { display: grid; place-items: center; overflow: visible; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.gallery-swiper .swiper-slide img { display: block; width: 100%; height: 100%; border-radius: 6px; object-fit: contain; box-shadow: 0 12px 28px rgb(0 0 0 / 28%); user-select: none; -webkit-user-drag: none; }
+.lightbox-pagination { position: absolute; z-index: 6; right: 0; bottom: -8px; left: 0; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.lightbox-stage > .lightbox-pagination.swiper-pagination-horizontal { bottom: -48px; }
+.lightbox-pagination .swiper-pagination-bullet { width: 6px; height: 6px; margin: 0 !important; border: 0; border-radius: 5px; background: var(--cream); opacity: .45; cursor: pointer; transition: width .22s ease, opacity .22s ease; }
+.lightbox-pagination .swiper-pagination-bullet-active { width: 19px; opacity: 1; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+.lightbox-arrow { position: absolute; z-index: 5; top: 46%; color: white; transform: translateY(-50%); }
+.lightbox-previous { left: 0; }
+.lightbox-next { right: 0; }
 
 .music-toggle {
   position: fixed;
@@ -408,5 +429,8 @@ img { display: block; max-width: 100%; }
   .intro-title { animation: none; }
   .intro-screen { transition-duration: .15s; transition-delay: 0s; }
   .music-equalizer span { animation: none; transform: scaleY(.65); }
+  .lightbox { transition: none; }
+  .count-digit-old { display: none; animation: none; }
+  .count-digit-new { animation: none; }
 }
 

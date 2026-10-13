@@ -39,10 +39,24 @@
   background-color: var(--paper);
 }
 
-main > :not(.opening) {
+.content-sheet,
+.content-sheet > * {
   position: relative;
   z-index: 1;
   isolation: isolate;
+}
+
+/* Keep an opaque backing behind reveal/clip layers over the sticky cover. */
+.content-sheet {
+  display: flow-root;
+  background-color: var(--paper);
+}
+
+/* Promote the backing as one stable layer during iOS asynchronous scrolling. */
+@supports (-webkit-touch-callout: none) {
+  .content-sheet {
+    transform: translateZ(0);
+  }
 }
 
 .opening-panel {

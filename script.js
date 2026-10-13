@@ -9,25 +9,43 @@ const openingShade=$('.opening-shade');
 const interlude=$('#interlude');
 const pendingReveals=new Set();
 let scrollFrame=0;
+let lastOpeningProgress=-1,lastInterludeOffset=null;
+const interludeTitle=interlude?.querySelector('.interlude-title');
+const interludeSubtitle=interlude?.querySelector('.interlude-subtitle');
 function updateScrollEffects(){
  scrollFrame=0;
  if(reduced)return;
- const progress=Math.min(Math.max(window.scrollY/Math.max(window.innerHeight,1),0),1);
+ // Read geometry before changing styles so scroll frames do not force layout.
+ const viewportHeight=window.innerHeight;
+ const scrollY=window.scrollY;
+ const openingHeight=opening.offsetHeight;
+ const progress=Math.min(Math.max(scrollY/Math.max(viewportHeight,1),0),1);
  const eased=1-(1-progress)**2;
- openingShade.style.opacity=String((progress*.32).toFixed(3));
- opening.style.setProperty('--panel-scale',(1-.07*eased).toFixed(4));
- opening.style.setProperty('--cover-shift',`${(-70*eased).toFixed(1)}px`);
- opening.style.setProperty('--cover-scale',(1+.16*eased).toFixed(4));
- const threshold=Math.min(opening.offsetHeight*.22,window.innerHeight*.18);
- opening.classList.toggle('is-scattered',window.scrollY>threshold);
+ const threshold=Math.min(openingHeight*.22,viewportHeight*.18);
+ let offset=null;
  if(interlude){
-  const interludeProgress=Math.min(Math.max((window.innerHeight-interlude.getBoundingClientRect().top)/(window.innerHeight+interlude.offsetHeight),0),1);
-  const offset=120*(1-2*interludeProgress);
-  interlude.querySelector('.interlude-title').style.setProperty('--row-offset',`${offset.toFixed(1)}px`);
-  interlude.querySelector('.interlude-subtitle').style.setProperty('--row-offset',`${(-offset).toFixed(1)}px`);
+  const interludeProgress=Math.min(Math.max((viewportHeight-interlude.getBoundingClientRect().top)/(viewportHeight+interlude.offsetHeight),0),1);
+  offset=120*(1-2*interludeProgress);
  }
+ const ready=[];
  pendingReveals.forEach(element=>{
-  if(element.getBoundingClientRect().top>=window.innerHeight*.92)return;
+  if(element.getBoundingClientRect().top<viewportHeight*.92)ready.push(element);
+ });
+ // The cover's values stop changing once it is fully behind the content.
+ if(progress!==lastOpeningProgress){
+  openingShade.style.opacity=String((progress*.32).toFixed(3));
+  opening.style.setProperty('--panel-scale',(1-.07*eased).toFixed(4));
+  opening.style.setProperty('--cover-shift',`${(-70*eased).toFixed(1)}px`);
+  opening.style.setProperty('--cover-scale',(1+.16*eased).toFixed(4));
+  lastOpeningProgress=progress;
+ }
+ opening.classList.toggle('is-scattered',scrollY>threshold);
+ if(offset!==null&&offset!==lastInterludeOffset){
+  interludeTitle.style.setProperty('--row-offset',`${offset.toFixed(1)}px`);
+  interludeSubtitle.style.setProperty('--row-offset',`${(-offset).toFixed(1)}px`);
+  lastInterludeOffset=offset;
+ }
+ ready.forEach(element=>{
   element.classList.add('is-revealed');
   pendingReveals.delete(element);
  });

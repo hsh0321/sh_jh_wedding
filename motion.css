@@ -155,7 +155,9 @@ img,
 }
 
 main {
-  overflow: visible;
+  /* Clip animated overflow without creating a scroll container for sticky. */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .gallery-viewport {

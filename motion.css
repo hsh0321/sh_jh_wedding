@@ -37,9 +37,6 @@
   z-index: 0;
   isolation: isolate;
   background-color: var(--paper);
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
 }
 
 main > :not(.opening) {

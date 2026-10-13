@@ -7,7 +7,6 @@ $('#palette').addEventListener('change',e=>{const [base,accent]=palettes[e.targe
 const opening=$('#home');
 const openingShade=$('.opening-shade');
 const interlude=$('#interlude');
-const pendingReveals=new Set();
 let scrollFrame=0;
 function updateScrollEffects(){
  scrollFrame=0;
@@ -21,22 +20,26 @@ function updateScrollEffects(){
  const threshold=Math.min(opening.offsetHeight*.22,window.innerHeight*.18);
  opening.classList.toggle('is-scattered',window.scrollY>threshold);
  if(interlude){
-  const progress=Math.min(Math.max((window.innerHeight-interlude.getBoundingClientRect().top)/(window.innerHeight+interlude.offsetHeight),0),1);
-  const offset=120*(1-2*progress);
+  const interludeProgress=Math.min(Math.max((window.innerHeight-interlude.getBoundingClientRect().top)/(window.innerHeight+interlude.offsetHeight),0),1);
+  const offset=120*(1-2*interludeProgress);
   interlude.querySelector('.interlude-title').style.setProperty('--row-offset',`${offset.toFixed(1)}px`);
   interlude.querySelector('.interlude-subtitle').style.setProperty('--row-offset',`${(-offset).toFixed(1)}px`);
  }
- pendingReveals.forEach(element=>{
-  if(element.getBoundingClientRect().top>=window.innerHeight*.92)return;
-  element.classList.add('is-revealed');
-  pendingReveals.delete(element);
- });
 }
 function scheduleScrollEffects(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updateScrollEffects);}
 window.addEventListener('scroll',scheduleScrollEffects,{passive:true});
 window.addEventListener('resize',scheduleScrollEffects);
 function setupScrollReveals(){
- if(reduced||!('IntersectionObserver'in window))return;
+ if(reduced)return;
+ const observer='IntersectionObserver'in window
+  ?new IntersectionObserver(entries=>{
+   entries.forEach(entry=>{
+    if(!entry.isIntersecting)return;
+    entry.target.classList.add('is-revealed');
+    observer.unobserve(entry.target);
+   });
+  },{rootMargin:'0px 0px 8% 0px'})
+  :null;
  const targets=new Map();
  const add=(element,type,delay=0)=>{
   if(element.closest('[hidden]'))return;
@@ -55,7 +58,8 @@ function setupScrollReveals(){
  targets.forEach(({type,delay},element)=>{
   element.classList.add('scroll-reveal',`scroll-reveal-${type}`);
   element.style.setProperty('--reveal-delay',`${delay}ms`);
-  pendingReveals.add(element);
+  if(observer)observer.observe(element);
+  else element.classList.add('is-revealed');
  });
 }
 setupScrollReveals();

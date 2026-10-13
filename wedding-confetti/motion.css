@@ -1,0 +1,195 @@
+.opening .dot:not(.dot-12) {
+  animation: scatter-drift 5s ease-in-out infinite alternate;
+  animation-delay: calc(var(--n) * -.4s);
+  transition: transform .8s cubic-bezier(.2, .7, .25, 1);
+  transform: translate(0, 0);
+}
+
+.opening.is-scattered .dot-1 { transform: translate(-32px, -36px) scale(.8); }
+.opening.is-scattered .dot-2 { transform: translate(-24px, -42px) scale(.84); }
+.opening.is-scattered .dot-3 { transform: translate(28px, -38px) scale(.8); }
+.opening.is-scattered .dot-4 { transform: translate(36px, -24px) scale(.84); }
+.opening.is-scattered .dot-5 { transform: translate(38px, 4px) scale(.8); }
+.opening.is-scattered .dot-6 { transform: translate(-36px, 10px) scale(.82); }
+.opening.is-scattered .dot-7 { transform: translate(-21px, 28px) scale(.8); }
+.opening.is-scattered .dot-8 { transform: translate(-33px, 36px) scale(.84); }
+.opening.is-scattered .dot-9 { transform: translate(34px, 34px) scale(.8); }
+.opening.is-scattered .dot-10 { transform: translate(16px, 38px) scale(.84); }
+.opening.is-scattered .dot-11 { transform: translate(-24px, 30px) scale(.8); }
+
+#gallery-photo,
+#large-photo {
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+#gallery-photo.is-changing,
+#large-photo.is-changing {
+  opacity: 0;
+  transform: scale(.985);
+}
+
+@keyframes scatter-drift {
+  to { translate: 4px -8px; }
+}
+
+.opening {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  isolation: isolate;
+}
+
+.opening-panel {
+  transform: scale(var(--panel-scale, 1));
+}
+
+.heart-photo img {
+  transform: translateY(var(--cover-shift, 0px)) scale(var(--cover-scale, 1));
+  transform-origin: center;
+}
+
+.opening-shade {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+  background: #161616;
+  opacity: 0;
+}
+
+.save-date,
+.section,
+.day,
+.photo-banner,
+.interlude {
+  position: relative;
+  z-index: 1;
+  background-color: var(--paper);
+}
+
+.day {
+  background-color: var(--powder);
+}
+
+.photo-banner {
+  height: auto;
+}
+
+.photo-banner > img {
+  display: block;
+  height: auto;
+  object-fit: contain;
+}
+
+.ending {
+  position: relative;
+  z-index: 1;
+  background-color: var(--paper);
+}
+
+main {
+  overflow: clip;
+}
+
+.scroll-reveal {
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.scroll-reveal-up {
+  opacity: 0;
+  filter: blur(5px);
+  transform: translate3d(0, 24px, 0);
+  transition-property: opacity, filter, transform;
+  transition-duration: .85s;
+  transition-timing-function: cubic-bezier(.16, .84, .24, 1);
+}
+
+.scroll-reveal-wipe {
+  clip-path: inset(-40% 100% -40% -14%);
+  filter: blur(2px);
+  transition-property: clip-path, filter;
+  transition-duration: .95s;
+  transition-timing-function: cubic-bezier(.45, .05, .25, 1);
+}
+
+.scroll-reveal-center {
+  clip-path: inset(0 50%);
+  transform: scale(1.12);
+  transition-property: clip-path, transform;
+  transition-duration: 1.1s;
+  transition-timing-function: cubic-bezier(.16, .84, .24, 1);
+}
+
+.scroll-reveal.is-revealed {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  clip-path: inset(0);
+}
+
+.interlude {
+  min-height: 252px;
+  padding-top: 132px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.interlude-row {
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.interlude-row + .interlude-row {
+  margin-top: 4px;
+}
+
+.interlude-title,
+.interlude-subtitle {
+  position: relative;
+  left: 50%;
+  display: inline-block;
+  width: max-content;
+  transform: translateX(calc(-50% + var(--row-offset, 120px)));
+  will-change: transform;
+}
+
+.interlude-title {
+  font: italic 400 46px/1.35 var(--serif);
+  letter-spacing: .01em;
+}
+
+.interlude-subtitle {
+  font: 500 10px/1.8 var(--sans);
+  font-stretch: 125%;
+  letter-spacing: .12em;
+}
+
+.interlude-caption {
+  margin: 20px 0 0;
+  font: 500 9px/1.8 var(--sans);
+  letter-spacing: .14em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening .dot,
+  .opening-panel,
+  .heart-photo img,
+  #gallery-photo,
+  #large-photo,
+  .scroll-reveal-up,
+  .scroll-reveal-wipe,
+  .scroll-reveal-center,
+  .interlude-title,
+  .interlude-subtitle {
+    animation: none;
+    transition: none;
+  }
+
+  .scroll-reveal {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    clip-path: none;
+  }
+}

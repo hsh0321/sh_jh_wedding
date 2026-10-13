@@ -1,5 +1,14 @@
 window.weddingDesigns=[
   {
+    "id": "confetti",
+    "name": "With Love",
+    "ko": "하트 컨페티",
+    "note": "하트 포토 · 체리 도트 · 컬러 팔레트",
+    "group": "new",
+    "url": "wedding-confetti/index.html",
+    "cover": "wedding-confetti/screenshots/cover.jpg"
+  },
+  {
     "id": "winter-letter",
     "name": "A Winter Letter",
     "ko": "겨울 편지",

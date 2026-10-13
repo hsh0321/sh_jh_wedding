@@ -1,156 +1,23 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#F7F2E5">
-  <meta name="description" content="성현과 지현의 결혼식에 초대합니다.">
-  <title>성현 ♥ 지현, 결혼합니다</title>
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="성현 ♥ 지현, 결혼합니다">
-  <meta property="og:description" content="2027년 1월 17일(일) 오후 3시 10분, 라마다 서울 신도림 호텔 5층 세인트그레이스홀">
-  <meta property="og:image" content="http://shjhwedding.ppko1233.workers.dev/images/main.jpg?v=1">
-  <meta property="og:image:alt" content="성현과 지현의 결혼식 사진">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
-  <audio id="background-music" src="music/music1.mp3" loop autoplay preload="auto"></audio>
-  <div class="intro-screen" id="intro-screen" role="status" aria-live="polite">
-    <p class="intro-title">We are Getting<br>Married</p>
-  </div>
-  <main class="invitation">
-    <section class="cover" aria-label="대문사진">
-      <img src="images/대문사진.png" alt="성현과 지현의 대문 사진">
-    </section>
-
-    <section class="wedding section-dark" id="wedding">
-      <div class="section-inner wedding-inner">
-        <span class="heart" aria-hidden="true">♥︎</span>
-        <h1 class="script-title">Our Wedding day</h1>
-        <img class="date-art-image" src="images/일시 및 장소.png" alt="2027년 1월 17일 오후 3시 10분, 라마다 서울 신도림 호텔 5층 세인트그레이스홀">
-        <p class="family-line">황석한 · 백미자의 아들 황성현</p>
-        <p class="family-line">육근봉 · 윤혜리의 장녀 육지현</p>
-        <div class="vows">
-          <img class="handwriting-image" src="images/손글씨 배경.png" alt="「물고기는 존재하지 않는다」 중. 세상의 냉기를 막아주는 서로의 안식처가 되어주기로 했습니다. 그 약속이 영원이 되는 날, 저희의 증인이 되어주세요.">
-        </div>
-      </div>
-    </section>
-
-    <section class="gallery-section section-dark" id="gallery">
-      <div class="section-inner">
-        <span class="heart" aria-hidden="true">♥︎</span>
-        <h2 class="script-title">Gallery</h2>
-        <p class="section-subtitle">우리의 순간</p>
-        <div class="gallery-paper" id="gallery-grid" aria-label="사진 갤러리"></div>
-      </div>
-    </section>
-
-    <section class="date-section section-light" id="date">
-      <div class="section-inner">
-        <span class="heart" aria-hidden="true">♥︎</span>
-        <h2 class="script-title">Save the Date</h2>
-        <p class="section-subtitle">예식 안내</p>
-        <div class="calendar" aria-label="2027년 1월 달력">
-          <h3>2027. 01</h3>
-          <div class="week" aria-hidden="true">
-            <span class="sunday">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="saturday">토</span>
-          </div>
-          <div class="days" id="calendar-days"></div>
-        </div>
-        <p class="wedding-date">2027년 1월 17일(일) 오후 3시 10분</p>
-        <button class="calendar-add-button" id="calendar-add-button" type="button">
-          <span class="calendar-add-icon" aria-hidden="true">▦</span>
-          캘린더에 일정 추가
-        </button>
-        <div class="countdown" aria-label="결혼식까지 남은 시간">
-          <div class="time-unit"><span class="time-value" id="count-days">00</span><span class="time-label">Days</span></div>
-          <span class="time-separator">:</span>
-          <div class="time-unit"><span class="time-value" id="count-hours">00</span><span class="time-label">Hours</span></div>
-          <span class="time-separator">:</span>
-          <div class="time-unit"><span class="time-value" id="count-minutes">00</span><span class="time-label">Min</span></div>
-          <span class="time-separator">:</span>
-          <div class="time-unit"><span class="time-value" id="count-seconds">00</span><span class="time-label">Sec</span></div>
-        </div>
-        <p class="countdown-copy">신랑<span class="inline-heart">♥︎</span>신부 결혼식이 <strong id="days-remaining">00</strong>일 남았습니다.</p>
-      </div>
-    </section>
-
-    <section class="location-section section-light" id="location">
-      <div class="section-inner">
-        <span class="heart" aria-hidden="true">♥︎</span>
-        <h2 class="script-title">Location</h2>
-        <p class="section-subtitle">오시는길</p>
-        <div class="map-container">
-          <div class="map-frame" id="naver-map" role="application" aria-label="라마다 서울 신도림 호텔 네이버 지도"></div>
-          <a class="map-fallback" id="map-fallback" href="https://naver.me/G9r5RXWh" target="_blank" rel="noopener noreferrer" hidden>
-            <span class="map-main-label">NAVER MAP</span>
-            <span class="map-main-name">라마다 서울 신도림 호텔</span>
-            <span>5층 세인트그레이스홀</span>
-            <span class="map-main-action">네이버 지도로 위치 확인</span>
-          </a>
-        </div>
-        <nav class="map-links" aria-label="지도 서비스">
-          <a href="https://naver.me/G9r5RXWh" target="_blank" rel="noopener noreferrer">네이버지도</a>
-          <span aria-hidden="true">|</span>
-          <a href="https://place.map.kakao.com/1212235250" target="_blank" rel="noopener noreferrer">카카오맵</a>
-        </nav>
-        <p class="address">서울특별시 구로구 경인로 624<br>라마다 서울 신도림 호텔 5층 세인트그레이스홀</p>
-      </div>
-    </section>
-
-    <section class="detail-section section-dark" id="detail">
-      <div class="section-inner">
-        <span class="heart" aria-hidden="true">♥︎</span>
-        <h2 class="script-title">Detail</h2>
-        <p class="section-subtitle">안내사항</p>
-        <div class="detail-carousel" id="detail-carousel" aria-label="안내사항 이미지 캐러셀">
-          <button class="carousel-arrow previous" type="button" aria-label="이전 안내사항">‹</button>
-          <div class="detail-slide" id="detail-slide" aria-live="polite"></div>
-          <button class="carousel-arrow next" type="button" aria-label="다음 안내사항">›</button>
-        </div>
-        <div class="carousel-dots" id="carousel-dots" aria-label="안내사항 페이지"></div>
-      </div>
-    </section>
-
-    <section class="gift-section section-light" id="gift">
-      <div class="section-inner">
-        <span class="heart" aria-hidden="true">♥︎</span>
-        <h2 class="script-title">Gift</h2>
-        <p class="section-subtitle">마음 전하실 곳</p>
-        <div class="account-list" id="account-list"></div>
-        <p class="gift-note">참석이 어려우신 분들을 위해 조심스럽게 안내드립니다.<br>보내주시는 따뜻한 마음, 감사히 간직하겠습니다.</p>
-      </div>
-    </section>
-
-    <footer class="thanks section-dark" id="thanks">
-      <div class="section-inner">
-        <p>저희 두 사람의 새로운 시작을<br>따뜻한 마음으로 축복해 주시면<br>감사하겠습니다.</p>
-        <p class="thanks-final">행복하게 잘 살겠습니다.</p>
-        <p class="signature">신랑 · 신부 올림</p>
-      </div>
-    </footer>
-  </main>
-
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="갤러리 사진" hidden>
-    <button class="lightbox-close" id="lightbox-close" type="button" aria-label="닫기">×</button>
-    <div class="lightbox-stage">
-      <div class="swiper gallery-swiper" id="gallery-swiper" aria-label="갤러리 사진 슬라이더">
-        <div class="swiper-wrapper" id="gallery-swiper-wrapper"></div>
-      </div>
-      <div class="lightbox-pagination" id="lightbox-pagination" aria-label="사진 순서"></div>
-      <p class="visually-hidden" id="lightbox-caption" aria-live="polite"></p>
-      <button class="lightbox-arrow lightbox-previous" id="lightbox-previous" type="button" aria-label="이전 사진">‹</button>
-      <button class="lightbox-arrow lightbox-next" id="lightbox-next" type="button" aria-label="다음 사진">›</button>
-    </div>
-  </div>
-  <button class="music-toggle" id="music-toggle" type="button" aria-label="배경음악 끄기" aria-pressed="true" title="배경음악 끄기">
-    <span class="music-equalizer" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-  </button>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f6f4ef"><meta name="description" content="성현과 지현의 모바일 청첩장 디자인 23종을 하나씩 체험해 보세요."><title>성현과 지현 · Invitation Archive</title><link rel="stylesheet" href="gallery/style.css"><script src="gallery/index.js" defer></script></head><body><header class="site-head"><a href="./" class="monogram">S <i>&</i> J</a><span>OUR WEDDING, MANY WAYS.</span><a href="wedding-original/index.html">기존 청첩장 ↗</a></header><main class="catalog"><section class="intro"><p class="eyebrow">THE INVITATION ARCHIVE · 2027.01.17</p><h1>One love.<br><em>Many little worlds.</em></h1><div class="intro-bottom"><p>성현과 지현, 우리의 초대장 모음.<br>사진으로 고르고, 직접 열어보세요.</p><a href="try.html?design=winter-letter" class="start">최신 디자인부터 체험하기 <span>↗</span></a></div></section><div class="filter-bar"><div class="filters" role="group" aria-label="디자인 분류"><button data-filter="all" aria-pressed="true">전체 <span>23</span></button><button data-filter="new" aria-pressed="false">최신</button><button data-filter="studio" aria-pressed="false">스튜디오 10</button><button data-filter="collection" aria-pressed="false">컬렉션 10</button><button data-filter="original" aria-pressed="false">오리지널</button></div><span id="result-count" aria-live="polite">23 DESIGNS</span></div><section class="grid" aria-label="청첩장 디자인 목록"><article class="card" data-group="new"><a class="preview" href="try.html?design=winter-letter" aria-label="A Winter Letter 체험하기"><img src="wedding-blue-letter/screenshots/cover.jpg" alt="겨울 편지 청첩장 미리보기" ><span class="number">01</span><span class="badge">NEW</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>겨울 편지</p><h2><a href="try.html?design=winter-letter">A Winter Letter</a></h2><small>빈티지 블루 · 봉투 오프닝</small><a class="direct" href="wedding-blue-letter/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="original"><a class="preview" href="try.html?design=original" aria-label="Our Wedding Day 체험하기"><img src="images/대문사진.png" alt="처음의 청첩장 청첩장 미리보기" ><span class="number">02</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>처음의 청첩장</p><h2><a href="try.html?design=original">Our Wedding Day</a></h2><small>기존에 작업한 원본 청첩장</small><a class="direct" href="wedding-original/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="original"><a class="preview" href="try.html?design=editorial" aria-label="The Beginning 체험하기"><img src="wedding-editorial/screenshots/mobile-cover.jpg" alt="우리의 시작 청첩장 미리보기" ><span class="number">03</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>우리의 시작</p><h2><a href="try.html?design=editorial">The Beginning</a></h2><small>아이보리 · 올리브 · 에디토리얼</small><a class="direct" href="wedding-editorial/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-01-vow" aria-label="Vow 체험하기"><img src="wedding-studio/screenshots/01-vow-cover.jpg" alt="하얀 서약 청첩장 미리보기" loading="lazy"><span class="number">04</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>하얀 서약</p><h2><a href="try.html?design=studio-01-vow">Vow</a></h2><small>풀스크린 사진 · 흰색 캘리그래피</small><a class="direct" href="wedding-studio/01-vow/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-02-atelier" aria-label="Atelier 체험하기"><img src="wedding-studio/screenshots/02-atelier-cover.jpg" alt="아틀리에 청첩장 미리보기" loading="lazy"><span class="number">05</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>아틀리에</p><h2><a href="try.html?design=studio-02-atelier">Atelier</a></h2><small>오트밀 페이퍼 · 작은 사진과 정교한 조판</small><a class="direct" href="wedding-studio/02-atelier/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-03-silk-ribbon" aria-label="Silk Ribbon 체험하기"><img src="wedding-studio/screenshots/03-silk-ribbon-cover.jpg" alt="실크 리본 청첩장 미리보기" loading="lazy"><span class="number">06</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>실크 리본</p><h2><a href="try.html?design=studio-03-silk-ribbon">Silk Ribbon</a></h2><small>체리 레드 · 리본 드로잉 · 물결 테두리</small><a class="direct" href="wedding-studio/03-silk-ribbon/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-04-cinema-note" aria-label="Cinema Note 체험하기"><img src="wedding-studio/screenshots/04-cinema-note-cover.jpg" alt="시네마 노트 청첩장 미리보기" loading="lazy"><span class="number">07</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>시네마 노트</p><h2><a href="try.html?design=studio-04-cinema-note">Cinema Note</a></h2><small>35mm 필름 · 크림 라벨 · 느린 페이드</small><a class="direct" href="wedding-studio/04-cinema-note/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-05-paper-letter" aria-label="Paper Letter 체험하기"><img src="wedding-studio/screenshots/05-paper-letter-cover.jpg" alt="당신에게 쓰는 편지 청첩장 미리보기" loading="lazy"><span class="number">08</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>당신에게 쓰는 편지</p><h2><a href="try.html?design=studio-05-paper-letter">Paper Letter</a></h2><small>세이지 · 가로 사진 · 편지지 구성</small><a class="direct" href="wedding-studio/05-paper-letter/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-06-something-blue" aria-label="Something Blue 체험하기"><img src="wedding-studio/screenshots/06-something-blue-cover.jpg" alt="썸띵 블루 청첩장 미리보기" loading="lazy"><span class="number">09</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>썸띵 블루</p><h2><a href="try.html?design=studio-06-something-blue">Something Blue</a></h2><small>파우더 블루 · 우편엽서 · 세로 레터링</small><a class="direct" href="wedding-studio/06-something-blue/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-07-blush-type" aria-label="Blush 체험하기"><img src="wedding-studio/screenshots/07-blush-type-cover.jpg" alt="블러시 청첩장 미리보기" loading="lazy"><span class="number">10</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>블러시</p><h2><a href="try.html?design=studio-07-blush-type">Blush</a></h2><small>톤온톤 핑크 · 사진과 겹치는 세리프</small><a class="direct" href="wedding-studio/07-blush-type/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-08-monochrome" aria-label="Monochrome 체험하기"><img src="wedding-studio/screenshots/08-monochrome-cover.jpg" alt="모노크롬 청첩장 미리보기" loading="lazy"><span class="number">11</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>모노크롬</p><h2><a href="try.html?design=studio-08-monochrome">Monochrome</a></h2><small>흑백 포토북 · 얇은 그리드 · 화이트 타이포</small><a class="direct" href="wedding-studio/08-monochrome/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-09-quiet-vow" aria-label="Quiet Vow 체험하기"><img src="wedding-studio/screenshots/09-quiet-vow-cover.jpg" alt="고요한 약속 청첩장 미리보기" loading="lazy"><span class="number">12</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>고요한 약속</p><h2><a href="try.html?design=studio-09-quiet-vow">Quiet Vow</a></h2><small>사진 없는 표지 · 활자 · 엠보싱 모노그램</small><a class="direct" href="wedding-studio/09-quiet-vow/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="studio"><a class="preview" href="try.html?design=studio-10-dear-sunday" aria-label="Dear Sunday 체험하기"><img src="wedding-studio/screenshots/10-dear-sunday-cover.jpg" alt="디어 선데이 청첩장 미리보기" loading="lazy"><span class="number">13</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>디어 선데이</p><h2><a href="try.html?design=studio-10-dear-sunday">Dear Sunday</a></h2><small>버터 옐로 · 사진 두 컷 · 가벼운 손글씨</small><a class="direct" href="wedding-studio/10-dear-sunday/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-01-velvet-letter" aria-label="Velvet Letter 체험하기"><img src="wedding-collection/screenshots/01-velvet-letter-cover.jpg" alt="당신에게 보내는 편지 청첩장 미리보기" loading="lazy"><span class="number">14</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>당신에게 보내는 편지</p><h2><a href="try.html?design=collection-01-velvet-letter">Velvet Letter</a></h2><small>클래식 · 봉투 오프닝</small><a class="direct" href="wedding-collection/01-velvet-letter/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-02-blue-hour" aria-label="Blue Hour 체험하기"><img src="wedding-collection/screenshots/02-blue-hour-cover.jpg" alt="우리의 가장 푸른 순간 청첩장 미리보기" loading="lazy"><span class="number">15</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>우리의 가장 푸른 순간</p><h2><a href="try.html?design=collection-02-blue-hour">Blue Hour</a></h2><small>코발트 · 셔터 오프닝</small><a class="direct" href="wedding-collection/02-blue-hour/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-03-botanical" aria-label="Evergreen 체험하기"><img src="wedding-collection/screenshots/03-botanical-cover.jpg" alt="함께 자라는 마음 청첩장 미리보기" loading="lazy"><span class="number">16</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>함께 자라는 마음</p><h2><a href="try.html?design=collection-03-botanical">Evergreen</a></h2><small>가든 · 꽃 피는 오프닝</small><a class="direct" href="wedding-collection/03-botanical/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-04-cinema" aria-label="The Premiere 체험하기"><img src="wedding-collection/screenshots/04-cinema-cover.jpg" alt="우리라는 영화의 시작 청첩장 미리보기" loading="lazy"><span class="number">17</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>우리라는 영화의 시작</p><h2><a href="try.html?design=collection-04-cinema">The Premiere</a></h2><small>시네마 · 커튼 오프닝</small><a class="direct" href="wedding-collection/04-cinema/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-05-peach-pop" aria-label="Peach Club 체험하기"><img src="wedding-collection/screenshots/05-peach-pop-cover.jpg" alt="우리, 결혼해요! 청첩장 미리보기" loading="lazy"><span class="number">18</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>우리, 결혼해요!</p><h2><a href="try.html?design=collection-05-peach-pop">Peach Club</a></h2><small>피치 · 팝업 오프닝</small><a class="direct" href="wedding-collection/05-peach-pop/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-06-hanji" aria-label="연, 緣 체험하기"><img src="wedding-collection/screenshots/06-hanji-cover.jpg" alt="두 사람이 맺는 하나의 인연 청첩장 미리보기" loading="lazy"><span class="number">19</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>두 사람이 맺는 하나의 인연</p><h2><a href="try.html?design=collection-06-hanji">연, 緣</a></h2><small>한지 · 문이 열리는 오프닝</small><a class="direct" href="wedding-collection/06-hanji/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-07-modern-muse" aria-label="Modern Muse 체험하기"><img src="wedding-collection/screenshots/07-modern-muse-cover.jpg" alt="둘, 하나의 새로운 시작 청첩장 미리보기" loading="lazy"><span class="number">20</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>둘, 하나의 새로운 시작</p><h2><a href="try.html?design=collection-07-modern-muse">Modern Muse</a></h2><small>모던 · 타이포 오프닝</small><a class="direct" href="wedding-collection/07-modern-muse/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-08-starry-night" aria-label="Written in Stars 체험하기"><img src="wedding-collection/screenshots/08-starry-night-cover.jpg" alt="별처럼 만나, 영원으로 청첩장 미리보기" loading="lazy"><span class="number">21</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>별처럼 만나, 영원으로</p><h2><a href="try.html?design=collection-08-starry-night">Written in Stars</a></h2><small>미드나이트 · 별빛 오프닝</small><a class="direct" href="wedding-collection/08-starry-night/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-09-memory-book" aria-label="Our Little Book 체험하기"><img src="wedding-collection/screenshots/09-memory-book-cover.jpg" alt="차곡차곡, 우리의 날들 청첩장 미리보기" loading="lazy"><span class="number">22</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>차곡차곡, 우리의 날들</p><h2><a href="try.html?design=collection-09-memory-book">Our Little Book</a></h2><small>스크랩북 · 폴라로이드 오프닝</small><a class="direct" href="wedding-collection/09-memory-book/index.html">단독으로 열기 ↗</a></div></article>
+<article class="card" data-group="collection"><a class="preview" href="try.html?design=collection-10-lilac-dream" aria-label="Lilac Dream 체험하기"><img src="wedding-collection/screenshots/10-lilac-dream-cover.jpg" alt="꿈처럼 다정한 시작 청첩장 미리보기" loading="lazy"><span class="number">23</span><span class="preview-cta">체험하기 ↗</span></a><div class="card-meta"><p>꿈처럼 다정한 시작</p><h2><a href="try.html?design=collection-10-lilac-dream">Lilac Dream</a></h2><small>라벤더 · 베일 오프닝</small><a class="direct" href="wedding-collection/10-lilac-dream/index.html">단독으로 열기 ↗</a></div></article></section><p id="empty" hidden>선택한 디자인이 없습니다.</p></main><footer class="site-footer"><span>SUNG HYUN & JI HYUN</span><p>서로 다른 모습으로 담은, 같은 마음.</p><span>JANUARY 17, 2027</span></footer></body></html>

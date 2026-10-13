@@ -180,8 +180,6 @@ function photoPath(number) {
 }
 
 function buildGallery() {
-  const rotations = [-4, 2, -2, 3, -3, 1, 4, -1, 2, -3, 1, -2, 3, -1, 2, -4, 1, -2];
-
   const loadPhoto = (number) => {
     const image = document.createElement("img");
     image.alt = `${number}번 사진`;
@@ -189,15 +187,13 @@ function buildGallery() {
 
     image.addEventListener("load", () => {
       const stamp = document.createElement("div");
-      const landscape = image.naturalWidth > image.naturalHeight;
       const photoIndex = galleryPhotos.length;
       stamp.className = "stamp";
-      stamp.style.transform = `rotate(${rotations[(number - 1) % rotations.length]}deg)`;
-      stamp.classList.add(landscape ? "stamp--landscape" : "stamp--portrait");
       stamp.dataset.photoNumber = String(number);
+      stamp.dataset.photoIndex = String(photoIndex);
       galleryPhotos.push({ number, source: image.src, alt: image.alt });
       stamp.append(image);
-      stamp.addEventListener("click", () => openLightbox(photoIndex, stamp));
+      stamp.addEventListener("click", () => openLightbox(Number(stamp.dataset.photoIndex), stamp));
       galleryGrid.append(stamp);
       observeScrollReveal(stamp, ((number - 1) % 5) * 55);
       loadPhoto(number + 1);
@@ -210,26 +206,6 @@ function buildGallery() {
   loadPhoto(1);
 }
 
-function setupGalleryMotion() {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-  galleryGrid.addEventListener("animationend", (event) => {
-    if (event.target.classList.contains("stamp")) event.target.classList.remove("is-nudging");
-  });
-
-  window.setInterval(() => {
-    if (document.visibilityState !== "visible" || !lightbox.hidden) return;
-    const galleryBounds = galleryGrid.getBoundingClientRect();
-    if (galleryBounds.bottom <= 0 || galleryBounds.top >= window.innerHeight) return;
-
-    const stamps = galleryGrid.querySelectorAll(".stamp");
-    if (!stamps.length) return;
-    stamps.forEach((stamp) => stamp.classList.remove("is-nudging"));
-    void galleryGrid.offsetWidth;
-    stamps.forEach((stamp) => stamp.classList.add("is-nudging"));
-  }, 2000);
-}
-
 function updateLightboxCaption() {
   const photo = galleryPhotos[activePhotoIndex];
   if (photo) lightboxCaption.textContent = `${photo.number}번째 사진`;
@@ -239,8 +215,9 @@ function updateLightboxCaption() {
   });
 }
 
-function renderLightbox() {
+function renderLightbox(index) {
   if (!galleryPhotos.length || !window.Swiper) return;
+  activePhotoIndex = index;
 
   if (!gallerySwiper) {
     galleryPhotos.forEach((photo) => {
@@ -279,12 +256,13 @@ function renderLightbox() {
         }
       }
     });
-    gallerySwiper.slideToLoop(activePhotoIndex, 0, false);
+    gallerySwiper.slideToLoop(index, 0, false);
   } else {
     gallerySwiper.update();
-    gallerySwiper.slideToLoop(activePhotoIndex, 0, false);
+    gallerySwiper.slideToLoop(index, 0, false);
   }
 
+  activePhotoIndex = gallerySwiper.realIndex;
   updateLightboxCaption();
 }
 
@@ -294,7 +272,7 @@ function openLightbox(index, focusedElement) {
   lastFocusedElement = focusedElement;
   lightbox.hidden = false;
   document.body.style.overflow = "hidden";
-  renderLightbox();
+  renderLightbox(index);
   window.setTimeout(() => lightbox.classList.add("is-open"), 20);
   document.getElementById("lightbox-close").focus();
 }
@@ -535,7 +513,6 @@ updateCountdown();
 window.setInterval(updateCountdown, 1000);
 setupScrollReveals();
 buildGallery();
-setupGalleryMotion();
 setupGalleryControls();
 setupDetailCarousel();
 renderAccounts();

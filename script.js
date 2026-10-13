@@ -1,5 +1,5 @@
 'use strict';
-const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,iosWebKit=CSS.supports('-webkit-touch-callout','none');
+const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let toastTimer;
 function notify(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4000);}
 const palettes={blue:['#cbdce5','#bb3f53'],pink:['#eed4d6','#863d50'],sage:['#d8dfce','#5d7353'],butter:['#f0e5b9','#3a5396']};
@@ -11,7 +11,7 @@ const pendingReveals=new Set();
 let scrollFrame=0;
 function updateScrollEffects(){
  scrollFrame=0;
- if(reduced||iosWebKit)return;
+ if(reduced)return;
  const progress=Math.min(Math.max(window.scrollY/Math.max(window.innerHeight,1),0),1);
  const eased=1-(1-progress)**2;
  openingShade.style.opacity=String((progress*.32).toFixed(3));
@@ -36,7 +36,7 @@ function scheduleScrollEffects(){if(!scrollFrame)scrollFrame=requestAnimationFra
 window.addEventListener('scroll',scheduleScrollEffects,{passive:true});
 window.addEventListener('resize',scheduleScrollEffects);
 function setupScrollReveals(){
- if(reduced||iosWebKit)return;
+ if(reduced)return;
  const targets=new Map();
  const add=(element,type,delay=0)=>{
   if(element.closest('[hidden]'))return;

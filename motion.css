@@ -289,39 +289,3 @@ main {
     clip-path: none;
   }
 }
-
-@supports (-webkit-touch-callout: none) {
-  .opening {
-    position: relative;
-    top: auto;
-  }
-
-  .opening .opening-panel,
-  .opening .heart-photo,
-  .opening .dot,
-  .opening .letter-chain span,
-  .ticker > div {
-    animation: none;
-  }
-
-  .opening .opening-panel,
-  .opening .heart-photo img,
-  .interlude-title,
-  .interlude-subtitle {
-    transform: none;
-    will-change: auto;
-  }
-
-  .opening-shade,
-  body::after {
-    display: none;
-  }
-
-  .scroll-reveal {
-    opacity: 1;
-    filter: none;
-    transform: none;
-    clip-path: none;
-    transition: none;
-  }
-}

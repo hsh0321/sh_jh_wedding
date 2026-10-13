@@ -1,5 +1,5 @@
 'use strict';
-const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,iosWebKit=CSS.supports('-webkit-touch-callout','none');
 let toastTimer;
 function notify(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4000);}
 const palettes={blue:['#cbdce5','#bb3f53'],pink:['#eed4d6','#863d50'],sage:['#d8dfce','#5d7353'],butter:['#f0e5b9','#3a5396']};
@@ -7,10 +7,11 @@ $('#palette').addEventListener('change',e=>{const [base,accent]=palettes[e.targe
 const opening=$('#home');
 const openingShade=$('.opening-shade');
 const interlude=$('#interlude');
+const pendingReveals=new Set();
 let scrollFrame=0;
 function updateScrollEffects(){
  scrollFrame=0;
- if(reduced)return;
+ if(reduced||iosWebKit)return;
  const progress=Math.min(Math.max(window.scrollY/Math.max(window.innerHeight,1),0),1);
  const eased=1-(1-progress)**2;
  openingShade.style.opacity=String((progress*.32).toFixed(3));
@@ -25,21 +26,17 @@ function updateScrollEffects(){
   interlude.querySelector('.interlude-title').style.setProperty('--row-offset',`${offset.toFixed(1)}px`);
   interlude.querySelector('.interlude-subtitle').style.setProperty('--row-offset',`${(-offset).toFixed(1)}px`);
  }
+ pendingReveals.forEach(element=>{
+  if(element.getBoundingClientRect().top>=window.innerHeight*.92)return;
+  element.classList.add('is-revealed');
+  pendingReveals.delete(element);
+ });
 }
 function scheduleScrollEffects(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updateScrollEffects);}
 window.addEventListener('scroll',scheduleScrollEffects,{passive:true});
 window.addEventListener('resize',scheduleScrollEffects);
 function setupScrollReveals(){
- if(reduced)return;
- const observer='IntersectionObserver'in window
-  ?new IntersectionObserver(entries=>{
-   entries.forEach(entry=>{
-    if(!entry.isIntersecting)return;
-    entry.target.classList.add('is-revealed');
-    observer.unobserve(entry.target);
-   });
-  },{rootMargin:'0px 0px 8% 0px'})
-  :null;
+ if(reduced||iosWebKit)return;
  const targets=new Map();
  const add=(element,type,delay=0)=>{
   if(element.closest('[hidden]'))return;
@@ -58,8 +55,7 @@ function setupScrollReveals(){
  targets.forEach(({type,delay},element)=>{
   element.classList.add('scroll-reveal',`scroll-reveal-${type}`);
   element.style.setProperty('--reveal-delay',`${delay}ms`);
-  if(observer)observer.observe(element);
-  else element.classList.add('is-revealed');
+  pendingReveals.add(element);
  });
 }
 setupScrollReveals();

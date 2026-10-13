@@ -1,3 +1,17 @@
+/* Allow scrolling while excluding pinch and double-tap page zoom. */
+html, body {
+  touch-action: pan-x pan-y;
+}
+
+img,
+.heart-photo,
+.gallery-viewport {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 .opening .dot:not(.dot-12) {
   animation: dot-pop .42s cubic-bezier(.2, .8, .25, 1) both, scatter-drift 5s ease-in-out infinite alternate;
   animation-delay: calc(var(--n) * .2s), calc(var(--n) * -.4s);

@@ -1,4 +1,15 @@
 'use strict';
+// Discourage native image saving without blocking gallery pointer gestures.
+document.querySelectorAll('img').forEach(image=>{image.draggable=false;});
+function blockPhotoAction(event){
+ if(event.target instanceof Element&&event.target.closest('img,.heart-photo,.gallery-viewport'))event.preventDefault();
+}
+document.addEventListener('contextmenu',blockPhotoAction);
+document.addEventListener('dragstart',blockPhotoAction);
+// iOS Safari can ignore viewport zoom limits; cancel its native pinch gesture.
+for(const type of ['gesturestart','gesturechange']){
+ document.addEventListener(type,event=>event.preventDefault(),{passive:false});
+}
 const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let toastTimer;
 function notify(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4000);}

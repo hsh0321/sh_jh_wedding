@@ -74,7 +74,8 @@ img,
 }
 
 .opening-panel {
-  transform: scale(var(--panel-scale, 1));
+  transform: scale(1);
+  will-change: transform;
   animation: opening-unfold .95s cubic-bezier(.2, .8, .25, 1) both;
 }
 
@@ -100,7 +101,8 @@ img,
 }
 
 .heart-photo img {
-  transform: translateY(var(--cover-shift, 0px)) scale(var(--cover-scale, 1));
+  transform: translate3d(0, 0, 0) scale(1);
+  will-change: transform;
   transform-origin: center;
 }
 
@@ -122,6 +124,7 @@ img,
   pointer-events: none;
   background: #161616;
   opacity: 0;
+  will-change: opacity;
 }
 
 .save-date,
@@ -270,7 +273,7 @@ main {
   left: 50%;
   display: inline-block;
   width: max-content;
-  transform: translateX(calc(-50% + var(--row-offset, 120px)));
+  transform: translate3d(calc(-50% + 120px), 0, 0);
   will-change: transform;
 }
 

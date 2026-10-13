@@ -18,52 +18,82 @@ $('#palette').addEventListener('change',e=>{const [base,accent]=palettes[e.targe
 const opening=$('#home');
 const openingShade=$('.opening-shade');
 const interlude=$('#interlude');
-const pendingReveals=new Set();
+const openingPanel=$('.opening-panel');
+const coverImage=$('.heart-photo img');
+const pendingReveals=new Map();
 let scrollFrame=0;
 let lastOpeningProgress=-1,lastInterludeOffset=null;
+let layoutDirty=true,geometry=null,renderedProgress=null,renderedOffset=null,lastFrameTime=0;
 const interludeTitle=interlude?.querySelector('.interlude-title');
 const interludeSubtitle=interlude?.querySelector('.interlude-subtitle');
-function updateScrollEffects(){
+function measureScrollGeometry(){
+ const y=window.scrollY;
+ geometry={viewport:Math.max(window.innerHeight,1),openingHeight:opening.offsetHeight,
+  interludeTop:interlude?interlude.getBoundingClientRect().top+y:0,
+  interludeHeight:interlude?interlude.offsetHeight:0};
+ pendingReveals.forEach((top,element)=>pendingReveals.set(element,element.getBoundingClientRect().top+y));
+ layoutDirty=false;
+}
+function updateScrollEffects(time){
  scrollFrame=0;
  if(reduced)return;
- // Read geometry before changing styles so scroll frames do not force layout.
- const viewportHeight=window.innerHeight;
+ // Measure only when layout changes, never on each ordinary scroll frame.
+ if(layoutDirty)measureScrollGeometry();
+ const viewportHeight=geometry.viewport;
  const scrollY=window.scrollY;
- const openingHeight=opening.offsetHeight;
  const progress=Math.min(Math.max(scrollY/Math.max(viewportHeight,1),0),1);
- const eased=1-(1-progress)**2;
- const threshold=Math.min(openingHeight*.22,viewportHeight*.18);
+ const threshold=Math.min(geometry.openingHeight*.22,viewportHeight*.18);
  let offset=null;
  if(interlude){
-  const interludeProgress=Math.min(Math.max((viewportHeight-interlude.getBoundingClientRect().top)/(viewportHeight+interlude.offsetHeight),0),1);
+  const interludeProgress=Math.min(Math.max((viewportHeight-(geometry.interludeTop-scrollY))/(viewportHeight+geometry.interludeHeight),0),1);
   offset=120*(1-2*interludeProgress);
  }
+ // Time-based interpolation behaves the same at 60 Hz and 120 Hz.
+ const dt=lastFrameTime?Math.min(time-lastFrameTime,64):16.67;
+ const blend=1-Math.exp(-dt/55);
+ lastFrameTime=time;
+ if(renderedProgress===null||scrollY>=geometry.openingHeight)renderedProgress=progress;
+ else renderedProgress+=(progress-renderedProgress)*blend;
+ if(Math.abs(progress-renderedProgress)<.0001)renderedProgress=progress;
+ if(offset!==null){
+  if(renderedOffset===null||Math.abs(offset)===120)renderedOffset=offset;
+  else renderedOffset+=(offset-renderedOffset)*blend;
+  if(Math.abs(offset-renderedOffset)<.015)renderedOffset=offset;
+ }
+ const eased=1-(1-renderedProgress)**2;
  const ready=[];
- pendingReveals.forEach(element=>{
-  if(element.getBoundingClientRect().top<viewportHeight*.92)ready.push(element);
+ pendingReveals.forEach((top,element)=>{
+  if(top-scrollY<viewportHeight*.92)ready.push(element);
  });
- // The cover's values stop changing once it is fully behind the content.
- if(progress!==lastOpeningProgress){
-  openingShade.style.opacity=String((progress*.32).toFixed(3));
-  opening.style.setProperty('--panel-scale',(1-.07*eased).toFixed(4));
-  opening.style.setProperty('--cover-shift',`${(-70*eased).toFixed(1)}px`);
-  opening.style.setProperty('--cover-scale',(1+.16*eased).toFixed(4));
-  lastOpeningProgress=progress;
+ // Local compositor properties avoid inherited CSS-variable invalidation.
+ if(renderedProgress!==lastOpeningProgress){
+  openingShade.style.opacity=String((renderedProgress*.32).toFixed(4));
+  openingPanel.style.transform=`scale(${(1-.07*eased).toFixed(5)})`;
+  coverImage.style.transform=`translate3d(0,${(-70*eased).toFixed(3)}px,0) scale(${(1+.16*eased).toFixed(5)})`;
+  lastOpeningProgress=renderedProgress;
  }
  opening.classList.toggle('is-scattered',scrollY>threshold);
- if(offset!==null&&offset!==lastInterludeOffset){
-  interludeTitle.style.setProperty('--row-offset',`${offset.toFixed(1)}px`);
-  interludeSubtitle.style.setProperty('--row-offset',`${(-offset).toFixed(1)}px`);
-  lastInterludeOffset=offset;
+ if(offset!==null&&renderedOffset!==lastInterludeOffset){
+  interludeTitle.style.transform=`translate3d(calc(-50% + ${renderedOffset.toFixed(3)}px),0,0)`;
+  interludeSubtitle.style.transform=`translate3d(calc(-50% + ${(-renderedOffset).toFixed(3)}px),0,0)`;
+  lastInterludeOffset=renderedOffset;
  }
  ready.forEach(element=>{
   element.classList.add('is-revealed');
   pendingReveals.delete(element);
  });
+ if(renderedProgress!==progress||(offset!==null&&renderedOffset!==offset))scheduleScrollEffects();
+ else lastFrameTime=0;
 }
 function scheduleScrollEffects(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updateScrollEffects);}
+function invalidateScrollGeometry(){layoutDirty=true;scheduleScrollEffects();}
 window.addEventListener('scroll',scheduleScrollEffects,{passive:true});
-window.addEventListener('resize',scheduleScrollEffects);
+window.addEventListener('resize',invalidateScrollGeometry);
+window.addEventListener('pageshow',invalidateScrollGeometry);
+document.addEventListener('load',invalidateScrollGeometry,true);
+document.addEventListener('toggle',invalidateScrollGeometry,true);
+if('ResizeObserver' in window)new ResizeObserver(invalidateScrollGeometry).observe(document.querySelector('main'));
+document.fonts?.ready.then(invalidateScrollGeometry);
 function setupScrollReveals(){
  if(reduced)return;
  const targets=new Map();
@@ -84,7 +114,7 @@ function setupScrollReveals(){
  targets.forEach(({type,delay},element)=>{
   element.classList.add('scroll-reveal',`scroll-reveal-${type}`);
   element.style.setProperty('--reveal-delay',`${delay}ms`);
-  pendingReveals.add(element);
+  pendingReveals.set(element,0);
  });
 }
 setupScrollReveals();

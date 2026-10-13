@@ -1,7 +1,0 @@
-{
-  "name": "sh-jh-wedding-editorial",
-  "version": "1.0.0",
-  "private": true,
-  "description": "성현과 지현의 모바일 청첩장 — The Beginning",
-  "scripts": { "start": "node server.cjs", "check": "node --check script.js" }
-}

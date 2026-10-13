@@ -1,520 +1,175 @@
-const accountDetails = [
-  { side: "신랑 측", bank: "카카오뱅크", number: "3333 05 0183009", holder: "황성현" },
-  { side: "신부 측", bank: "우리은행", number: "1002 948 015 989", holder: "육지현" }
-];
-const NAVER_MAP_CLIENT_ID = "pdxf1mih2z";
-const backgroundMusic = document.getElementById("background-music");
-const musicToggle = document.getElementById("music-toggle");
-
-const galleryPhotos = [];
-const galleryGrid = document.getElementById("gallery-grid");
-const lightbox = document.getElementById("lightbox");
-const lightboxCaption = document.getElementById("lightbox-caption");
-const gallerySwiperElement = document.getElementById("gallery-swiper");
-const gallerySwiperWrapper = document.getElementById("gallery-swiper-wrapper");
-const galleryPagination = document.getElementById("lightbox-pagination");
-let activePhotoIndex = 0;
-let lastFocusedElement = null;
-let scrollRevealObserver = null;
-let lightboxCloseTimer = null;
-let gallerySwiper = null;
-
-function observeScrollReveal(element, delay = 0) {
-  if (!scrollRevealObserver) return;
-  element.classList.add("scroll-reveal");
-  element.style.setProperty("--reveal-delay", `${delay}ms`);
-  scrollRevealObserver.observe(element);
+'use strict';
+const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let toastTimer;
+function notify(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4000);}
+const palettes={blue:['#cbdce5','#bb3f53'],pink:['#eed4d6','#863d50'],sage:['#d8dfce','#5d7353'],butter:['#f0e5b9','#3a5396']};
+$('#palette').addEventListener('change',e=>{const [base,accent]=palettes[e.target.value];document.documentElement.style.setProperty('--powder',base);document.documentElement.style.setProperty('--cherry',accent);});
+const opening=$('#home');
+const openingShade=$('.opening-shade');
+const interlude=$('#interlude');
+const pendingReveals=new Set();
+let scrollFrame=0;
+function updateScrollEffects(){
+ scrollFrame=0;
+ if(reduced)return;
+ const progress=Math.min(Math.max(window.scrollY/Math.max(window.innerHeight,1),0),1);
+ const eased=1-(1-progress)**2;
+ openingShade.style.opacity=String((progress*.32).toFixed(3));
+ opening.style.setProperty('--panel-scale',(1-.07*eased).toFixed(4));
+ opening.style.setProperty('--cover-shift',`${(-70*eased).toFixed(1)}px`);
+ opening.style.setProperty('--cover-scale',(1+.16*eased).toFixed(4));
+ const threshold=Math.min(opening.offsetHeight*.22,window.innerHeight*.18);
+ opening.classList.toggle('is-scattered',window.scrollY>threshold);
+ if(interlude){
+  const progress=Math.min(Math.max((window.innerHeight-interlude.getBoundingClientRect().top)/(window.innerHeight+interlude.offsetHeight),0),1);
+  const offset=120*(1-2*progress);
+  interlude.querySelector('.interlude-title').style.setProperty('--row-offset',`${offset.toFixed(1)}px`);
+  interlude.querySelector('.interlude-subtitle').style.setProperty('--row-offset',`${(-offset).toFixed(1)}px`);
+ }
+ pendingReveals.forEach(element=>{
+  if(element.getBoundingClientRect().top>=window.innerHeight*.92)return;
+  element.classList.add('is-revealed');
+  pendingReveals.delete(element);
+ });
 }
-
-function setupScrollReveals() {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
-
-  scrollRevealObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add("is-revealed");
-      observer.unobserve(entry.target);
-    });
-  }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
-
-  document.querySelectorAll(".section-inner").forEach((section) => {
-    [...section.children].forEach((element, index) => {
-      observeScrollReveal(element, Math.min(index * 70, 280));
-    });
+function scheduleScrollEffects(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updateScrollEffects);}
+window.addEventListener('scroll',scheduleScrollEffects,{passive:true});
+window.addEventListener('resize',scheduleScrollEffects);
+function setupScrollReveals(){
+ if(reduced||!('IntersectionObserver'in window))return;
+ const targets=new Map();
+ const add=(element,type,delay=0)=>{
+  if(element.closest('[hidden]'))return;
+  if(!targets.has(element))targets.set(element,{type,delay});
+ };
+ document.querySelectorAll('.section,.day').forEach(section=>{
+  [...section.children].forEach((element,index)=>{
+   if(element.id==='gallery-viewport')return;
+   add(element,element.classList.contains('section-heading')?'wipe':'up',Math.min(index*65,260));
   });
+ });
+ document.querySelectorAll('.save-intro > *, .date-caption > *, .interlude-caption').forEach((element,index)=>{
+  add(element,'up',Math.min(index*65,260));
+ });
+ document.querySelectorAll('.save-photo,.photo-banner > img').forEach(element=>add(element,'center'));
+ targets.forEach(({type,delay},element)=>{
+  element.classList.add('scroll-reveal',`scroll-reveal-${type}`);
+  element.style.setProperty('--reveal-delay',`${delay}ms`);
+  pendingReveals.add(element);
+ });
 }
-
-function renderCalendar() {
-  const daysContainer = document.getElementById("calendar-days");
-  const firstWeekday = new Date(2027, 0, 1).getDay();
-  const dayCount = new Date(2027, 1, 0).getDate();
-
-  for (let blank = 0; blank < firstWeekday; blank += 1) {
-    daysContainer.append(document.createElement("span"));
-  }
-
-  for (let day = 1; day <= dayCount; day += 1) {
-    const dateCell = document.createElement("span");
-    dateCell.textContent = String(day);
-    if (day === 17) {
-      dateCell.className = "wedding-day";
-      dateCell.setAttribute("aria-label", "1월 17일 결혼식");
-    }
-    daysContainer.append(dateCell);
-  }
-}
-
-function escapeCalendarText(value) {
-  return value
-    .replace(/\\/g, "\\\\")
-    .replace(/\r?\n/g, "\\n")
-    .replace(/;/g, "\\;")
-    .replace(/,/g, "\\,");
-}
-
-function foldCalendarLine(line) {
-  const segments = [];
-  let currentSegment = "";
-  let currentBytes = 0;
-
-  for (const character of line) {
-    const characterBytes = new TextEncoder().encode(character).length;
-    if (currentBytes + characterBytes > 75) {
-      segments.push(currentSegment);
-      currentSegment = character;
-      currentBytes = characterBytes + 1;
-    } else {
-      currentSegment += character;
-      currentBytes += characterBytes;
-    }
-  }
-
-  segments.push(currentSegment);
-  return segments.join("\r\n ");
-}
-
-function downloadWeddingCalendarEvent() {
-  const timestamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const eventLines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Wedding Invitation//KO",
-    "CALSCALE:GREGORIAN",
-    "BEGIN:VEVENT",
-    "UID:wedding-20270117T061000Z@sh-jh-wedding",
-    `DTSTAMP:${timestamp}`,
-    "DTSTART:20270117T061000Z",
-    `SUMMARY:${escapeCalendarText("황성현 · 육지현 결혼식")}`,
-    `LOCATION:${escapeCalendarText("서울특별시 구로구 경인로 624, 라마다 서울 신도림 호텔 5층 세인트그레이스홀")}`,
-    `DESCRIPTION:${escapeCalendarText("황성현과 육지현의 결혼식에 초대합니다.")}`,
-    "URL:https://naver.me/G9r5RXWh",
-    "END:VEVENT",
-    "END:VCALENDAR"
-  ];
-  const calendarFile = new Blob(["\uFEFF", `${eventLines.map(foldCalendarLine).join("\r\n")}\r\n`], {
-    type: "text/calendar;charset=utf-8"
-  });
-  const downloadLink = document.createElement("a");
-  const downloadUrl = URL.createObjectURL(calendarFile);
-  downloadLink.href = downloadUrl;
-  downloadLink.download = "wedding-2027-01-17.ics";
-  document.body.append(downloadLink);
-  downloadLink.click();
-  downloadLink.remove();
-  window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 60000);
-}
-
-function updateCountdownNumber(element, value) {
-  const hasPreviousValue = element.dataset.countInitialized === "true";
-  const previousDigits = (element.dataset.countValue || value).padStart(value.length, "0").split("");
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const digitColumns = [...value].map((digit, index) => {
-    const column = document.createElement("span");
-    column.className = "count-digit";
-
-    if (!hasPreviousValue || reduceMotion || previousDigits[index] === digit) {
-      column.classList.add("count-digit-static");
-      column.textContent = digit;
-      column.setAttribute("aria-hidden", "true");
-      return column;
-    }
-
-    const previousDigit = document.createElement("span");
-    previousDigit.className = "count-digit-old";
-    previousDigit.textContent = previousDigits[index];
-    previousDigit.setAttribute("aria-hidden", "true");
-    const nextDigit = document.createElement("span");
-    nextDigit.className = "count-digit-new";
-    nextDigit.textContent = digit;
-    nextDigit.setAttribute("aria-hidden", "true");
-    column.append(previousDigit, nextDigit);
-    return column;
-  });
-
-  element.replaceChildren(...digitColumns);
-  element.dataset.countValue = value;
-  element.dataset.countInitialized = "true";
-  element.setAttribute("role", "img");
-  element.setAttribute("aria-label", value);
-}
-
-function updateCountdown() {
-  const now = new Date();
-  const wedding = new Date(2027, 0, 17, 15, 10, 0);
-  const difference = Math.max(0, wedding.getTime() - now.getTime());
-  const totalSeconds = Math.floor(difference / 1000);
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  updateCountdownNumber(document.getElementById("count-days"), String(days).padStart(2, "0"));
-  updateCountdownNumber(document.getElementById("count-hours"), String(hours).padStart(2, "0"));
-  updateCountdownNumber(document.getElementById("count-minutes"), String(minutes).padStart(2, "0"));
-  updateCountdownNumber(document.getElementById("count-seconds"), String(seconds).padStart(2, "0"));
-  document.getElementById("days-remaining").textContent = String(days).padStart(2, "0");
-}
-
-function photoPath(number) {
-  return `images/photo${number}.jpg`;
-}
-
-function buildGallery() {
-  const loadPhoto = (number) => {
-    const image = document.createElement("img");
-    image.alt = `${number}번 사진`;
-    image.loading = "eager";
-
-    image.addEventListener("load", () => {
-      const stamp = document.createElement("div");
-      const photoIndex = galleryPhotos.length;
-      stamp.className = "stamp";
-      stamp.dataset.photoNumber = String(number);
-      stamp.dataset.photoIndex = String(photoIndex);
-      galleryPhotos.push({ number, source: image.src, alt: image.alt });
-      stamp.append(image);
-      stamp.addEventListener("click", () => openLightbox(Number(stamp.dataset.photoIndex), stamp));
-      galleryGrid.append(stamp);
-      observeScrollReveal(stamp, ((number - 1) % 5) * 55);
-      loadPhoto(number + 1);
-    }, { once: true });
-
-    image.addEventListener("error", () => {}, { once: true });
-    image.src = photoPath(number);
-  };
-
-  loadPhoto(1);
-}
-
-function updateLightboxCaption() {
-  const photo = galleryPhotos[activePhotoIndex];
-  if (photo) lightboxCaption.textContent = `${photo.number}번째 사진`;
-  const selectedIndex = gallerySwiper?.realIndex ?? activePhotoIndex;
-  galleryPagination.querySelectorAll(".swiper-pagination-bullet").forEach((bullet, index) => {
-    bullet.setAttribute("aria-current", String(index === selectedIndex));
-  });
-}
-
-function renderLightbox(index) {
-  if (!galleryPhotos.length || !window.Swiper) return;
-  activePhotoIndex = index;
-
-  if (!gallerySwiper) {
-    galleryPhotos.forEach((photo) => {
-      const slide = document.createElement("div");
-      const image = document.createElement("img");
-      slide.className = "swiper-slide";
-      image.src = photo.source;
-      image.alt = photo.alt;
-      image.draggable = false;
-      slide.append(image);
-      gallerySwiperWrapper.append(slide);
-    });
-
-    gallerySwiper = new window.Swiper(gallerySwiperElement, {
-      effect: "cards",
-      grabCursor: true,
-      loop: true,
-      speed: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 150 : 520,
-      cardsEffect: {
-        perSlideOffset: 12,
-        perSlideRotate: 2,
-        rotate: true,
-        slideShadows: false
-      },
-      pagination: {
-        el: galleryPagination,
-        clickable: true,
-        renderBullet(index, className) {
-          return `<button class="${className}" type="button" aria-label="${index + 1}번째 사진 보기"></button>`;
-        }
-      },
-      on: {
-        slideChange(swiper) {
-          activePhotoIndex = swiper.realIndex;
-          updateLightboxCaption();
-        }
-      }
-    });
-    gallerySwiper.slideToLoop(index, 0, false);
-  } else {
-    gallerySwiper.update();
-    gallerySwiper.slideToLoop(index, 0, false);
-  }
-
-  activePhotoIndex = gallerySwiper.realIndex;
-  updateLightboxCaption();
-}
-
-function openLightbox(index, focusedElement) {
-  window.clearTimeout(lightboxCloseTimer);
-  activePhotoIndex = index;
-  lastFocusedElement = focusedElement;
-  lightbox.hidden = false;
-  document.body.style.overflow = "hidden";
-  renderLightbox(index);
-  window.setTimeout(() => lightbox.classList.add("is-open"), 20);
-  document.getElementById("lightbox-close").focus();
-}
-
-function closeLightbox() {
-  if (lightbox.hidden || !lightbox.classList.contains("is-open")) return;
-  lightbox.classList.remove("is-open");
-  lightboxCloseTimer = window.setTimeout(() => {
-    if (lightbox.classList.contains("is-open")) return;
-    lightbox.hidden = true;
-    document.body.style.overflow = "";
-    lastFocusedElement?.focus();
-  }, 320);
-}
-
-function movePhoto(direction) {
-  if (!gallerySwiper) return;
-  if (direction > 0) gallerySwiper.slideNext();
-  else gallerySwiper.slidePrev();
-}
-
-function setupGalleryControls() {
-  document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
-  document.getElementById("lightbox-previous").addEventListener("click", () => movePhoto(-1));
-  document.getElementById("lightbox-next").addEventListener("click", () => movePhoto(1));
-
-  lightbox.addEventListener("click", (event) => {
-    if (event.target === lightbox) closeLightbox();
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (lightbox.hidden) return;
-    if (event.key === "Escape") closeLightbox();
-    if (event.key === "ArrowLeft") movePhoto(-1);
-    if (event.key === "ArrowRight") movePhoto(1);
-  });
-}
-
-const detailTitles = ["안내 1", "안내 2", "안내 3", "안내 4"];
-const detailRotations = [3, 0, -3, 0];
-let activeDetailIndex = 0;
-
-function renderDetailSlide() {
-  const slide = document.getElementById("detail-slide");
-  const fileNumber = activeDetailIndex + 1;
-  const image = document.createElement("img");
-  image.src = `images/안내${fileNumber}.png`;
-  image.alt = `${detailTitles[activeDetailIndex]} 이미지`;
-  image.style.transform = `rotate(${detailRotations[activeDetailIndex]}deg)`;
-  slide.replaceChildren(image);
-
-  document.querySelectorAll(".carousel-dot").forEach((dot, index) => {
-    dot.setAttribute("aria-current", String(index === activeDetailIndex));
-  });
-}
-
-function moveDetail(direction) {
-  activeDetailIndex = (activeDetailIndex + direction + detailTitles.length) % detailTitles.length;
-  renderDetailSlide();
-}
-
-function setupDetailCarousel() {
-  const dots = document.getElementById("carousel-dots");
-  detailTitles.forEach((title, index) => {
-    const dot = document.createElement("button");
-    dot.type = "button";
-    dot.className = "carousel-dot";
-    dot.setAttribute("aria-label", `${title} 보기`);
-    dot.addEventListener("click", () => {
-      activeDetailIndex = index;
-      renderDetailSlide();
-    });
-    dots.append(dot);
-  });
-
-  document.querySelector(".carousel-arrow.previous").addEventListener("click", () => moveDetail(-1));
-  document.querySelector(".carousel-arrow.next").addEventListener("click", () => moveDetail(1));
-
-  const carousel = document.getElementById("detail-carousel");
-  let touchStartX = 0;
-  carousel.addEventListener("touchstart", (event) => {
-    touchStartX = event.changedTouches[0].clientX;
-  }, { passive: true });
-  carousel.addEventListener("touchend", (event) => {
-    const distance = event.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(distance) > 45) moveDetail(distance < 0 ? 1 : -1);
-  }, { passive: true });
-  renderDetailSlide();
-}
-
-function renderAccounts() {
-  const accountList = document.getElementById("account-list");
-  const status = document.createElement("p");
-  status.className = "copy-status";
-  status.setAttribute("aria-live", "polite");
-  accountList.after(status);
-
-  accountDetails.forEach((account) => {
-    const details = document.createElement("details");
-    details.className = "account-item";
-    const summary = document.createElement("summary");
-    summary.textContent = account.side;
-    const content = document.createElement("div");
-    content.className = "account-content";
-    const row = document.createElement("div");
-    row.className = "account-row";
-    const meta = document.createElement("div");
-    meta.className = "account-meta";
-
-    [account.bank, account.number || "계좌번호 입력", account.holder].forEach((value) => {
-      const item = document.createElement("span");
-      item.textContent = value;
-      if (value === account.number && account.number) item.className = "account-number";
-      meta.append(item);
-    });
-
-    const copyButton = document.createElement("button");
-    copyButton.className = "copy-button";
-    copyButton.type = "button";
-    copyButton.textContent = "복사";
-    copyButton.disabled = !account.number;
-    copyButton.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(account.number);
-        status.textContent = `${account.side} 계좌번호를 복사했습니다.`;
-      } catch {
-        const temporaryInput = document.createElement("textarea");
-        temporaryInput.value = account.number;
-        temporaryInput.setAttribute("readonly", "");
-        temporaryInput.style.position = "fixed";
-        temporaryInput.style.opacity = "0";
-        document.body.append(temporaryInput);
-        temporaryInput.select();
-        const copied = document.execCommand("copy");
-        temporaryInput.remove();
-        status.textContent = copied ? "계좌번호를 복사했습니다." : "계좌번호를 복사하지 못했습니다.";
-      }
-    });
-
-    row.append(meta, copyButton);
-    content.append(row);
-    details.append(summary, content);
-    accountList.append(details);
-  });
-}
-
-function showNaverMapFallback() {
-  document.getElementById("map-fallback").hidden = false;
-}
-
-function initNaverMap() {
-  if (!window.naver?.maps) {
-    showNaverMapFallback();
-    return;
-  }
-
-  const venuePosition = new naver.maps.LatLng(37.506227, 126.88545);
-  const map = new naver.maps.Map("naver-map", {
-    center: venuePosition,
-    zoom: 16,
-    zoomControl: true,
-    zoomControlOptions: { position: naver.maps.Position.TOP_RIGHT }
-  });
-
-  new naver.maps.Marker({
-    map,
-    position: venuePosition,
-    title: "라마다 서울 신도림 호텔 5층 세인트그레이스홀"
-  });
-}
-
-function loadNaverMap() {
-  window.navermap_authFailure = showNaverMapFallback;
-  const mapScript = document.createElement("script");
-  mapScript.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(NAVER_MAP_CLIENT_ID)}`;
-  mapScript.async = true;
-  mapScript.addEventListener("load", initNaverMap, { once: true });
-  mapScript.addEventListener("error", showNaverMapFallback, { once: true });
-  document.head.append(mapScript);
-}
-
-function showIntroScreen() {
-  const introScreen = document.getElementById("intro-screen");
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.body.classList.add("intro-active");
-
-  window.setTimeout(() => {
-    introScreen.classList.add("is-fading");
-    introScreen.addEventListener("transitionend", () => {
-      introScreen.remove();
-      document.body.classList.remove("intro-active");
-    }, { once: true });
-  }, prefersReducedMotion ? 650 : 1700);
-}
-
-function setMusicState(isPlaying) {
-  musicToggle.setAttribute("aria-pressed", String(isPlaying));
-  musicToggle.setAttribute("aria-label", `배경음악 ${isPlaying ? "끄기" : "켜기"}`);
-  musicToggle.title = `배경음악 ${isPlaying ? "끄기" : "켜기"}`;
-}
-
-function startMusicFromPageGesture(event) {
-  if (!(event.target instanceof Element) || event.target.closest("#music-toggle")) return;
-  if (backgroundMusic.paused) backgroundMusic.play().catch(() => setMusicState(false));
-}
-
-musicToggle.addEventListener("click", async () => {
-  if (backgroundMusic.paused) {
-    try {
-      await backgroundMusic.play();
-    } catch {
-      setMusicState(false);
-    }
-    return;
-  }
-  backgroundMusic.pause();
-});
-
-backgroundMusic.volume = 0.4;
-document.addEventListener("pointerdown", startMusicFromPageGesture, { passive: true });
-backgroundMusic.addEventListener("play", () => {
-  setMusicState(true);
-  document.removeEventListener("pointerdown", startMusicFromPageGesture);
-});
-backgroundMusic.addEventListener("pause", () => setMusicState(false));
-backgroundMusic.addEventListener("error", () => {
-  document.removeEventListener("pointerdown", startMusicFromPageGesture);
-  setMusicState(false);
-  musicToggle.disabled = true;
-  musicToggle.setAttribute("aria-label", "음악 파일을 재생할 수 없습니다");
-  musicToggle.title = "음악 파일을 재생할 수 없습니다";
-});
-backgroundMusic.play().catch(() => setMusicState(false));
-
-renderCalendar();
-document.getElementById("calendar-add-button").addEventListener("click", downloadWeddingCalendarEvent);
-updateCountdown();
-window.setInterval(updateCountdown, 1000);
 setupScrollReveals();
-buildGallery();
-setupGalleryControls();
-setupDetailCarousel();
-renderAccounts();
-loadNaverMap();
-showIntroScreen();
+scheduleScrollEffects();
+const photos=[1,3,4,5,6,7,8,9,10];
+const gallery=$('#gallery-viewport');
+const currentPhoto=$('#gallery-photo');
+const nextPhoto=$('#gallery-next-photo');
+let activePhoto=0,drag=null,animating=false,animationTimer=0;
+function photoSource(index){return `assets/photo${photos[(index+photos.length)%photos.length]}.jpg`;}
+function updatePhotoCount(){$('#gallery-count').textContent=`${String(activePhoto+1).padStart(2,'0')} / 09`;}
+function setNeighbor(direction,preservePosition=false){
+ const index=(activePhoto+direction+photos.length)%photos.length;
+ const source=photoSource(index);
+ const changed=nextPhoto.dataset.index!==String(index);
+ if(changed){
+  nextPhoto.dataset.index=String(index);
+  nextPhoto.src=source;
+ }
+ nextPhoto.alt=`성현과 지현의 웨딩 사진 ${index+1}`;
+ if(!preservePosition||changed)nextPhoto.style.transform=`translateX(${direction*100}%)`;
+ return index;
+}
+function setDragOffset(offset,direction){
+ currentPhoto.style.transition='none';
+ nextPhoto.style.transition='none';
+ currentPhoto.style.transform=`translateX(${offset}px)`;
+ nextPhoto.style.transform=`translateX(calc(${direction*100}% + ${offset}px))`;
+}
+function resetDrag(animate=true){
+ currentPhoto.style.transition=animate?'transform .24s ease-out':'none';
+ nextPhoto.style.transition=animate?'transform .24s ease-out':'none';
+ if(animate)gallery.getBoundingClientRect();
+ currentPhoto.style.transform='';
+ nextPhoto.style.transform='translateX(100%)';
+ window.setTimeout(()=>{currentPhoto.style.transition='';nextPhoto.style.transition='';},animate?260:0);
+}
+function finishTransition(direction,targetIndex){
+ window.clearTimeout(animationTimer);
+ activePhoto=targetIndex;
+ currentPhoto.src=photoSource(activePhoto);
+ currentPhoto.alt=`성현과 지현의 웨딩 사진 ${activePhoto+1}`;
+ currentPhoto.classList.remove('is-sliding');
+ nextPhoto.classList.remove('is-sliding');
+ nextPhoto.dataset.index='';
+ gallery.classList.remove('is-sliding');
+ currentPhoto.style.transition='none';
+ nextPhoto.style.transition='none';
+ currentPhoto.style.transform='';
+ nextPhoto.style.transform='translateX(100%)';
+ animating=false;
+ updatePhotoCount();
+ requestAnimationFrame(()=>{currentPhoto.style.transition='';nextPhoto.style.transition='';});
+ preloadAdjacent();
+}
+function preloadAdjacent(){
+ [-1,1].forEach(direction=>{const image=new Image();image.src=photoSource(activePhoto+direction);});
+}
+function movePhoto(direction,preserveDrag=false){
+ if(animating)return;
+ const targetIndex=setNeighbor(direction,preserveDrag);
+ animating=true;
+ gallery.classList.add('is-sliding');
+ gallery.getBoundingClientRect();
+ currentPhoto.classList.add('is-sliding');
+ nextPhoto.classList.add('is-sliding');
+ currentPhoto.style.transition='';
+ nextPhoto.style.transition='';
+ currentPhoto.style.transform=`translateX(${direction>0?-100:100}%)`;
+ nextPhoto.style.transform='translateX(0)';
+ const done=()=>finishTransition(direction,targetIndex);
+ nextPhoto.addEventListener('transitionend',event=>{if(event.propertyName==='transform')done();},{once:true});
+ animationTimer=window.setTimeout(done,450);
+}
+$('#gallery-prev').addEventListener('click',()=>movePhoto(-1));
+$('#gallery-next').addEventListener('click',()=>movePhoto(1));
+gallery.addEventListener('pointerdown',event=>{
+ if(animating||event.button>0)return;
+ drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,x:event.clientX,y:event.clientY,direction:0,axis:null,samples:[{x:event.clientX,time:performance.now()}]};
+ gallery.setPointerCapture(event.pointerId);
+});
+window.addEventListener('pointermove',event=>{
+ if(!drag||event.pointerId!==drag.id)return;
+ drag.x=event.clientX;drag.y=event.clientY;
+ const now=performance.now();
+ drag.samples.push({x:event.clientX,time:now});
+ drag.samples=drag.samples.filter(sample=>now-sample.time<=100);
+ const dx=drag.x-drag.startX,dy=drag.y-drag.startY;
+ if(!drag.axis&&Math.max(Math.abs(dx),Math.abs(dy))>7)drag.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+ if(drag.axis!=='x')return;
+ event.preventDefault();
+ const direction=dx<0?1:-1;
+ if(direction!==drag.direction){drag.direction=direction;setNeighbor(direction);}
+ setDragOffset(dx,direction);
+});
+window.addEventListener('pointerup',event=>{
+ if(!drag||event.pointerId!==drag.id)return;
+ const dx=event.clientX-drag.startX,dy=event.clientY-drag.startY,direction=dx<0?1:-1;
+ const now=performance.now();
+ const recent=drag.samples.filter(sample=>now-sample.time<=100);
+ const first=recent[0],last=recent[recent.length-1];
+ const velocity=first&&last&&last.time>first.time?(last.x-first.x)/(last.time-first.time):0;
+ const shouldChange=drag.axis==='x'&&Math.abs(dx)>Math.abs(dy)*1.15&&(Math.abs(dx)>Math.max(48,gallery.clientWidth*.18)||Math.abs(velocity)>.55);
+ drag=null;
+ if(shouldChange){movePhoto(direction,true);return;}
+ resetDrag();
+});
+gallery.addEventListener('pointercancel',()=>{drag=null;resetDrag();});
+gallery.addEventListener('lostpointercapture',()=>{if(drag){drag=null;resetDrag();}});
+gallery.addEventListener('keydown',event=>{
+ if(event.key==='ArrowLeft'){event.preventDefault();movePhoto(-1);}
+ if(event.key==='ArrowRight'){event.preventDefault();movePhoto(1);}
+});
+updatePhotoCount();
+preloadAdjacent();
+document.querySelectorAll('[data-side]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-side]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));$('#groom-account').hidden=button.dataset.side!=='groom';$('#bride-account').hidden=button.dataset.side!=='bride';}));
+$('#copy-link').addEventListener('click',()=>copyText(location.href.split('#')[0],'청첩장 링크'));

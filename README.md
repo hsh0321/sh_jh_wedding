@@ -1,15 +1,13 @@
-# 성현과 지현 · Invitation Archive
+# 성현과 지현 · With Love
 
-지금까지 제작한 청첩장 23종을 모아 체험하는 정적 사이트입니다.
+프로젝트 루트에서 확정된 모바일 청첩장을 제공합니다.
 
-- `/`: 전체 디자인 목록과 분류 필터
-- `/try.html?design=winter-letter`: 이전/다음, 디자인 선택, 단독 열기를 지원하는 체험 화면
-- `/wedding-original/index.html`: 기존 루트 청첩장을 보존한 경로
-- `/wedding-editorial/index.html`: 에디토리얼
-- `/wedding-blue-letter/index.html`: 블루 빈티지
-- `/wedding-studio/`: 스튜디오 10종
-- `/wedding-collection/`: 컬렉션 10종
+- `index.html`: 청첩장
+- `style.css`, `motion.css`, `script.js`, `utilities.js`: 화면, 모션, 동작
+- `assets/`: 청첩장 사진과 배경 음악
+- `build.cjs`: 루트 청첩장 HTML 빌드
+- `server.cjs`: 로컬 미리보기 서버
 
-HTML/CSS/JS 정적 파일로 구성됩니다. 기존 Cloudflare Git 연동의 루트 배포를 사용하며 별도 빌드가 필요 없습니다. ZIP 파일은 배포에서 제외합니다.
+사진 모음은 좌우 드래그와 이전/다음 버튼으로 탐색하며, 원본 사진 비율을 유지합니다. 확대 보기 기능은 제공하지 않습니다.
 
-`node gallery/build.cjs`로 목록을 재생성하고 `node gallery/check.cjs`로 23종 경로와 정적 참조를 검사합니다. 원본 청첩장은 이전 이미지를 함께 사용하며 삭제된 사진 번호를 건너뛰도록 갤러리를 수정했습니다.
+기존 디자인과 사용하지 않는 프로젝트 자료는 `archive/`의 ZIP 파일로 보관합니다. Cloudflare Pages에서 프로젝트 루트를 정적 에셋 디렉터리로 배포하면 됩니다.

@@ -1,0 +1,11 @@
+.git/**
+node_modules/**
+**/*.zip
+**/*.cjs
+**/*.md
+**/package.json
+**/package-lock.json
+wrangler.jsonc
+.gitignore
+.assetsignore
+gallery/screenshots/**

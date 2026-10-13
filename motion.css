@@ -75,6 +75,17 @@ main > :not(.opening) {
   transform-origin: center;
 }
 
+@keyframes heart-in {
+  from { opacity: 0; transform: translateY(24px) rotate(0) scale(.9); }
+  to { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+}
+
+.heart-photo {
+  height: auto;
+  aspect-ratio: 0.799;
+  transform: none;
+}
+
 .opening-shade {
   position: absolute;
   z-index: 5;

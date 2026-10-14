@@ -119,13 +119,13 @@ function setupScrollReveals(){
 }
 setupScrollReveals();
 scheduleScrollEffects();
-const photos=[1,3,4,5,6,7,8,9,10];
+const photos=[1,3,4,5,6,7,8,9,10,11,12,13,14,15];
 const gallery=$('#gallery-viewport');
 const currentPhoto=$('#gallery-photo');
 const nextPhoto=$('#gallery-next-photo');
 let activePhoto=0,drag=null,animating=false,animationTimer=0;
 function photoSource(index){return `assets/wedding-retouched-${photos[(index+photos.length)%photos.length]}.jpg`;}
-function updatePhotoCount(){$('#gallery-count').textContent=`${String(activePhoto+1).padStart(2,'0')} / 09`;}
+function updatePhotoCount(){$('#gallery-count').textContent=`${String(activePhoto+1).padStart(2,'0')} / ${String(photos.length).padStart(2,'0')}`;}
 function setNeighbor(direction,preservePosition=false){
  const index=(activePhoto+direction+photos.length)%photos.length;
  const source=photoSource(index);

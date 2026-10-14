@@ -230,5 +230,4 @@ gallery.addEventListener('keydown',event=>{
 });
 updatePhotoCount();
 preloadAdjacent();
-document.querySelectorAll('[data-side]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-side]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));$('#groom-account').hidden=button.dataset.side!=='groom';$('#bride-account').hidden=button.dataset.side!=='bride';}));
 $('#copy-link').addEventListener('click',()=>copyText(location.href.split('#')[0],'청첩장 링크'));

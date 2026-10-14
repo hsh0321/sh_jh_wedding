@@ -12,6 +12,24 @@ html, body {
   min-width: 0;
 }
 
+.profile img,
+.profile.bride img {
+  height: 163px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.account-group {
+  margin-top: 30px;
+}
+
+.account-heading {
+  margin: 0 0 18px;
+  font-size: calc(13px + 2pt);
+  font-weight: 500;
+  color: var(--cherry);
+}
+
 .profile p {
   word-break: keep-all;
   overflow-wrap: break-word;

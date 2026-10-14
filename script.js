@@ -30,12 +30,23 @@ const mapElement=$('#naver-map');
 const mapStatus=$('#map-status');
 function showMapError(message){mapStatus.textContent=message;}
 window.navermap_authFailure=()=>showMapError('네이버 지도 인증에 실패했습니다. 등록된 웹 서비스 URL을 확인해 주세요.');
+let mapInitialized=false,mapInitAttempts=0;
 function initializeNaverMap(){
- if(!window.naver?.maps?.Map){
+ if(mapInitialized)return;
+ const maps=window.naver?.maps;
+ if(!maps?.Map){
+  if(maps&&!maps.jsContentLoaded){
+   maps.onJSContentLoaded=initializeNaverMap;
+   return;
+  }
+  if(mapInitAttempts++<40){
+   setTimeout(initializeNaverMap,50);
+   return;
+  }
   showMapError('지도를 사용할 수 없습니다. 아래 지도 앱 링크를 이용해 주세요.');
   return;
  }
- const maps=window.naver.maps;
+ mapInitialized=true;
  const position=new maps.LatLng(37.5065595,126.8853578);
  const map=new maps.Map(mapElement,{center:position,zoom:16,zoomControl:false,scrollWheel:false});
  new maps.Marker({position,map,title:'라마다 서울 신도림 호텔'});

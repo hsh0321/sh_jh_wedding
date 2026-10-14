@@ -151,7 +151,7 @@ img,
 .opening-panel {
   transform: scale(1);
   will-change: transform;
-  background: transparent;
+  background: var(--paper);
 }
 
 .opening > .confetti {
@@ -186,7 +186,7 @@ img,
   height: auto;
   aspect-ratio: 0.799;
   transform: none;
-  animation: heart-in 1.9s ease-out .65s backwards;
+  animation: heart-in 1.9s ease-out both;
 }
 
 .opening-shade {

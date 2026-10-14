@@ -12,6 +12,26 @@ html, body {
   min-width: 0;
 }
 
+.profile p {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* Match the live typefaces used by the LILT_008 reference. */
+.opening-date,
+.opening-names h1 {
+  font-stretch: 72%;
+}
+
+.account-tabs button {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+}
+
+.account span {
+  font-family: var(--sans), var(--kr);
+}
+
 img,
 .heart-photo,
 .gallery-viewport {

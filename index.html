@@ -10,6 +10,11 @@
     <meta property="og:description" content="2027.01.17 SUN · 3:10 PM">
     <meta property="og:image" content="assets/wedding-retouched-6.jpg">
     <title>성현과 지현 · With Love</title>
+    <script>
+        if (!location.hash && performance.getEntriesByType('navigation')[0]?.type !== 'back_forward') {
+            history.scrollRestoration = 'manual';
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -47,7 +52,8 @@
         <section class="opening" id="home">
             <p class="opening-date">JANUARY 17, 2027</p>
             <div class="opening-panel"><div class="heart-photo"><img
-                        src="assets/wedding-retouched-6.jpg" alt="성현과 지현의 웨딩 사진" fetchpriority="high"></div>
+                        src="assets/wedding-retouched-6.jpg" alt="성현과 지현의 웨딩 사진" width="2603" height="3904"
+                        fetchpriority="high"></div>
                 <div class="letter-chain chain-left" aria-label="WITH">
                     <span>W</span><span>I</span><span>T</span><span>H</span></div>
                 <div class="letter-chain chain-right" aria-label="LOVE">
@@ -145,12 +151,13 @@
                 <h2>Moments</h2>
                 <p>우리의 순간</p>
             </header>
-            <div class="gallery-viewport" id="gallery-viewport" role="region" tabindex="0" aria-label="우리의 순간 사진 슬라이더">
-                <img id="gallery-photo" src="assets/wedding-retouched-1.jpg" alt="성현과 지현의 웨딩 사진 1" loading="lazy"
-                    draggable="false"><img id="gallery-next-photo" alt="" aria-hidden="true" draggable="false"></div>
-            <div class="gallery-controls"><button id="gallery-prev" aria-label="이전 사진">←</button><span
-                    id="gallery-count" aria-live="polite">01 / 14</span><button id="gallery-next"
-                    aria-label="다음 사진">→</button></div>
+            <div class="gallery-viewport" id="gallery-viewport" role="region" tabindex="0" aria-label="우리의 순간 사진 슬라이더" aria-busy="true">
+                <img id="gallery-photo" src="assets/gallery-preload/gallery-1.jpg" alt="성현과 지현의 웨딩 사진 1"
+                    fetchpriority="low" draggable="false"><img id="gallery-next-photo" alt="" aria-hidden="true" draggable="false"></div>
+            <p id="gallery-loading" class="hint" role="status">사진을 준비하고 있어요.</p>
+            <div class="gallery-controls"><button id="gallery-prev" aria-label="이전 사진" disabled>←</button><span
+                    id="gallery-count" aria-live="polite">01 / 13</span><button id="gallery-next"
+                    aria-label="다음 사진" disabled>→</button></div>
             <p class="hint">사진을 좌우로 드래그하거나 아래 버튼으로 넘길 수 있어요</p>
         </section>
         <section class="section location" id="location">

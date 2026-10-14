@@ -277,7 +277,7 @@ main {
 
 .gallery-viewport.is-sliding > #gallery-photo,
 .gallery-viewport.is-sliding > #gallery-next-photo {
-  transition: transform .52s cubic-bezier(.22, .61, .36, 1);
+  transition: transform .32s cubic-bezier(.22, .61, .36, 1);
   will-change: transform;
 }
 

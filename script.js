@@ -1,21 +1,4 @@
 'use strict';
-if(!location.hash){
- history.scrollRestoration='manual';
- const root=document.documentElement;
- root.style.scrollBehavior='auto';
- const resetEntryScroll=()=>{
-  window.scrollTo(0,0);
-  requestAnimationFrame(()=>{
-   window.scrollTo(0,0);
-   requestAnimationFrame(()=>{
-    window.scrollTo(0,0);
-    root.style.removeProperty('scroll-behavior');
-   });
-  });
- };
- resetEntryScroll();
- window.addEventListener('pageshow',resetEntryScroll);
-}
 // Discourage native image saving without blocking gallery pointer gestures.
 document.querySelectorAll('img').forEach(image=>{image.draggable=false;});
 function blockPhotoAction(event){
@@ -172,20 +155,22 @@ const photos=[1,3,4,5,6,8,9,10,11,12,13,14,15];
 const gallery=$('#gallery-viewport');
 let currentPhoto=$('#gallery-photo');
 let nextPhoto=$('#gallery-next-photo');
-let activePhoto=0,drag=null,animating=false,animationTimer=0,neighborLoadToken=0,readyNeighborIndex=-1;
+let activePhoto=0,drag=null,animating=false,animationTimer=0,neighborLoadToken=0,readyNeighborIndex=-1,galleryReady=false;
 const photoLoads=new Map();
-function photoSource(index){return `assets/wedding-retouched-${photos[(index+photos.length)%photos.length]}.jpg`;}
+function photoSource(index){return `assets/gallery-preload/gallery-${photos[(index+photos.length)%photos.length]}.jpg`;}
 function updatePhotoCount(){$('#gallery-count').textContent=`${String(activePhoto+1).padStart(2,'0')} / ${String(photos.length).padStart(2,'0')}`;}
 function preloadPhoto(index){
  const normalized=(index+photos.length)%photos.length;
  if(photoLoads.has(normalized))return photoLoads.get(normalized);
  const image=new Image();
+ image.fetchPriority='low';
+ image.decoding='async';
  const promise=new Promise((resolve,reject)=>{
-  image.onload=()=>resolve(image);
+  image.onload=()=>image.decode().then(()=>resolve(true),reject);
   image.onerror=()=>{photoLoads.delete(normalized);reject(new Error(`Failed to load ${image.src}`));};
   image.src=photoSource(normalized);
   if(image.complete){
-   if(image.naturalWidth)resolve(image);
+   if(image.naturalWidth)image.decode().then(()=>resolve(true),reject);
    else reject(new Error(`Failed to load ${image.src}`));
   }
  });
@@ -270,10 +255,29 @@ function preloadAdjacent(){
   preloadPhoto(activePhoto+direction).catch(error=>console.warn('Failed to preload gallery photo.',error));
  });
 }
+async function prepareGallery(){
+ try{
+  await Promise.all(photos.map((_,index)=>preloadPhoto(index)));
+  currentPhoto.src=photoSource(activePhoto);
+  if(currentPhoto.decode)await currentPhoto.decode();
+  galleryReady=true;
+  gallery.removeAttribute('aria-busy');
+  $('#gallery-loading').remove();
+  $('#gallery-prev').disabled=false;
+  $('#gallery-next').disabled=false;
+  preloadAdjacent();
+ }catch(error){
+  console.error('Failed to prepare all gallery photos.',error);
+  $('#gallery-loading').textContent='사진을 불러오지 못했어요. 페이지를 새로고침해 주세요.';
+ }
+}
 async function movePhoto(direction,preserveDrag=false,dragOffset=0){
- if(animating)return;
+ if(!galleryReady||animating)return;
  animating=true;
- const targetIndex=await prepareNeighbor(direction);
+ const targetPhotoIndex=(activePhoto+direction+photos.length)%photos.length;
+ const neighborIsReady=readyNeighborIndex===targetPhotoIndex
+  &&nextPhoto.dataset.index===String(targetPhotoIndex);
+ const targetIndex=neighborIsReady?targetPhotoIndex:await prepareNeighbor(direction);
  if(targetIndex===null){animating=false;resetDrag();return;}
  if(preserveDrag)setDragOffset(dragOffset,direction);
  gallery.classList.add('is-sliding');
@@ -293,7 +297,7 @@ async function movePhoto(direction,preserveDrag=false,dragOffset=0){
 $('#gallery-prev').addEventListener('click',()=>movePhoto(-1));
 $('#gallery-next').addEventListener('click',()=>movePhoto(1));
 gallery.addEventListener('pointerdown',event=>{
- if(animating||event.button>0)return;
+ if(!galleryReady||animating||event.button>0)return;
  drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,x:event.clientX,y:event.clientY,direction:0,axis:null,samples:[{x:event.clientX,time:performance.now()}]};
  gallery.setPointerCapture(event.pointerId);
 });
@@ -329,9 +333,10 @@ window.addEventListener('pointerup',event=>{
 gallery.addEventListener('pointercancel',()=>{drag=null;resetDrag();});
 gallery.addEventListener('lostpointercapture',()=>{if(drag){drag=null;resetDrag();}});
 gallery.addEventListener('keydown',event=>{
+ if(!galleryReady)return;
  if(event.key==='ArrowLeft'){event.preventDefault();movePhoto(-1);}
  if(event.key==='ArrowRight'){event.preventDefault();movePhoto(1);}
 });
 updatePhotoCount();
-preloadAdjacent();
+prepareGallery();
 $('#copy-link').addEventListener('click',()=>copyText(location.href.split('#')[0],'청첩장 링크'));

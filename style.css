@@ -18,7 +18,8 @@
 
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: 45px
+    scroll-padding-top: 45px;
+    overflow-anchor: none
 }
 
 body {

@@ -22,6 +22,7 @@
     <script src="utilities.js" defer></script>
     <script src="rsvp-config.js" defer></script>
     <script src="rsvp.js" defer></script>
+    <script src="rsvp-ui.js" defer></script>
 </head>
 
 <body><svg class="definitions" aria-hidden="true" width="0" height="0">
@@ -235,37 +236,35 @@
         </section>
         <section class="section reply" id="rsvp" aria-labelledby="rsvp-title">
             <header class="section-heading"><span class="divider" aria-hidden="true"><i></i>&<i></i></span>
-                <h2 id="rsvp-title">Join Us</h2><p>참석 여부</p>
+                <h2 id="rsvp-title">Join Us</h2><p id="rsvp-step-title">참석 여부</p>
             </header>
-            <p>참석 여부를 미리 알려주시면<br>자리와 식사 준비에 큰 도움이 됩니다.</p>
+            <p id="rsvp-intro">참석 여부를 미리 알려주시면 자리와 식사 준비에 큰 도움이 됩니다.</p>
             <form id="rsvp-form" aria-describedby="rsvp-status">
                 <fieldset id="rsvp-fields">
                     <legend class="sr-only">참석 여부 회신</legend>
-                    <label for="rsvp-name">성함 <span class="rsvp-required">필수</span></label>
-                    <input id="rsvp-name" name="guestName" autocomplete="name" maxlength="40" required placeholder="성함을 적어 주세요">
-                    <div class="form-row">
-                        <div><label for="rsvp-side">구분 <span class="rsvp-required">필수</span></label>
-                            <select id="rsvp-side" name="side" required><option value="">선택해 주세요</option><option value="groom">신랑 측</option><option value="bride">신부 측</option></select></div>
-                        <div><label for="rsvp-attendance">참석 여부 <span class="rsvp-required">필수</span></label>
-                            <select id="rsvp-attendance" name="attendance" required><option value="">선택해 주세요</option><option value="yes">참석합니다</option><option value="no">마음으로 축하합니다</option></select></div>
+                    <div id="rsvp-step-one" class="rsvp-rows">
+                        <div class="rsvp-row"><label for="rsvp-name">성함</label><input class="rsvp-value" id="rsvp-name" name="guestName" autocomplete="name" maxlength="40" required placeholder="성함을 입력해 주세요"><i aria-hidden="true"></i></div>
+                        <div class="rsvp-row"><span id="side-label">구분</span><button class="rsvp-value" type="button" id="side-choice" aria-labelledby="side-label side-choice" data-cycle="side">눌러서 선택해 주세요</button><i aria-hidden="true"></i></div>
+                        <div class="rsvp-row"><span id="attendance-label">참석 여부</span><button class="rsvp-value" type="button" id="attendance-choice" aria-labelledby="attendance-label attendance-choice" data-cycle="attendance">눌러서 선택해 주세요</button><i aria-hidden="true"></i></div>
+                        <input type="hidden" name="side" value=""><input type="hidden" name="attendance" value="">
+                        <fieldset id="rsvp-attending" hidden disabled>
+                            <legend class="sr-only">참석 인원</legend>
+                            <div class="rsvp-row"><span>인원</span><div class="rsvp-value rsvp-count"><span aria-live="polite">본인 포함 <b id="rsvp-count">1</b>명</span><div><button type="button" id="rsvp-minus" aria-label="인원 줄이기">−</button><button type="button" id="rsvp-plus" aria-label="인원 늘리기">+</button></div></div><i aria-hidden="true"></i></div>
+                            <input type="hidden" id="rsvp-guests" name="guests" value="1"><input type="hidden" name="meal" value="unknown">
+                        </fieldset>
                     </div>
-                    <fieldset id="rsvp-attending" hidden disabled>
-                        <legend class="sr-only">참석 상세 정보</legend>
-                        <label for="rsvp-guests">참석 인원 (본인 포함) <span class="rsvp-required">필수</span></label>
-                        <input id="rsvp-guests" name="guests" type="number" inputmode="numeric" min="1" max="20" step="1" value="1" required>
-                        <label for="rsvp-meal">식사 여부 <span class="rsvp-required">필수</span></label>
-                        <select id="rsvp-meal" name="meal" required><option value="">선택해 주세요</option><option value="yes">식사 예정입니다</option><option value="no">식사하지 않습니다</option><option value="unknown">아직 정하지 못했어요</option></select>
-                    </fieldset>
-                    <label for="rsvp-message">전하실 말씀 <span class="rsvp-required">선택 · 300자 이내</span></label>
-                    <textarea id="rsvp-message" name="message" rows="3" maxlength="300" placeholder="동행인별 식사 여부 등 필요한 내용을 남겨 주세요"></textarea>
-                    <details class="rsvp-privacy">
-                        <summary>개인정보 수집·이용 안내 <span aria-hidden="true">＋</span></summary>
-                        <p>수집·이용자: 황성현 · 육지현<br>목적: 결혼식 참석 확인 및 좌석·식사 준비<br>필수 항목: 성함, 신랑·신부 측 구분, 참석 여부, 참석 시 인원과 식사 여부<br>선택 항목: 전하실 말씀<br>보유 기간: 예식 종료 후 30일 이내(2027년 2월 16일까지) 삭제<br>입력 내용은 Google 스프레드시트에 저장됩니다. 동의를 거부할 수 있으며, 이 경우 온라인 회신 대신 신랑·신부에게 직접 알려주세요.</p>
-                    </details>
-                    <label class="rsvp-consent"><input name="consent" type="checkbox" required><span>개인정보 수집·이용에 동의합니다. (필수)</span></label>
+                    <div id="rsvp-step-two" hidden>
+                        <div class="rsvp-rows" id="rsvp-bus-rows">
+                            <div class="rsvp-row"><span id="bus-label">탑승</span><button class="rsvp-value" type="button" id="bus-choice" aria-labelledby="bus-label bus-choice" data-cycle="bus">눌러서 선택해 주세요</button><i aria-hidden="true"></i></div>
+                            <div class="rsvp-row" id="rsvp-bus-count-row" hidden><span>인원</span><div class="rsvp-value rsvp-count"><span aria-live="polite">총 <b id="rsvp-bus-count">1</b>명</span><div><button type="button" id="bus-minus" aria-label="탑승 인원 줄이기">−</button><button type="button" id="bus-plus" aria-label="탑승 인원 늘리기">+</button></div></div><i aria-hidden="true"></i></div>
+                        </div>
+                        <details class="rsvp-privacy"><summary>개인정보 수집·이용 안내 <span aria-hidden="true">＋</span></summary><p>수집·이용자: 황성현 · 육지현<br>목적: 결혼식 참석 및 전세버스 탑승 확인<br>항목: 성함, 신랑·신부 측 구분, 참석 여부와 인원, 전세버스 탑승 여부와 인원<br>보유 기간: 예식 종료 후 30일 이내(2027년 2월 16일까지) 삭제<br>입력 내용은 Google 스프레드시트에 저장됩니다. 동의를 거부할 수 있으며, 이 경우 신랑·신부에게 직접 알려주세요.</p></details>
+                        <label class="rsvp-consent"><input name="consent" type="checkbox" required><span>개인정보 수집·이용에 동의합니다.</span></label>
+                    </div>
+                    <input type="hidden" name="message" value="">
                 </fieldset>
-                <button type="submit" class="solid">참석 여부 전달하기</button>
-                <p id="rsvp-status" class="reply-note" role="status" aria-live="polite" aria-atomic="true">회신은 한 번만 보내 주세요. 변경은 신랑·신부에게 알려주세요.</p>
+                <div class="rsvp-footer"><button type="button" id="rsvp-back" hidden>이전</button><button type="button" class="rsvp-send" id="rsvp-next" disabled>다음 · 전세버스</button><button type="submit" class="rsvp-send" hidden>회신 보내기</button></div>
+                <p id="rsvp-status" role="status" aria-live="polite" aria-atomic="true"></p>
             </form>
             <noscript><p>참석 여부를 보내려면 자바스크립트를 켜거나 신랑·신부에게 직접 알려주세요.</p></noscript>
         </section>

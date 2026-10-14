@@ -8,7 +8,7 @@
 
 ## 1. Apps Script 준비
 
-1. 저장할 [Google 스프레드시트](https://docs.google.com/spreadsheets/d/1gLS1X2SwrrdU0pB6Q-wKzojNW4QPyRpshIoV5U6kq811vi4BlDGyt92T/edit)를 편집 권한이 있는 계정으로 엽니다.
+1. 저장할 [Google 스프레드시트](https://docs.google.com/spreadsheets/d/1Dz7fbz0WwYTFK7r1HNpgBERv_w7otemAGclzTVKAo34/edit)를 편집 권한이 있는 계정으로 엽니다.
 2. **확장 프로그램 → Apps Script**를 선택합니다.
 3. 새 스크립트 프로젝트의 `Code.gs`에 로컬 `apps-script/Code.gs` 내용을 붙여넣습니다. 기존 스크립트가 있는 경우 보존하고 `doPost` 등의 이름 충돌을 먼저 확인합니다.
 4. 함수 목록에서 `setup`을 선택해 실행하고 해당 계정에서 권한을 승인합니다. `참석여부` 탭과 헤더가 생성됩니다. ID가 잘못되었거나 권한이 없으면 이 단계에서 실패하므로 링크와 편집 권한을 확인합니다.

@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = '1gLS1X2SwrrdU0pB6Q-wKzojNW4QPyRpshIoV5U6kq811vi4BlDGyt92T';
+const SPREADSHEET_ID = '1Dz7fbz0WwYTFK7r1HNpgBERv_w7otemAGclzTVKAo34';
 const SHEET_NAME = '참석여부';
 const HEADERS = ['요청 ID', '접수 시각', '성함', '구분', '참석 여부', '본인 포함 인원', '식사 여부', '메시지', '수집 동의', '동의문 버전'];
 

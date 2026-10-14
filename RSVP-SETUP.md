@@ -2,7 +2,9 @@
 
 작업 위치: `C:\project_hsh\sh_jh_wedding`
 
-구현은 완료되어 있으며, 실제 저장을 시작하려면 아래 Apps Script 배포와 URL 설정이 필요합니다. 현재 `rsvp-config.js`의 endpoint는 빈 값이므로 어떤 응답도 외부로 보내지 않습니다. Google 계정 배포 및 실제 시트 기록은 아직 검증하지 않았습니다.
+사용자가 제공한 Apps Script 웹 앱 배포 URL을 `rsvp-config.js`에 연결했습니다. 실제 시트 기록은 아직 검증하지 않았습니다. 배포 주소 변경 및 저장 확인은 아래 절차를 참고하세요.
+
+2026-10-15 연결 점검: 필수 필드가 없는 요청에 JSON 오류 대신 `TypeError: Cannot read properties of null (reading 'appendRow')`(Code 9행) HTML 오류가 반환되었습니다. 배포된 서버 코드를 이 저장소의 `apps-script/Code.gs`와 맞추고, 실제 스프레드시트 ID와 시트 설정을 확인한 뒤 새 버전으로 재배포해야 합니다.
 
 ## 1. Apps Script 준비
 

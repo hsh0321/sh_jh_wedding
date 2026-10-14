@@ -162,10 +162,10 @@ function setupScrollReveals(){
 }
 setupScrollReveals();
 scheduleScrollEffects();
-const photos=[1,3,4,5,6,7,8,9,10,11,12,13,14,15];
+const photos=[1,3,4,5,6,8,9,10,11,12,13,14,15];
 const gallery=$('#gallery-viewport');
-const currentPhoto=$('#gallery-photo');
-const nextPhoto=$('#gallery-next-photo');
+let currentPhoto=$('#gallery-photo');
+let nextPhoto=$('#gallery-next-photo');
 let activePhoto=0,drag=null,animating=false,animationTimer=0;
 function photoSource(index){return `assets/wedding-retouched-${photos[(index+photos.length)%photos.length]}.jpg`;}
 function updatePhotoCount(){$('#gallery-count').textContent=`${String(activePhoto+1).padStart(2,'0')} / ${String(photos.length).padStart(2,'0')}`;}
@@ -182,12 +182,16 @@ function setNeighbor(direction,preservePosition=false){
  return index;
 }
 function setDragOffset(offset,direction){
+ currentPhoto.style.zIndex='0';
+ nextPhoto.style.zIndex='1';
  currentPhoto.style.transition='none';
  nextPhoto.style.transition='none';
  currentPhoto.style.transform=`translateX(${offset}px)`;
  nextPhoto.style.transform=`translateX(calc(${direction*100}% + ${offset}px))`;
 }
 function resetDrag(animate=true){
+ currentPhoto.style.zIndex='1';
+ nextPhoto.style.zIndex='0';
  currentPhoto.style.transition=animate?'transform .24s ease-out':'none';
  nextPhoto.style.transition=animate?'transform .24s ease-out':'none';
  if(animate)gallery.getBoundingClientRect();
@@ -197,17 +201,24 @@ function resetDrag(animate=true){
 }
 function finishTransition(direction,targetIndex){
  window.clearTimeout(animationTimer);
+ const outgoingPhoto=currentPhoto;
+ const incomingPhoto=nextPhoto;
  activePhoto=targetIndex;
- currentPhoto.src=photoSource(activePhoto);
- currentPhoto.alt=`성현과 지현의 웨딩 사진 ${activePhoto+1}`;
- currentPhoto.classList.remove('is-sliding');
- nextPhoto.classList.remove('is-sliding');
- nextPhoto.dataset.index='';
+ incomingPhoto.dataset.index=String(activePhoto);
+ incomingPhoto.alt=`성현과 지현의 웨딩 사진 ${activePhoto+1}`;
+ outgoingPhoto.dataset.index=String((activePhoto-direction+photos.length)%photos.length);
+ outgoingPhoto.alt=`성현과 지현의 웨딩 사진 ${Number(outgoingPhoto.dataset.index)+1}`;
+ incomingPhoto.classList.remove('is-sliding');
+ outgoingPhoto.classList.remove('is-sliding');
  gallery.classList.remove('is-sliding');
- currentPhoto.style.transition='none';
- nextPhoto.style.transition='none';
- currentPhoto.style.transform='';
- nextPhoto.style.transform='translateX(100%)';
+ incomingPhoto.style.transition='none';
+ outgoingPhoto.style.transition='none';
+ incomingPhoto.style.zIndex='1';
+ outgoingPhoto.style.zIndex='0';
+ incomingPhoto.style.transform='translateX(0)';
+ outgoingPhoto.style.transform='translateX(100%)';
+ currentPhoto=incomingPhoto;
+ nextPhoto=outgoingPhoto;
  animating=false;
  updatePhotoCount();
  requestAnimationFrame(()=>{currentPhoto.style.transition='';nextPhoto.style.transition='';});
@@ -222,6 +233,8 @@ function movePhoto(direction,preserveDrag=false){
  animating=true;
  gallery.classList.add('is-sliding');
  gallery.getBoundingClientRect();
+ currentPhoto.style.zIndex='0';
+ nextPhoto.style.zIndex='1';
  currentPhoto.classList.add('is-sliding');
  nextPhoto.classList.add('is-sliding');
  currentPhoto.style.transition='';
@@ -230,7 +243,7 @@ function movePhoto(direction,preserveDrag=false){
  nextPhoto.style.transform='translateX(0)';
  const done=()=>finishTransition(direction,targetIndex);
  nextPhoto.addEventListener('transitionend',event=>{if(event.propertyName==='transform')done();},{once:true});
- animationTimer=window.setTimeout(done,450);
+ animationTimer=window.setTimeout(done,700);
 }
 $('#gallery-prev').addEventListener('click',()=>movePhoto(-1));
 $('#gallery-next').addEventListener('click',()=>movePhoto(1));

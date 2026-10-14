@@ -881,7 +881,8 @@ summary i {
     margin-left: auto;
     font-style: normal;
     font-size: calc(18px + 2pt);
-    font-weight: 400
+    font-weight: 400;
+    transition: transform .32s cubic-bezier(.22, .61, .36, 1)
 }
 
 details[open] summary i {

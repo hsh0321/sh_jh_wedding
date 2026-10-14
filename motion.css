@@ -126,6 +126,8 @@ img,
   z-index: 0;
   isolation: isolate;
   background-color: var(--paper);
+  background-image: linear-gradient(rgba(251, 250, 247, .65), rgba(251, 250, 247, .65)), var(--paper-texture);
+  background-size: auto, 520px;
 }
 
 .content-sheet,
@@ -139,6 +141,8 @@ img,
 .content-sheet {
   display: flow-root;
   background-color: var(--paper);
+  background-image: linear-gradient(rgba(251, 250, 247, .65), rgba(251, 250, 247, .65)), var(--paper-texture);
+  background-size: auto, 520px;
 }
 
 /* Promote the backing as one stable layer during iOS asynchronous scrolling. */
@@ -152,6 +156,8 @@ img,
   transform: scale(1);
   will-change: transform;
   background: var(--paper);
+  background-image: linear-gradient(rgba(251, 250, 247, .65), rgba(251, 250, 247, .65)), var(--paper-texture);
+  background-size: auto, 520px;
 }
 
 .opening > .confetti {
@@ -207,10 +213,14 @@ img,
   position: relative;
   z-index: 1;
   background-color: var(--paper);
+  background-image: linear-gradient(rgba(251, 250, 247, .65), rgba(251, 250, 247, .65)), var(--paper-texture);
+  background-size: auto, 520px;
 }
 
 .day {
   background-color: var(--powder);
+  background-image: linear-gradient(color-mix(in srgb, var(--powder) 65%, transparent), color-mix(in srgb, var(--powder) 65%, transparent)), var(--paper-texture);
+  background-blend-mode: normal, multiply;
 }
 
 .photo-banner {
@@ -227,6 +237,8 @@ img,
   position: relative;
   z-index: 1;
   background-color: var(--paper);
+  background-image: linear-gradient(rgba(251, 250, 247, .65), rgba(251, 250, 247, .65)), var(--paper-texture);
+  background-size: auto, 520px;
 }
 
 main {

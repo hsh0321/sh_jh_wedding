@@ -2,6 +2,7 @@
 
 :root {
     --paper: #fbfaf7;
+    --paper-texture: url("assets/paper-grain.jpg");
     --powder: #d8dfce;
     --cherry: #5d7353;
     --ink: #20211f;

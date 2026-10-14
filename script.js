@@ -1,14 +1,20 @@
 'use strict';
-const navigation=performance.getEntriesByType('navigation')[0];
-if(!location.hash&&navigation?.type!=='back_forward'){
+if(!location.hash){
  history.scrollRestoration='manual';
  const root=document.documentElement;
  root.style.scrollBehavior='auto';
- window.scrollTo(0,0);
- window.addEventListener('pageshow',event=>{
-  if(!event.persisted)window.scrollTo(0,0);
-  requestAnimationFrame(()=>root.style.removeProperty('scroll-behavior'));
- },{once:true});
+ const resetEntryScroll=()=>{
+  window.scrollTo(0,0);
+  requestAnimationFrame(()=>{
+   window.scrollTo(0,0);
+   requestAnimationFrame(()=>{
+    window.scrollTo(0,0);
+    root.style.removeProperty('scroll-behavior');
+   });
+  });
+ };
+ resetEntryScroll();
+ window.addEventListener('pageshow',resetEntryScroll);
 }
 // Discourage native image saving without blocking gallery pointer gestures.
 document.querySelectorAll('img').forEach(image=>{image.draggable=false;});
@@ -166,20 +172,52 @@ const photos=[1,3,4,5,6,8,9,10,11,12,13,14,15];
 const gallery=$('#gallery-viewport');
 let currentPhoto=$('#gallery-photo');
 let nextPhoto=$('#gallery-next-photo');
-let activePhoto=0,drag=null,animating=false,animationTimer=0;
+let activePhoto=0,drag=null,animating=false,animationTimer=0,neighborLoadToken=0,readyNeighborIndex=-1;
+const photoLoads=new Map();
 function photoSource(index){return `assets/wedding-retouched-${photos[(index+photos.length)%photos.length]}.jpg`;}
 function updatePhotoCount(){$('#gallery-count').textContent=`${String(activePhoto+1).padStart(2,'0')} / ${String(photos.length).padStart(2,'0')}`;}
-function setNeighbor(direction,preservePosition=false){
+function preloadPhoto(index){
+ const normalized=(index+photos.length)%photos.length;
+ if(photoLoads.has(normalized))return photoLoads.get(normalized);
+ const image=new Image();
+ const promise=new Promise((resolve,reject)=>{
+  image.onload=()=>resolve(image);
+  image.onerror=()=>{photoLoads.delete(normalized);reject(new Error(`Failed to load ${image.src}`));};
+  image.src=photoSource(normalized);
+  if(image.complete){
+   if(image.naturalWidth)resolve(image);
+   else reject(new Error(`Failed to load ${image.src}`));
+  }
+ });
+ photoLoads.set(normalized,promise);
+ return promise;
+}
+async function prepareNeighbor(direction){
  const index=(activePhoto+direction+photos.length)%photos.length;
+ const token=++neighborLoadToken;
  const source=photoSource(index);
- const changed=nextPhoto.dataset.index!==String(index);
- if(changed){
-  nextPhoto.dataset.index=String(index);
+ readyNeighborIndex=-1;
+ nextPhoto.style.visibility='hidden';
+ nextPhoto.style.transform=`translateX(${direction*100}%)`;
+ try{
+  await preloadPhoto(index);
+  if(token!==neighborLoadToken)return null;
   nextPhoto.src=source;
+  if(nextPhoto.decode)await nextPhoto.decode();
+  if(token!==neighborLoadToken)return null;
+  nextPhoto.dataset.index=String(index);
+  nextPhoto.alt=`성현과 지현의 웨딩 사진 ${index+1}`;
+  nextPhoto.style.visibility='visible';
+  readyNeighborIndex=index;
+  if(drag?.direction===direction)setDragOffset(drag.x-drag.startX,direction);
+  return index;
+ }catch(error){
+  if(token===neighborLoadToken){
+   nextPhoto.style.visibility='hidden';
+   notify('사진을 불러오지 못했습니다. 다시 시도해 주세요.');
+  }
+  return null;
  }
- nextPhoto.alt=`성현과 지현의 웨딩 사진 ${index+1}`;
- if(!preservePosition||changed)nextPhoto.style.transform=`translateX(${direction*100}%)`;
- return index;
 }
 function setDragOffset(offset,direction){
  currentPhoto.style.zIndex='0';
@@ -192,6 +230,7 @@ function setDragOffset(offset,direction){
 function resetDrag(animate=true){
  currentPhoto.style.zIndex='1';
  nextPhoto.style.zIndex='0';
+ nextPhoto.style.visibility='visible';
  currentPhoto.style.transition=animate?'transform .24s ease-out':'none';
  nextPhoto.style.transition=animate?'transform .24s ease-out':'none';
  if(animate)gallery.getBoundingClientRect();
@@ -215,6 +254,8 @@ function finishTransition(direction,targetIndex){
  outgoingPhoto.style.transition='none';
  incomingPhoto.style.zIndex='1';
  outgoingPhoto.style.zIndex='0';
+ incomingPhoto.style.visibility='visible';
+ outgoingPhoto.style.visibility='visible';
  incomingPhoto.style.transform='translateX(0)';
  outgoingPhoto.style.transform='translateX(100%)';
  currentPhoto=incomingPhoto;
@@ -225,12 +266,16 @@ function finishTransition(direction,targetIndex){
  preloadAdjacent();
 }
 function preloadAdjacent(){
- [-1,1].forEach(direction=>{const image=new Image();image.src=photoSource(activePhoto+direction);});
+ [-1,1].forEach(direction=>{
+  preloadPhoto(activePhoto+direction).catch(error=>console.warn('Failed to preload gallery photo.',error));
+ });
 }
-function movePhoto(direction,preserveDrag=false){
+async function movePhoto(direction,preserveDrag=false,dragOffset=0){
  if(animating)return;
- const targetIndex=setNeighbor(direction,preserveDrag);
  animating=true;
+ const targetIndex=await prepareNeighbor(direction);
+ if(targetIndex===null){animating=false;resetDrag();return;}
+ if(preserveDrag)setDragOffset(dragOffset,direction);
  gallery.classList.add('is-sliding');
  gallery.getBoundingClientRect();
  currentPhoto.style.zIndex='0';
@@ -263,8 +308,11 @@ window.addEventListener('pointermove',event=>{
  if(drag.axis!=='x')return;
  event.preventDefault();
  const direction=dx<0?1:-1;
- if(direction!==drag.direction){drag.direction=direction;setNeighbor(direction);}
- setDragOffset(dx,direction);
+ if(direction!==drag.direction){
+  drag.direction=direction;
+  prepareNeighbor(direction);
+ }
+ if(readyNeighborIndex===(activePhoto+direction+photos.length)%photos.length)setDragOffset(dx,direction);
 });
 window.addEventListener('pointerup',event=>{
  if(!drag||event.pointerId!==drag.id)return;
@@ -275,7 +323,7 @@ window.addEventListener('pointerup',event=>{
  const velocity=first&&last&&last.time>first.time?(last.x-first.x)/(last.time-first.time):0;
  const shouldChange=drag.axis==='x'&&Math.abs(dx)>Math.abs(dy)*1.15&&(Math.abs(dx)>Math.max(48,gallery.clientWidth*.18)||Math.abs(velocity)>.55);
  drag=null;
- if(shouldChange){movePhoto(direction,true);return;}
+ if(shouldChange){movePhoto(direction,true,dx);return;}
  resetDrag();
 });
 gallery.addEventListener('pointercancel',()=>{drag=null;resetDrag();});

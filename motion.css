@@ -149,6 +149,7 @@ img,
 }
 
 .opening-panel {
+  width: 100%;
   transform: scale(1);
   will-change: transform;
   background: transparent;
@@ -198,9 +199,14 @@ img,
 }
 
 .heart-photo {
-  height: auto;
-  aspect-ratio: 0.799;
-  transform: none;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: calc(100% - 64px);
+  max-height: min(150vw, 645px);
+  clip-path: none;
+  overflow: hidden;
+  transform: translateY(-50%);
   animation: heart-in 1.9s ease-out .65s backwards;
 }
 

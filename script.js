@@ -124,7 +124,7 @@ const gallery=$('#gallery-viewport');
 const currentPhoto=$('#gallery-photo');
 const nextPhoto=$('#gallery-next-photo');
 let activePhoto=0,drag=null,animating=false,animationTimer=0;
-function photoSource(index){return `assets/photo${photos[(index+photos.length)%photos.length]}.jpg`;}
+function photoSource(index){return `assets/wedding-retouched-${photos[(index+photos.length)%photos.length]}.jpg`;}
 function updatePhotoCount(){$('#gallery-count').textContent=`${String(activePhoto+1).padStart(2,'0')} / 09`;}
 function setNeighbor(direction,preservePosition=false){
  const index=(activePhoto+direction+photos.length)%photos.length;

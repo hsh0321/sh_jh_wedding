@@ -1,4 +1,15 @@
 'use strict';
+const navigation=performance.getEntriesByType('navigation')[0];
+if(navigation?.type==='reload'&&!location.hash){
+ history.scrollRestoration='manual';
+ window.scrollTo(0,0);
+ window.addEventListener('pageshow',()=>{
+  const root=document.documentElement;
+  root.style.scrollBehavior='auto';
+  window.scrollTo(0,0);
+  requestAnimationFrame(()=>root.style.removeProperty('scroll-behavior'));
+ },{once:true});
+}
 // Discourage native image saving without blocking gallery pointer gestures.
 document.querySelectorAll('img').forEach(image=>{image.draggable=false;});
 function blockPhotoAction(event){

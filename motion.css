@@ -15,8 +15,8 @@ html, body {
 .profile img,
 .profile.bride img {
   height: 163px;
-  object-fit: contain;
-  object-position: center;
+  object-fit: cover;
+  object-position: center 40%;
 }
 
 .account-group {

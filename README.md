@@ -2,6 +2,10 @@
 
 프로젝트 루트의 정적 파일을 그대로 배포하는 모바일 청첩장입니다.
 
+참석 여부 설정은 [RSVP-SETUP.md](RSVP-SETUP.md)를 참고하세요. Apps Script 배포 후 `rsvp-config.js`에 웹 앱 URL을 넣으면 지정된 Google 스프레드시트로 저장됩니다.
+
+HTML 생성 소스는 `src/index.template.html`입니다. HTML을 수정한 뒤 `node build.cjs`로 `index.html`을 생성하세요. 검증은 `node --test tests/rsvp.test.cjs`로 실행합니다.
+
 - `index.html`: 청첩장
 - `style.css`, `motion.css`, `script.js`, `utilities.js`: 화면, 모션, 동작
 - `assets/`: 청첩장 사진과 배경 음악

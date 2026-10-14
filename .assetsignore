@@ -8,3 +8,6 @@ node_modules/**
 wrangler.jsonc
 .gitignore
 .assetsignore
+src/**
+apps-script/**
+tests/**

@@ -1016,6 +1016,27 @@ details>p {
     margin: 13px 0 0
 }
 
+/* RSVP shares the invitation's paper, olive accent and editorial spacing. */
+.reply { padding-bottom: 55px; }
+.reply fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.reply [hidden] { display: none !important; }
+.reply input, .reply select, .reply textarea { font-size: 16px; }
+.reply textarea { resize: vertical; }
+.rsvp-required { font-size: 11px; color: #62625d; margin-left: 4px; }
+.reply .rsvp-privacy { border-block: 1px solid var(--line); margin: 8px 0 16px; }
+.reply .rsvp-privacy summary { font-size: 13px; gap: 8px; }
+.reply .rsvp-privacy summary span { margin-left: auto; min-width: auto; font-size: 18px; }
+.reply .rsvp-privacy p { font-size: 12px; line-height: 1.9; overflow-wrap: anywhere; }
+.reply .rsvp-consent { display: flex; align-items: flex-start; gap: 10px; margin: 18px 0 24px; font-size: 13px; cursor: pointer; }
+.reply .rsvp-consent input { flex: 0 0 18px; width: 18px; min-height: 18px; height: 18px; margin: 3px 0 0; padding: 0; accent-color: var(--cherry); }
+.reply .solid { background: var(--cherry); color: #fff; min-height: 48px; }
+.reply :disabled { cursor: default; opacity: .65; }
+.reply :focus-visible { outline: 2px solid var(--cherry); outline-offset: 3px; }
+#rsvp-status { min-height: 3.8em; overflow-wrap: anywhere; }
+#rsvp-status[data-state="error"] { color: #982d38; }
+#rsvp-status[data-state="success"] { color: var(--cherry); }
+@media (max-width: 370px) { .reply .form-row { grid-template-columns: 1fr; gap: 0; } }
+
 .ending {
     text-align: center;
     padding-top: 15px

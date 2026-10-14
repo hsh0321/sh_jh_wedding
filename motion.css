@@ -7,6 +7,10 @@ html, body {
   margin-top: 16px;
 }
 
+.profile > div {
+  min-width: 0;
+}
+
 img,
 .heart-photo,
 .gallery-viewport {
@@ -282,19 +286,19 @@ main {
 }
 
 .interlude-title {
-  font: italic 400 46px/1.35 var(--serif);
+  font: italic 400 calc(46px + 2pt)/1.35 var(--serif);
   letter-spacing: .01em;
 }
 
 .interlude-subtitle {
-  font: 500 10px/1.8 var(--sans);
+  font: 500 calc(10px + 2pt)/1.8 var(--sans);
   font-stretch: 125%;
   letter-spacing: .12em;
 }
 
 .interlude-caption {
   margin: 20px 0 0;
-  font: 500 9px/1.8 var(--sans);
+  font: 500 calc(9px + 2pt)/1.8 var(--sans);
   letter-spacing: .14em;
 }
 

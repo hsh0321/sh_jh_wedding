@@ -26,6 +26,27 @@ let toastTimer;
 function notify(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4000);}
 const palettes={blue:['#cbdce5','#bb3f53'],pink:['#eed4d6','#863d50'],sage:['#d8dfce','#5d7353'],butter:['#f0e5b9','#3a5396']};
 $('#palette').addEventListener('change',e=>{const [base,accent]=palettes[e.target.value];document.documentElement.style.setProperty('--powder',base);document.documentElement.style.setProperty('--cherry',accent);});
+const mapElement=$('#naver-map');
+const mapStatus=$('#map-status');
+function showMapError(message){mapStatus.textContent=message;}
+window.navermap_authFailure=()=>showMapError('네이버 지도 인증에 실패했습니다. 등록된 웹 서비스 URL을 확인해 주세요.');
+function initializeNaverMap(){
+ if(!window.naver?.maps?.Map){
+  showMapError('지도를 사용할 수 없습니다. 아래 지도 앱 링크를 이용해 주세요.');
+  return;
+ }
+ const maps=window.naver.maps;
+ const position=new maps.LatLng(37.5065595,126.8853578);
+ const map=new maps.Map(mapElement,{center:position,zoom:16,zoomControl:false,scrollWheel:false});
+ new maps.Marker({position,map,title:'라마다 서울 신도림 호텔'});
+ mapStatus.remove();
+}
+window.initNaverMap=initializeNaverMap;
+const mapScript=document.createElement('script');
+mapScript.src='https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=pdxf1mih2z&callback=initNaverMap';
+mapScript.async=true;
+mapScript.addEventListener('error',()=>showMapError('지도를 불러오지 못했습니다. 아래 지도 앱 링크를 이용해 주세요.'),{once:true});
+document.head.append(mapScript);
 const opening=$('#home');
 const openingShade=$('.opening-shade');
 const interlude=$('#interlude');

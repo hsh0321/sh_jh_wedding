@@ -149,20 +149,9 @@ img,
 }
 
 .opening-panel {
-  width: 100%;
   transform: scale(1);
   will-change: transform;
   background: transparent;
-}
-
-/* Animate only the paper, so the heart and letters keep their own timing. */
-.opening-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--powder);
-  pointer-events: none;
-  animation: opening-unfold 1.1s cubic-bezier(.7, 0, .2, 1) .15s backwards;
 }
 
 .opening > .confetti {
@@ -182,11 +171,6 @@ img,
   animation: opening-caption .9s cubic-bezier(.2, .8, .2, 1) 2.2s backwards;
 }
 
-@keyframes opening-unfold {
-  from { clip-path: inset(50% 0); }
-  to { clip-path: inset(0); }
-}
-
 .heart-photo img {
   transform: translate3d(0, 0, 0) scale(1);
   will-change: transform;
@@ -199,14 +183,9 @@ img,
 }
 
 .heart-photo {
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: calc(100% - 64px);
-  max-height: min(150vw, 645px);
-  clip-path: none;
-  overflow: hidden;
-  transform: translateY(-50%);
+  height: auto;
+  aspect-ratio: 0.799;
+  transform: none;
   animation: heart-in 1.9s ease-out .65s backwards;
 }
 

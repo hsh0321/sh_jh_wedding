@@ -1,12 +1,12 @@
 'use strict';
 const navigation=performance.getEntriesByType('navigation')[0];
-if(navigation?.type==='reload'&&!location.hash){
+if(!location.hash&&navigation?.type!=='back_forward'){
  history.scrollRestoration='manual';
+ const root=document.documentElement;
+ root.style.scrollBehavior='auto';
  window.scrollTo(0,0);
- window.addEventListener('pageshow',()=>{
-  const root=document.documentElement;
-  root.style.scrollBehavior='auto';
-  window.scrollTo(0,0);
+ window.addEventListener('pageshow',event=>{
+  if(!event.persisted)window.scrollTo(0,0);
   requestAnimationFrame(()=>root.style.removeProperty('scroll-behavior'));
  },{once:true});
 }

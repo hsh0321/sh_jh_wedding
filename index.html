@@ -23,6 +23,8 @@
     <script src="rsvp-config.js" defer></script>
     <script src="rsvp.js" defer></script>
     <script src="rsvp-ui.js" defer></script>
+    <script src="rsvp-float.js" defer></script>
+    <link rel="stylesheet" href="rsvp-float.css">
 </head>
 
 <body><svg class="definitions" aria-hidden="true" width="0" height="0">
@@ -243,7 +245,7 @@
                 <fieldset id="rsvp-fields">
                     <legend class="sr-only">참석 여부 회신</legend>
                     <div id="rsvp-step-one" class="rsvp-rows">
-                        <div class="rsvp-row"><label for="rsvp-name">성함</label><input class="rsvp-value" id="rsvp-name" name="guestName" autocomplete="name" maxlength="40" required placeholder="성함을 입력해 주세요"><i aria-hidden="true"></i></div>
+                        <div class="rsvp-row"><label for="rsvp-name">성함</label><input class="rsvp-value" id="rsvp-name" aria-label="성함" name="guestName" autocomplete="name" maxlength="40" required placeholder="성함을 입력해 주세요"><i aria-hidden="true"></i></div>
                         <div class="rsvp-row"><span id="side-label">구분</span><button class="rsvp-value" type="button" id="side-choice" aria-labelledby="side-label side-choice" data-cycle="side">눌러서 선택해 주세요</button><i aria-hidden="true"></i></div>
                         <div class="rsvp-row"><span id="attendance-label">참석 여부</span><button class="rsvp-value" type="button" id="attendance-choice" aria-labelledby="attendance-label attendance-choice" data-cycle="attendance">눌러서 선택해 주세요</button><i aria-hidden="true"></i></div>
                         <input type="hidden" name="side" value=""><input type="hidden" name="attendance" value="">
@@ -282,6 +284,17 @@
         </footer>
         </div>
     </main>
+    <button id="rsvp-float" aria-label="참석 여부 알려주기" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3 6 9 7 9-7"/></svg><i aria-hidden="true"></i></button>
+    <dialog id="rsvp-prompt" aria-labelledby="rsvp-prompt-title">
+        <button type="button" class="rsvp-close" data-prompt-close aria-label="참석 안내 닫기">×</button>
+        <p id="rsvp-prompt-title">R.S.V.P</p>
+        <p class="rsvp-prompt-note">참석 여부를 회신해 주세요.<br>소중한 걸음을 기다리고 있겠습니다.</p>
+        <button type="button" id="rsvp-prompt-confirm">확인</button>
+    </dialog>
+    <dialog id="rsvp-modal" aria-labelledby="rsvp-step-title">
+        <div class="rsvp-modal-nav"><button type="button" id="rsvp-modal-back">← 이전</button><button type="button" class="rsvp-close" id="rsvp-modal-close" aria-label="참석 입력창 닫기">×</button></div>
+        <div id="rsvp-modal-mount"></div>
+    </dialog>
     <div id="toast" role="status" aria-live="polite"></div><audio id="audio" src="assets/music1.mp3" loop
         preload="auto"></audio>
 </body>

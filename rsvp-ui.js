@@ -30,6 +30,10 @@
     }
     form.elements.message.value = form.elements.attendance.value !== 'yes' ? '' :
       bus === 'yes' ? `전세버스: 탑승 / ${busCount}명` : bus === 'no' ? '전세버스: 미탑승' : '';
+    form.querySelectorAll('[data-choice]').forEach(button => {
+      const key = button.dataset.choice;
+      button.setAttribute('aria-pressed', String(button.dataset.value === (key === 'bus' ? bus : form.elements[key].value)));
+    });
   }
   function showStep(value) {
     step = value;
@@ -44,7 +48,8 @@
     status.textContent = '';
     status.dataset.state = '';
     sync();
-    const target = step === 1 ? $('rsvp-name') : attending ? $('bus-choice') : form.elements.consent;
+    const target = step === 1 ? $('rsvp-name') : attending ?
+      (form.closest('#rsvp-modal') ? form.querySelector('[data-choice="bus"]') : $('bus-choice')) : form.elements.consent;
     target.focus({ preventScroll: true });
   }
   form.querySelectorAll('[data-cycle]').forEach(button => {
@@ -62,6 +67,33 @@
       next.textContent = form.elements.attendance.value === 'no' ? '다음 · 회신 확인' : '다음 · 전세버스';
       sync();
     });
+  });
+  // The modal uses direct choices; the inline form keeps its cycling controls.
+  [['attendance', '참석 여부', ['참석', '불참석']], ['side', '어느 측 하객이신가요?', ['신랑 측', '신부 측']], ['bus', '전세버스 탑승 여부', ['탑승', '미탑승']]].forEach(([key, title, labels]) => {
+    const group = document.createElement('div');
+    group.className = 'rsvp-modal-choices';
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', title);
+    if (key !== 'attendance') {
+      const label = document.createElement('p'); label.textContent = title; group.append(label);
+    }
+    const buttons = document.createElement('div');
+    choices[key].forEach(([value], index) => {
+      const button = document.createElement('button'); button.type = 'button';
+      button.dataset.choice = key; button.dataset.value = value; button.textContent = labels[index];
+      button.addEventListener('click', () => {
+        // Advance the shared cycling control only when this value differs.
+        if ((key === 'bus' ? bus : form.elements[key].value) !== value) {
+          const cycle = form.querySelector(`[data-cycle="${key}"]`);
+          cycle.click();
+          if ((key === 'bus' ? bus : form.elements[key].value) !== value) cycle.click();
+        }
+      });
+      buttons.append(button);
+    });
+    group.append(buttons);
+    if (key === 'bus') $('rsvp-bus-rows').prepend(group);
+    else one.insertBefore(group, $('rsvp-attending'));
   });
   [['rsvp-minus', -1], ['rsvp-plus', 1]].forEach(([id, delta]) => {
     $(id).addEventListener('click', () => {

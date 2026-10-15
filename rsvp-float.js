@@ -7,6 +7,7 @@
   if (!section || !float || !prompt || !modal) return;
   const status = document.getElementById('rsvp-status');
   const mount = document.getElementById('rsvp-modal-mount');
+  const invitation = document.querySelector('section.invitation');
   const slot = document.createElement('div');
   section.before(slot);
   const seenKey = 'sh-jh-rsvp-prompt-v1';
@@ -21,7 +22,7 @@
     queued = false;
     const rect = (modal.open ? slot : section).getBoundingClientRect();
     const sectionVisible = rect.top < innerHeight && rect.bottom > 0;
-    const deep = scrollY > innerHeight * .9;
+    const deep = invitation && invitation.getBoundingClientRect().top <= innerHeight * .45;
     float.hidden = completed() || prompt.open || modal.open || !deep || sectionVisible;
     if (!seen && deep && !sectionVisible && !completed() && !modal.open && !prompt.open) {
       remember(); opener = document.activeElement; lock(); prompt.showModal(); float.hidden = true;

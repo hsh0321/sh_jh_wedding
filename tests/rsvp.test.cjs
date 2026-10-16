@@ -58,10 +58,12 @@ function client(fetch, endpoint = 'https://script.google.com/macros/s/test/exec'
   const storage = { value: JSON.stringify(initial), getItem() { return this.value; }, setItem(k, v) { this.value = v; } };
   let submit;
   let valid = true;
+  const document = { cookie: '', querySelector: s => s === '#rsvp-form' ? form : status };
   const form = { elements, querySelector: s => ({ '#rsvp-fields': fields, '#rsvp-attending': attending, '[type="submit"]': button })[s], reportValidity: () => valid, addEventListener: (type, fn) => { submit = fn; }, setAttribute() {}, removeAttribute() {} };
-  const context = vm.createContext({ document: { querySelector: s => s === '#rsvp-form' ? form : status }, window: { WEDDING_RSVP: { endpoint }, addEventListener() {} }, localStorage: storage, crypto: { randomUUID: () => id }, URLSearchParams, AbortController, setTimeout, clearTimeout, fetch });
+  document.querySelector = s => s === '#rsvp-form' ? form : status;
+  const context = vm.createContext({ document, window: { WEDDING_RSVP: { endpoint }, addEventListener() {} }, localStorage: storage, crypto: { randomUUID: () => id }, URLSearchParams, AbortController, setTimeout, clearTimeout, fetch });
   vm.runInContext(fs.readFileSync(path.join(root, 'rsvp.js'), 'utf8'), context);
-  return { submit: () => submit({ preventDefault() {} }), status, button, fields, elements, storage, invalidate: () => { valid = false; } };
+  return { submit: () => submit({ preventDefault() {} }), status, button, fields, elements, storage, document, invalidate: () => { valid = false; } };
 }
 test('client refuses invalid form and missing endpoint', async () => {
   let calls = 0;
@@ -78,6 +80,7 @@ test('client prevents double click and accepts only confirmed server success', a
   await pending;
   assert.equal(c.status.dataset.state, 'success'); assert.equal(c.button.disabled, true);
   assert.equal(JSON.parse(c.storage.value).done, true);
+  assert.match(c.document.cookie, /sh_jh_rsvp_done=1/);
   assert.ok(!c.storage.value.includes('테스트'));
   await c.submit(); assert.equal(calls, 1);
 });

@@ -25,7 +25,8 @@
     const deep = invitation && invitation.getBoundingClientRect().top <= innerHeight * .45;
     float.hidden = completed() || prompt.open || modal.open || !deep || sectionVisible;
     if (!seen && deep && !sectionVisible && !completed() && !modal.open && !prompt.open) {
-      remember(); opener = document.activeElement; lock(); prompt.showModal(); float.hidden = true;
+      remember(); opener = document.activeElement; lock(); prompt.showModal();
+      prompt.focus({ preventScroll: true }); float.hidden = true;
     }
   }
   function schedule() { if (!queued) { queued = true; requestAnimationFrame(paint); } }
@@ -39,8 +40,8 @@
     mount.append(section);
     lock(); modal.showModal();
     float.hidden = true;
-    // Keep the keyboard closed until the guest taps the name field.
-    document.getElementById('rsvp-modal-close').focus({ preventScroll: true });
+    // Keep the keyboard closed and avoid preselecting the close button.
+    modal.focus({ preventScroll: true });
   }
   function closeForm() { modal.close(); }
   modal.addEventListener('close', () => {

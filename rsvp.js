@@ -9,14 +9,23 @@
   const button = form.querySelector('[type="submit"]');
   const config = window.WEDDING_RSVP || {};
   const key = 'sh-jh-rsvp-20270117-v1';
+  const doneCookie = 'sh_jh_rsvp_done';
   let busy = false;
   let completed = false;
   let memoryId;
   function readState() {
-    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
+    try {
+      if (document.cookie.split(';').some(item => item.trim() === `${doneCookie}=1`)) state.done = true;
+    } catch {}
+    return state;
   }
   function saveState(value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Private mode: server still deduplicates this session. */ }
+    if (value.done) {
+      try { document.cookie = `${doneCookie}=1; expires=Tue, 16 Feb 2027 14:59:59 GMT; path=/; SameSite=Lax`; } catch {}
+    }
   }
   function show(message, state = '') {
     status.textContent = message;

@@ -285,13 +285,13 @@
         </div>
     </main>
     <button id="rsvp-float" aria-label="참석 여부 알려주기" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3 6 9 7 9-7"/></svg><i aria-hidden="true"></i></button>
-    <dialog id="rsvp-prompt" aria-labelledby="rsvp-prompt-title">
+    <dialog id="rsvp-prompt" tabindex="-1" aria-labelledby="rsvp-prompt-title">
         <button type="button" class="rsvp-close" data-prompt-close aria-label="참석 안내 닫기">×</button>
         <p id="rsvp-prompt-title">R.S.V.P</p>
         <p class="rsvp-prompt-note">참석 여부를 회신해 주세요.<br>소중한 걸음을 기다리고 있겠습니다.</p>
         <button type="button" id="rsvp-prompt-confirm">확인</button>
     </dialog>
-    <dialog id="rsvp-modal" aria-labelledby="rsvp-step-title">
+    <dialog id="rsvp-modal" tabindex="-1" aria-labelledby="rsvp-step-title">
         <div class="rsvp-modal-nav"><button type="button" id="rsvp-modal-back">← 이전</button><button type="button" class="rsvp-close" id="rsvp-modal-close" aria-label="참석 입력창 닫기">×</button></div>
         <div id="rsvp-modal-mount"></div>
     </dialog>

@@ -1052,6 +1052,8 @@ details>p {
 .reply #rsvp-status:empty { display: none; }
 .reply #rsvp-status[data-state="error"] { color: #982d38; text-align: left; }
 .reply #rsvp-status[data-state="success"] { text-align: center; }
+.reply #rsvp-status[data-state="cancelled"] { color: var(--cherry); text-align: center; }
+.reply #rsvp-cancel { display: block; margin: 18px auto 0; padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: #77766e; font: 500 11px var(--kr); }
 @media(max-width:350px) { .reply { padding-inline: 28px; } .reply .rsvp-row { grid-template-columns: 62px minmax(0,1fr) 10px; } }
 .ending {
     text-align: center;

@@ -12,7 +12,6 @@
   section.before(slot);
   const seenKey = 'sh-jh-rsvp-prompt-v1';
   let seen = false, opener = null, savedOverflow = '', savedSlotHeight = '', queued = false;
-  let autoClose = null;
   try { seen = sessionStorage.getItem(seenKey) === '1'; } catch {}
   function completed() { return status.dataset.state === 'success'; }
   function remember() { seen = true; try { sessionStorage.setItem(seenKey, '1'); } catch {} }
@@ -23,7 +22,8 @@
     const rect = (modal.open ? slot : section).getBoundingClientRect();
     const sectionVisible = rect.top < innerHeight && rect.bottom > 0;
     const deep = invitation && invitation.getBoundingClientRect().top <= innerHeight * .45;
-    float.hidden = completed() || prompt.open || modal.open || !deep || sectionVisible;
+    float.setAttribute('aria-label', completed() ? '참석 회신 확인 및 취소' : '참석 여부 알려주기');
+    float.hidden = prompt.open || modal.open || !deep || sectionVisible;
     if (!seen && deep && !sectionVisible && !completed() && !modal.open && !prompt.open) {
       remember(); opener = document.activeElement; lock(); prompt.showModal();
       prompt.focus({ preventScroll: true }); float.hidden = true;
@@ -45,7 +45,6 @@
   }
   function closeForm() { modal.close(); }
   modal.addEventListener('close', () => {
-    clearTimeout(autoClose);
     slot.after(section); slot.style.height = savedSlotHeight;
     unlock(); paint();
     if (opener && opener.isConnected && !opener.hidden) opener.focus({ preventScroll: true });
@@ -102,7 +101,6 @@
   new MutationObserver(() => {
     if (completed()) {
       if (prompt.open) prompt.close();
-      if (modal.open && !autoClose) autoClose = setTimeout(closeForm, 3000);
     }
     schedule();
   }).observe(status, { attributes: true, attributeFilter: ['data-state'] });

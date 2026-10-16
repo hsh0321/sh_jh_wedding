@@ -7,6 +7,7 @@
   const attendingFields = form.querySelector('#rsvp-attending');
   const status = document.querySelector('#rsvp-status');
   const button = form.querySelector('[type="submit"]');
+  const cancel = form.querySelector('#rsvp-cancel');
   const config = window.WEDDING_RSVP || {};
   const key = 'sh-jh-rsvp-20270117-v1';
   const doneCookie = 'sh_jh_rsvp_done';
@@ -17,15 +18,25 @@
     let state = {};
     try { state = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
     try {
-      if (document.cookie.split(';').some(item => item.trim() === `${doneCookie}=1`)) state.done = true;
+      const item = document.cookie.split(';').map(value => value.trim()).find(value => value.startsWith(`${doneCookie}=`));
+      if (item) {
+        const cookieId = decodeURIComponent(item.slice(doneCookie.length + 1));
+        if (!cookieId) return state;
+        state.done = true;
+        if (/^[0-9a-f-]{36}$/i.test(cookieId)) state.requestId = state.requestId || cookieId;
+      }
     } catch {}
     return state;
   }
   function saveState(value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Private mode: server still deduplicates this session. */ }
     if (value.done) {
-      try { document.cookie = `${doneCookie}=1; expires=Tue, 16 Feb 2027 14:59:59 GMT; path=/; SameSite=Lax`; } catch {}
+      try { document.cookie = `${doneCookie}=${encodeURIComponent(value.requestId || '1')}; expires=Tue, 16 Feb 2027 14:59:59 GMT; path=/; SameSite=Lax`; } catch {}
     }
+  }
+  function clearState() {
+    try { localStorage.removeItem(key); } catch {}
+    try { document.cookie = `${doneCookie}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`; } catch {}
   }
   function show(message, state = '') {
     status.textContent = message;
@@ -36,7 +47,17 @@
     fields.disabled = true;
     button.disabled = true;
     button.textContent = '회신 완료';
-    show('참석 여부가 전달되었습니다. 함께해 주시는 마음에 감사드려요. 변경은 신랑·신부에게 직접 알려주세요.', 'success');
+    cancel.hidden = false;
+    show('참석 여부가 전달되었습니다. 함께해 주시는 마음에 감사드려요.', 'success');
+  }
+  function resetAfterCancellation() {
+    completed = false;
+    fields.disabled = false;
+    cancel.hidden = true;
+    button.disabled = false;
+    button.textContent = '회신 보내기';
+    syncAttendance();
+    show('회신이 취소되었습니다. 다시 작성할 수 있어요.', 'cancelled');
   }
   function syncAttendance() {
     const attending = attendance.value === 'yes';
@@ -47,7 +68,38 @@
   syncAttendance();
   if (readState().done) finish();
   window.addEventListener('storage', event => {
-    if (event.key === key && readState().done) finish();
+    if (event.key !== key) return;
+    if (readState().done) finish();
+    else if (completed) resetAfterCancellation();
+  });
+  cancel.addEventListener('click', async () => {
+    if (busy || !completed || !window.confirm('참석 회신을 취소할까요?')) return;
+    const state = readState();
+    if (!state.requestId) {
+      show('취소할 회신 정보를 찾지 못했습니다. 신랑·신부에게 직접 알려주세요.', 'error');
+      return;
+    }
+    busy = true;
+    cancel.disabled = true;
+    cancel.textContent = '취소하는 중…';
+    try {
+      const response = await fetch(config.endpoint, {
+        method: 'POST', body: new URLSearchParams({ action: 'cancel', requestId: state.requestId }),
+        credentials: 'omit', redirect: 'follow'
+      });
+      if (!response.ok) throw new Error('http');
+      const result = await response.json();
+      if (result.ok !== true || result.cancelled !== true || result.requestId !== state.requestId) throw new Error('cancel');
+      clearState();
+      memoryId = undefined;
+      resetAfterCancellation();
+    } catch {
+      show('회신을 취소하지 못했습니다. 잠시 후 다시 시도해 주세요.', 'error');
+    } finally {
+      busy = false;
+      cancel.disabled = false;
+      cancel.textContent = '회신 취소';
+    }
   });
   form.addEventListener('submit', async event => {
     event.preventDefault();

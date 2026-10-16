@@ -12,6 +12,7 @@ function server() {
   const sheet = {
     getLastRow: () => rows.length,
     appendRow: row => { assert.ok(locked); rows.push(row); },
+    deleteRow: row => { assert.ok(locked); rows.splice(row - 1, 1); },
     setFrozenRows() {},
     getRange(start, col, count) {
       return {
@@ -46,6 +47,16 @@ test('server saves once across retries and escapes formula input', () => {
   assert.equal(s.rows[1][2], "'=1+1");
   assert.equal(s.rows[1][7], "'=IMPORTXML(\"x\")");
 });
+test('server cancellation removes the matching response and is idempotent', () => {
+  const s = server();
+  assert.equal(s.post(data()).ok, true);
+  assert.equal(s.rows.length, 2);
+  const cancelled = s.post({ action: 'cancel', requestId: id });
+  assert.equal(cancelled.cancelled, true);
+  assert.equal(cancelled.deleted, true);
+  assert.equal(s.rows.length, 1);
+  assert.equal(s.post({ action: 'cancel', requestId: id }).cancelled, true);
+});
 test('server reports write failure without claiming success', () => {
   const s = server();
   s.context.SpreadsheetApp.openById = () => { throw Error('private error'); };
@@ -54,16 +65,16 @@ test('server reports write failure without claiming success', () => {
 function client(fetch, endpoint = 'https://script.google.com/macros/s/test/exec', initial = {}) {
   const elements = Object.fromEntries(Object.entries(data()).map(([key, value]) => [key, { value }]));
   elements.attendance.addEventListener = () => {};
-  const fields = {}, attending = {}, status = { dataset: {} }, button = {};
-  const storage = { value: JSON.stringify(initial), getItem() { return this.value; }, setItem(k, v) { this.value = v; } };
+  const fields = {}, attending = {}, status = { dataset: {} }, button = {}, cancel = { hidden: true, addEventListener(type, fn) { this.click = fn; } };
+  const storage = { value: JSON.stringify(initial), getItem() { return this.value; }, setItem(k, v) { this.value = v; }, removeItem() { this.value = null; } };
   let submit;
   let valid = true;
   const document = { cookie: '', querySelector: s => s === '#rsvp-form' ? form : status };
-  const form = { elements, querySelector: s => ({ '#rsvp-fields': fields, '#rsvp-attending': attending, '[type="submit"]': button })[s], reportValidity: () => valid, addEventListener: (type, fn) => { submit = fn; }, setAttribute() {}, removeAttribute() {} };
+  const form = { elements, querySelector: s => ({ '#rsvp-fields': fields, '#rsvp-attending': attending, '[type="submit"]': button, '#rsvp-cancel': cancel })[s], reportValidity: () => valid, addEventListener: (type, fn) => { submit = fn; }, setAttribute() {}, removeAttribute() {} };
   document.querySelector = s => s === '#rsvp-form' ? form : status;
-  const context = vm.createContext({ document, window: { WEDDING_RSVP: { endpoint }, addEventListener() {} }, localStorage: storage, crypto: { randomUUID: () => id }, URLSearchParams, AbortController, setTimeout, clearTimeout, fetch });
+  const context = vm.createContext({ document, window: { WEDDING_RSVP: { endpoint }, addEventListener() {}, confirm: () => true }, localStorage: storage, crypto: { randomUUID: () => id }, URLSearchParams, AbortController, setTimeout, clearTimeout, fetch });
   vm.runInContext(fs.readFileSync(path.join(root, 'rsvp.js'), 'utf8'), context);
-  return { submit: () => submit({ preventDefault() {} }), status, button, fields, elements, storage, document, invalidate: () => { valid = false; } };
+  return { submit: () => submit({ preventDefault() {} }), cancel: () => cancel.click(), cancelButton: cancel, status, button, fields, elements, storage, document, invalidate: () => { valid = false; } };
 }
 test('client refuses invalid form and missing endpoint', async () => {
   let calls = 0;
@@ -80,7 +91,7 @@ test('client prevents double click and accepts only confirmed server success', a
   await pending;
   assert.equal(c.status.dataset.state, 'success'); assert.equal(c.button.disabled, true);
   assert.equal(JSON.parse(c.storage.value).done, true);
-  assert.match(c.document.cookie, /sh_jh_rsvp_done=1/);
+  assert.match(c.document.cookie, /sh_jh_rsvp_done=12345678-/);
   assert.ok(!c.storage.value.includes('테스트'));
   await c.submit(); assert.equal(calls, 1);
 });
@@ -103,6 +114,21 @@ test('client rejects opaque, malformed and negative responses', async () => {
 test('client restores completion without sending again', async () => {
   const c = client(() => { throw Error('must not send'); }, undefined, { requestId: id, done: true });
   await c.submit(); assert.equal(c.status.dataset.state, 'success'); assert.equal(c.fields.disabled, true);
+});
+test('client cancellation removes completion state and allows another reply', async () => {
+  let calls = 0;
+  const c = client(async (url, options) => {
+    calls++;
+    if (options.body.get('action') === 'cancel') return { ok: true, json: async () => ({ ok: true, cancelled: true, requestId: id }) };
+    return { ok: true, json: async () => ({ ok: true, requestId: id }) };
+  });
+  await c.submit();
+  await c.cancel();
+  assert.equal(c.status.dataset.state, 'cancelled');
+  assert.equal(c.storage.value, null);
+  assert.equal(c.cancelButton.hidden, true);
+  await c.submit();
+  assert.equal(calls, 3);
 });
 test('generated page matches source and includes RSVP once', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');

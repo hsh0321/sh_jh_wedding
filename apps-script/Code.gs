@@ -7,7 +7,7 @@ function json_(value) {
 }
 
 function valid_(p) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.requestId || '') &&
+  return validRequestId_(p.requestId) &&
     typeof p.guestName === 'string' && p.guestName.trim().length >= 1 && p.guestName.trim().length <= 40 &&
     !/[\u0000-\u001f\u007f]/.test(p.guestName) &&
     ['groom', 'bride'].includes(p.side) && ['yes', 'no'].includes(p.attendance) &&
@@ -16,6 +16,10 @@ function valid_(p) {
       : p.guests === '0' && p.meal === 'none') &&
     typeof p.message === 'string' && p.message.length <= 300 &&
     p.consent === 'yes' && p.consentVersion === '2026-10-14';
+}
+
+function validRequestId_(value) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value || '');
 }
 
 // Treat user text as literal cells, including formula-looking input.
@@ -44,12 +48,25 @@ function setup() {
 
 function doPost(e) {
   const p = e && e.parameter || {};
-  if (!e || e.contentLength > 8000 || !valid_(p)) return json_({ ok: false, code: 'INVALID_INPUT' });
+  const cancelling = p.action === 'cancel';
+  if (!e || e.contentLength > 8000 || (cancelling ? !validRequestId_(p.requestId) : !valid_(p))) {
+    return json_({ ok: false, code: 'INVALID_INPUT' });
+  }
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(10000)) return json_({ ok: false, code: 'BUSY' });
   try {
     const sheet = sheet_();
     const lastRow = sheet.getLastRow();
+    if (cancelling) {
+      let deleted = false;
+      if (lastRow > 1) {
+        const ids = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+        const index = ids.findIndex(row => row[0] === p.requestId);
+        if (index >= 0) { sheet.deleteRow(index + 2); deleted = true; }
+      }
+      SpreadsheetApp.flush();
+      return json_({ ok: true, cancelled: true, deleted: deleted, requestId: p.requestId });
+    }
     // The durable request ID is checked and written under the same lock.
     // A retry after a timeout or a simultaneous click cannot append a second row.
     if (lastRow > 1 && sheet.getRange(2, 1, lastRow - 1, 1).createTextFinder(p.requestId).matchEntireCell(true).findNext()) {

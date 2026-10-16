@@ -45,6 +45,7 @@
 #rsvp-modal .rsvp-footer { margin-top: auto; padding-top: 28px; }
 #rsvp-modal .rsvp-footer #rsvp-back { display: none; }
 #rsvp-modal .rsvp-send { width: 100%; border-radius: 0; min-height: 48px; font-size: 15px; }
+#rsvp-modal #rsvp-cancel { width: 100%; min-height: 44px; border-radius: 0; }
 #rsvp-modal .scroll-reveal { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
 #rsvp-modal :focus-visible, #rsvp-prompt :focus-visible, #rsvp-float:focus-visible { outline: 2px solid var(--cherry); outline-offset: 3px; }
 @keyframes rsvp-paper-in { from { opacity: 0; transform: translateY(18px) scale(.94); } to { opacity: 1; transform: none; } }

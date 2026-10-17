@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="motion.css">
     <link rel="stylesheet" href="invitation-gate.css">
+    <script src="assets/vendor/three.min.js" defer></script>
     <script src="invitation-gate.js" defer></script>
     <script src="script.js" defer></script>
     <script src="utilities.js" defer></script>
@@ -32,36 +33,24 @@
 
 <body><section class="invitation-gate" id="invitation-gate" role="dialog" aria-modal="true"
         aria-labelledby="gate-title">
-        <div class="gate-carousel">
-            <div class="gate-carousel-strip">
-                <div class="gate-carousel-card gate-letter-page">
-                    <div class="gate-inner">
-                        <p class="gate-kicker">YOU ARE CORDIALLY INVITED</p>
-                        <div class="envelope-scene" aria-hidden="true">
-                            <div class="envelope">
-                                <div class="envelope-back"></div>
-                                <div class="letter-card">
-                                    <span>WEDDING INVITATION</span>
-                                    <strong>S <i>&amp;</i> J</strong>
-                                    <small>JANUARY 17, 2027</small>
-                                </div>
-                                <div class="envelope-flap"></div>
-                                <div class="envelope-front"></div>
-                                <div class="wax-seal"><span>SJ</span></div>
-                            </div>
-                        </div>
-                        <div class="gate-copy">
-                            <h1 id="gate-title">성현과 지현의<br>소중한 날에 초대합니다</h1>
-                            <p>2027년 1월 17일 일요일 · 오후 3시 10분</p>
-                            <button type="button" id="open-invitation"><span>청첩장 열기</span><i
-                                    aria-hidden="true">→</i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="gate-carousel-card gate-main-page" id="gate-main-preview" aria-hidden="true"></div>
+        <div class="gate-stage">
+            <div class="gate-meta"><span>WEDDING INVITATION</span><span>SEOUL · 2027</span></div>
+            <div class="gate-portrait" aria-hidden="true">
+                <img src="assets/wedding-cover-illustration.jpg" alt="" width="854" height="1280"
+                    decoding="async" fetchpriority="high">
+                <span>with love</span>
             </div>
+            <div class="gate-title-block">
+                <p>THE WEDDING OF</p>
+                <h1 id="gate-title"><span>SUNG HYUN</span><i>&amp;</i><span>JI HYUN</span></h1>
+                <p class="gate-date">2027. 01. 17 · SUNDAY · 3:10 PM</p>
+                <small>두 사람이 함께 써 내려갈 첫 장에 초대합니다</small>
+            </div>
+            <button type="button" id="open-invitation"><span>우리의 날 만나보기</span><i aria-hidden="true">↗</i></button>
         </div>
-    </section><svg class="definitions" aria-hidden="true" width="0" height="0">
+    </section><canvas id="velvet-transition" class="velvet-transition" aria-hidden="true"></canvas><div
+        id="velvet-fallback" class="velvet-fallback" aria-hidden="true"></div><svg class="definitions"
+        aria-hidden="true" width="0" height="0">
         <defs>
             <clipPath id="heart" clipPathUnits="objectBoundingBox">
                 <path

@@ -20,7 +20,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="motion.css">
     <link rel="stylesheet" href="invitation-gate.css">
-    <script src="assets/vendor/three.min.js" defer></script>
     <script src="invitation-gate.js" defer></script>
     <script src="script.js" defer></script>
     <script src="utilities.js" defer></script>
@@ -34,22 +33,27 @@
 <body><section class="invitation-gate" id="invitation-gate" role="dialog" aria-modal="true"
         aria-labelledby="gate-title">
         <div class="gate-stage">
-            <div class="gate-meta"><span>WEDDING INVITATION</span><span>SEOUL · 2027</span></div>
-            <div class="gate-portrait" aria-hidden="true">
-                <img src="assets/wedding-cover-illustration.jpg" alt="" width="854" height="1280"
-                    decoding="async" fetchpriority="high">
-                <span>with love</span>
+            <div class="gate-meta"><span>WEDDING INVITATION</span><span>01 / 17 / 2027</span></div>
+            <div class="gate-artwork" aria-hidden="true">
+                <span class="gate-index">01</span>
+                <div class="gate-frame">
+                    <img src="assets/wedding-cover-illustration.jpg" alt="" width="854" height="1280"
+                        decoding="async" fetchpriority="high">
+                </div>
+                <span class="gate-seal">WITH<br>LOVE</span>
             </div>
             <div class="gate-title-block">
                 <p>THE WEDDING OF</p>
-                <h1 id="gate-title"><span>SUNG HYUN</span><i>&amp;</i><span>JI HYUN</span></h1>
-                <p class="gate-date">2027. 01. 17 · SUNDAY · 3:10 PM</p>
-                <small>두 사람이 함께 써 내려갈 첫 장에 초대합니다</small>
+                <h1 id="gate-title">SUNG HYUN <i>&amp;</i> JI HYUN</h1>
+                <div class="gate-rule" aria-hidden="true"><span></span><b>SEOUL</b><span></span></div>
+                <p class="gate-date">SUNDAY · 3:10 PM</p>
             </div>
-            <button type="button" id="open-invitation"><span>우리의 날 만나보기</span><i aria-hidden="true">↗</i></button>
+            <button type="button" id="open-invitation"><span>초대장 들어가기</span><i aria-hidden="true">→</i></button>
         </div>
-    </section><canvas id="velvet-transition" class="velvet-transition" aria-hidden="true"></canvas><div
-        id="velvet-fallback" class="velvet-fallback" aria-hidden="true"></div><svg class="definitions"
+    </section><div id="frame-transition" class="frame-transition" aria-hidden="true">
+        <div class="frame-panel frame-color"></div>
+        <div class="frame-panel frame-next-view" id="frame-next-view"></div>
+    </div><svg class="definitions"
         aria-hidden="true" width="0" height="0">
         <defs>
             <clipPath id="heart" clipPathUnits="objectBoundingBox">

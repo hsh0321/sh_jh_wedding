@@ -103,11 +103,24 @@ function initializeNaverMap(){
  mapStatus.remove();
 }
 window.initNaverMap=initializeNaverMap;
-const mapScript=document.createElement('script');
-mapScript.src='https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=pdxf1mih2z&callback=initNaverMap';
-mapScript.async=true;
-mapScript.addEventListener('error',()=>showMapError('지도를 불러오지 못했습니다. 아래 지도 앱 링크를 이용해 주세요.'),{once:true});
-document.head.append(mapScript);
+let mapScriptRequested=false;
+function loadNaverMapScript(){
+ if(mapScriptRequested)return;
+ mapScriptRequested=true;
+ const mapScript=document.createElement('script');
+ mapScript.src='https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=pdxf1mih2z&callback=initNaverMap';
+ mapScript.async=true;
+ mapScript.addEventListener('error',()=>showMapError('지도를 불러오지 못했습니다. 아래 지도 앱 링크를 이용해 주세요.'),{once:true});
+ document.head.append(mapScript);
+}
+if('IntersectionObserver' in window){
+ const mapObserver=new IntersectionObserver(entries=>{
+  if(!entries.some(entry=>entry.isIntersecting))return;
+  mapObserver.disconnect();
+  loadNaverMapScript();
+ },{rootMargin:'900px 0px'});
+ mapObserver.observe(mapElement);
+}else loadNaverMapScript();
 const opening=$('#home');
 const openingShade=$('.opening-shade');
 const interlude=$('#interlude');
@@ -318,7 +331,7 @@ function preloadAdjacent(){
 }
 async function prepareGallery(){
  try{
-  await Promise.all(photos.map((_,index)=>preloadPhoto(index)));
+  await preloadPhoto(activePhoto);
   currentPhoto.src=photoSource(activePhoto);
   if(currentPhoto.decode)await currentPhoto.decode();
   galleryReady=true;
@@ -399,5 +412,12 @@ gallery.addEventListener('keydown',event=>{
  if(event.key==='ArrowRight'){event.preventDefault();movePhoto(1);}
 });
 updatePhotoCount();
-prepareGallery();
+if('IntersectionObserver' in window){
+ const galleryObserver=new IntersectionObserver(entries=>{
+  if(!entries.some(entry=>entry.isIntersecting))return;
+  galleryObserver.disconnect();
+  prepareGallery();
+ },{rootMargin:'800px 0px'});
+ galleryObserver.observe(gallery);
+}else prepareGallery();
 $('#copy-link').addEventListener('click',()=>copyText(location.href.split('#')[0],'청첩장 링크'));

@@ -145,10 +145,19 @@ img,
   background-size: auto, 520px;
 }
 
-/* Promote the backing as one stable layer during iOS asynchronous scrolling. */
+/* Keep the backing opaque on iOS without turning the entire long page into one GPU layer. */
 @supports (-webkit-touch-callout: none) {
   .content-sheet {
-    transform: translateZ(0);
+    transform: none;
+  }
+
+  body::after {
+    display: none;
+  }
+
+  .scroll-reveal-up,
+  .scroll-reveal-wipe {
+    filter: none;
   }
 }
 

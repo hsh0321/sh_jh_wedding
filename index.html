@@ -10,6 +10,7 @@
     <meta property="og:description" content="2027.01.17 SUN · 3:10 PM">
     <meta property="og:image" content="assets/wedding-retouched-6.jpg">
     <title>성현과 지현 · With Love</title>
+    <script>document.documentElement.classList.add('has-invitation-gate');window.__gateFallback=setTimeout(()=>document.documentElement.classList.remove('has-invitation-gate'),8000)</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -18,6 +19,8 @@
     <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="motion.css">
+    <link rel="stylesheet" href="invitation-gate.css">
+    <script src="invitation-gate.js" defer></script>
     <script src="script.js" defer></script>
     <script src="utilities.js" defer></script>
     <script src="rsvp-config.js" defer></script>
@@ -27,7 +30,30 @@
     <link rel="stylesheet" href="rsvp-float.css">
 </head>
 
-<body><svg class="definitions" aria-hidden="true" width="0" height="0">
+<body><section class="invitation-gate" id="invitation-gate" role="dialog" aria-modal="true"
+        aria-labelledby="gate-title">
+        <div class="gate-inner">
+            <p class="gate-kicker">YOU ARE CORDIALLY INVITED</p>
+            <div class="envelope-scene" aria-hidden="true">
+                <div class="envelope">
+                    <div class="envelope-back"></div>
+                    <div class="letter-card">
+                        <span>WEDDING INVITATION</span>
+                        <strong>S <i>&amp;</i> J</strong>
+                        <small>JANUARY 17, 2027</small>
+                    </div>
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-front"></div>
+                    <div class="wax-seal"><span>SJ</span></div>
+                </div>
+            </div>
+            <div class="gate-copy">
+                <h1 id="gate-title">성현과 지현의<br>소중한 날에 초대합니다</h1>
+                <p>2027년 1월 17일 일요일 · 오후 3시 10분</p>
+                <button type="button" id="open-invitation"><span>청첩장 열기</span><i aria-hidden="true">→</i></button>
+            </div>
+        </div>
+    </section><svg class="definitions" aria-hidden="true" width="0" height="0">
         <defs>
             <clipPath id="heart" clipPathUnits="objectBoundingBox">
                 <path
@@ -49,7 +75,7 @@
             <path d="M12 5a7 7 0 0 1 7 7M5 12a7 7 0 0 0 7 7" />
         </svg></button>
     <main>
-        <section class="opening" id="home">
+        <section class="opening" id="home" tabindex="-1">
             <p class="opening-date">JANUARY 17, 2027</p>
             <div class="opening-panel"><div class="heart-photo"><img
                         src="assets/gallery-preload/gallery-6.jpg" alt="성현과 지현의 웨딩 사진" width="960" height="1440"

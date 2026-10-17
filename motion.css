@@ -99,6 +99,15 @@ img,
   animation: opening-caption .9s cubic-bezier(.2, .8, .2, 1) .3s backwards;
 }
 
+.has-invitation-gate .opening-date,
+.has-invitation-gate .opening-panel,
+.has-invitation-gate .opening-names,
+.has-invitation-gate .opening .dot,
+.has-invitation-gate .opening .letter-chain span,
+.has-invitation-gate .heart-photo {
+  animation-play-state: paused;
+}
+
 @keyframes opening-caption {
   from { opacity: 0; transform: translate3d(0, 14px, 0); }
   to { opacity: 1; transform: none; }

@@ -3,32 +3,6 @@ html, body {
   touch-action: pan-x pan-y;
 }
 
-/* Lightweight canvas version of Interlude's ink reveal for the first entry. */
-.ink-intro {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background: var(--cherry);
-  contain: strict;
-}
-
-.has-js .ink-intro {
-  display: block;
-}
-
-.ink-intro.is-finished {
-  display: none;
-}
-
-html.is-ink-entering,
-html.is-ink-entering body {
-  overflow: hidden;
-}
-
 #groom-account .account + .account,
 #bride-account .account + .account {
   margin-top: 16px;

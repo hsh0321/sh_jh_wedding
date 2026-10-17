@@ -30,10 +30,13 @@ function setInformationOpen(details,open){
   return;
  }
  if(open)details.open=true;
+ details.style.removeProperty('height');
+ details.style.removeProperty('overflow');
  const summary=details.querySelector('summary');
+ const naturalHeight=details.getBoundingClientRect().height;
  const borders=getComputedStyle(details);
  const borderHeight=parseFloat(borders.borderTopWidth)+parseFloat(borders.borderBottomWidth);
- const toHeight=open?details.scrollHeight+borderHeight:summary.getBoundingClientRect().height+borderHeight;
+ const toHeight=open?naturalHeight:summary.getBoundingClientRect().height+borderHeight;
  detailTargets.set(details,open);
  if(Math.abs(fromHeight-toHeight)<1){
   if(!open)details.open=false;
@@ -47,7 +50,7 @@ function setInformationOpen(details,open){
  details.getBoundingClientRect();
  const animation=details.animate(
   [{height:`${fromHeight}px`},{height:`${toHeight}px`}],
-  {duration:340,easing:'cubic-bezier(.22,.61,.36,1)'}
+  {duration:340,easing:'cubic-bezier(.22,.61,.36,1)',fill:'both'}
  );
  detailAnimations.set(details,animation);
  animation.onfinish=()=>{
@@ -57,6 +60,7 @@ function setInformationOpen(details,open){
   details.style.removeProperty('overflow');
   detailAnimations.delete(details);
   detailTargets.delete(details);
+  animation.cancel();
  };
 }
 information.addEventListener('click',event=>{

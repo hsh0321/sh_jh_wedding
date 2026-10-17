@@ -32,25 +32,33 @@
 
 <body><section class="invitation-gate" id="invitation-gate" role="dialog" aria-modal="true"
         aria-labelledby="gate-title">
-        <div class="gate-inner">
-            <p class="gate-kicker">YOU ARE CORDIALLY INVITED</p>
-            <div class="envelope-scene" aria-hidden="true">
-                <div class="envelope">
-                    <div class="envelope-back"></div>
-                    <div class="letter-card">
-                        <span>WEDDING INVITATION</span>
-                        <strong>S <i>&amp;</i> J</strong>
-                        <small>JANUARY 17, 2027</small>
+        <div class="gate-carousel">
+            <div class="gate-carousel-strip">
+                <div class="gate-carousel-card gate-letter-page">
+                    <div class="gate-inner">
+                        <p class="gate-kicker">YOU ARE CORDIALLY INVITED</p>
+                        <div class="envelope-scene" aria-hidden="true">
+                            <div class="envelope">
+                                <div class="envelope-back"></div>
+                                <div class="letter-card">
+                                    <span>WEDDING INVITATION</span>
+                                    <strong>S <i>&amp;</i> J</strong>
+                                    <small>JANUARY 17, 2027</small>
+                                </div>
+                                <div class="envelope-flap"></div>
+                                <div class="envelope-front"></div>
+                                <div class="wax-seal"><span>SJ</span></div>
+                            </div>
+                        </div>
+                        <div class="gate-copy">
+                            <h1 id="gate-title">성현과 지현의<br>소중한 날에 초대합니다</h1>
+                            <p>2027년 1월 17일 일요일 · 오후 3시 10분</p>
+                            <button type="button" id="open-invitation"><span>청첩장 열기</span><i
+                                    aria-hidden="true">→</i></button>
+                        </div>
                     </div>
-                    <div class="envelope-flap"></div>
-                    <div class="envelope-front"></div>
-                    <div class="wax-seal"><span>SJ</span></div>
                 </div>
-            </div>
-            <div class="gate-copy">
-                <h1 id="gate-title">성현과 지현의<br>소중한 날에 초대합니다</h1>
-                <p>2027년 1월 17일 일요일 · 오후 3시 10분</p>
-                <button type="button" id="open-invitation"><span>청첩장 열기</span><i aria-hidden="true">→</i></button>
+                <div class="gate-carousel-card gate-main-page" id="gate-main-preview" aria-hidden="true"></div>
             </div>
         </div>
     </section><svg class="definitions" aria-hidden="true" width="0" height="0">

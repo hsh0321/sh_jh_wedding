@@ -9,67 +9,57 @@
   const status = $('rsvp-status');
   const choices = {
     side: [['groom', '신랑측'], ['bride', '신부측']],
-    attendance: [['yes', '참석할게요'], ['no', '마음으로 함께할게요']],
-    bus: [['yes', '이용할게요'], ['no', '이용하지 않을게요']]
+    attendance: [['yes', '참석할게요'], ['no', '마음으로 함께할게요']]
   };
-  let step = 1, bus = '', busCount = 1;
+  let step = 1;
   const ready = () => form.elements.guestName.value.trim() && form.elements.side.value && form.elements.attendance.value;
+
   function sync() {
     next.disabled = !ready();
     const count = Number(form.elements.guests.value);
-    busCount = Math.min(busCount, count);
     $('rsvp-count').textContent = count;
-    $('rsvp-bus-count').textContent = busCount;
     $('rsvp-minus').disabled = count <= 1;
     $('rsvp-plus').disabled = count >= 20;
-    $('bus-minus').disabled = busCount <= 1;
-    $('bus-plus').disabled = busCount >= count;
-    $('rsvp-bus-count-row').hidden = bus !== 'yes';
     if (!form.hasAttribute('aria-busy') && status.dataset.state !== 'success') {
-      send.disabled = !form.elements.consent.checked || (form.elements.attendance.value === 'yes' && !bus);
+      send.disabled = !form.elements.consent.checked;
     }
-    form.elements.message.value = form.elements.attendance.value !== 'yes' ? '' :
-      bus === 'yes' ? `KTX: 이용 희망 / ${busCount}명` : bus === 'no' ? 'KTX: 이용 안 함' : '';
+    form.elements.message.value = '';
     form.querySelectorAll('[data-choice]').forEach(button => {
       const key = button.dataset.choice;
-      button.setAttribute('aria-pressed', String(button.dataset.value === (key === 'bus' ? bus : form.elements[key].value)));
+      button.setAttribute('aria-pressed', String(button.dataset.value === form.elements[key].value));
     });
   }
+
   function showStep(value) {
     step = value;
-    const attending = form.elements.attendance.value === 'yes';
     one.hidden = step !== 1;
     two.hidden = step !== 2;
     next.hidden = step !== 1;
     back.hidden = send.hidden = step !== 2;
-    $('rsvp-bus-rows').hidden = !attending;
     $('rsvp-intro').hidden = step === 2;
-    $('rsvp-step-title').textContent = step === 1 ? '참석 여부 · KTX 이용 신청' : attending ? 'KTX 이용 희망 여부' : '회신 보내기';
+    $('rsvp-step-title').textContent = step === 1 ? '참석 여부' : '회신 보내기';
     status.textContent = '';
     status.dataset.state = '';
     sync();
-    const target = step === 1 ? $('rsvp-name') : attending ?
-      (form.closest('#rsvp-modal') ? form.querySelector('[data-choice="bus"]') : $('bus-choice')) : form.elements.consent;
-    target.focus({ preventScroll: true });
+    (step === 1 ? $('rsvp-name') : form.elements.consent).focus({ preventScroll: true });
   }
+
   form.querySelectorAll('[data-cycle]').forEach(button => {
     button.addEventListener('click', () => {
       const key = button.dataset.cycle;
-      const current = key === 'bus' ? bus : form.elements[key].value;
+      const current = form.elements[key].value;
       const options = choices[key];
       const value = options[(options.findIndex(option => option[0] === current) + 1) % options.length];
-      if (key === 'bus') bus = value[0];
-      else {
-        form.elements[key].value = value[0];
-        form.elements[key].dispatchEvent(new Event('change', { bubbles: true }));
-      }
+      form.elements[key].value = value[0];
+      form.elements[key].dispatchEvent(new Event('change', { bubbles: true }));
       button.textContent = value[1];
-      next.textContent = form.elements.attendance.value === 'no' ? '다음 · 회신 확인' : '다음 · KTX';
+      next.textContent = '다음 · 회신 확인';
       sync();
     });
   });
+
   // The modal uses direct choices; the inline form keeps its cycling controls.
-  [['attendance', '참석 여부', ['참석', '불참석']], ['side', '어느 측 하객이신가요?', ['신랑 측', '신부 측']], ['bus', 'KTX 이용 희망 여부', ['이용 희망', '이용 안 함']]].forEach(([key, title, labels]) => {
+  [['attendance', '참석 여부', ['참석', '불참석']], ['side', '어느 측 하객이신가요?', ['신랑 측', '신부 측']]].forEach(([key, title, labels]) => {
     const group = document.createElement('div');
     group.className = 'rsvp-modal-choices';
     group.setAttribute('role', 'group');
@@ -82,27 +72,23 @@
       const button = document.createElement('button'); button.type = 'button';
       button.dataset.choice = key; button.dataset.value = value; button.textContent = labels[index];
       button.addEventListener('click', () => {
-        // Advance the shared cycling control only when this value differs.
-        if ((key === 'bus' ? bus : form.elements[key].value) !== value) {
+        if (form.elements[key].value !== value) {
           const cycle = form.querySelector(`[data-cycle="${key}"]`);
           cycle.click();
-          if ((key === 'bus' ? bus : form.elements[key].value) !== value) cycle.click();
+          if (form.elements[key].value !== value) cycle.click();
         }
       });
       buttons.append(button);
     });
     group.append(buttons);
-    if (key === 'bus') $('rsvp-bus-rows').prepend(group);
-    else one.insertBefore(group, $('rsvp-attending'));
+    one.insertBefore(group, $('rsvp-attending'));
   });
+
   [['rsvp-minus', -1], ['rsvp-plus', 1]].forEach(([id, delta]) => {
     $(id).addEventListener('click', () => {
       form.elements.guests.value = Math.max(1, Math.min(20, Number(form.elements.guests.value) + delta));
       sync();
     });
-  });
-  [['bus-minus', -1], ['bus-plus', 1]].forEach(([id, delta]) => {
-    $(id).addEventListener('click', () => { busCount = Math.max(1, Math.min(Number(form.elements.guests.value), busCount + delta)); sync(); });
   });
   form.addEventListener('input', sync);
   next.addEventListener('click', () => { if (ready()) showStep(2); });
@@ -113,6 +99,7 @@
       if (step === 1 && ready()) showStep(2);
     }
   }, true);
+
   function reflectStatus() {
     const done = status.dataset.state === 'success';
     $('rsvp-fields').hidden = done;

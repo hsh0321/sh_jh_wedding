@@ -10,7 +10,6 @@
     <meta property="og:description" content="2027.01.17 SUN · 3:10 PM">
     <meta property="og:image" content="assets/wedding-retouched-6.jpg">
     <title>성현과 지현 · With Love</title>
-    <script>document.documentElement.classList.add('has-invitation-gate');window.__gateFallback=setTimeout(()=>document.documentElement.classList.remove('has-invitation-gate'),8000)</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -19,8 +18,6 @@
     <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="motion.css">
-    <link rel="stylesheet" href="invitation-gate.css">
-    <script src="invitation-gate.js" defer></script>
     <script src="script.js" defer></script>
     <script src="utilities.js" defer></script>
     <script src="rsvp-config.js" defer></script>
@@ -30,30 +27,7 @@
     <link rel="stylesheet" href="rsvp-float.css">
 </head>
 
-<body><section class="invitation-gate" id="invitation-gate" role="dialog" aria-modal="true"
-        aria-labelledby="gate-title">
-        <div class="gate-stage">
-            <div class="gate-meta"><span>WEDDING INVITATION</span><span>01 / 17 / 2027</span></div>
-            <div class="gate-artwork" aria-hidden="true">
-                <span class="gate-index">01</span>
-                <div class="gate-frame">
-                    <img src="assets/wedding-cover-illustration.jpg" alt="" width="854" height="1280"
-                        decoding="async" fetchpriority="high">
-                </div>
-                <span class="gate-seal">WITH<br>LOVE</span>
-            </div>
-            <div class="gate-title-block">
-                <p>THE WEDDING OF</p>
-                <h1 id="gate-title">SUNG HYUN <i>&amp;</i> JI HYUN</h1>
-                <div class="gate-rule" aria-hidden="true"><span></span><b>SEOUL</b><span></span></div>
-                <p class="gate-date">SUNDAY · 3:10 PM</p>
-            </div>
-            <button type="button" id="open-invitation"><span>초대장 들어가기</span><i aria-hidden="true">→</i></button>
-        </div>
-    </section><div id="frame-transition" class="frame-transition" aria-hidden="true">
-        <div class="frame-panel frame-color"></div>
-        <div class="frame-panel frame-next-view" id="frame-next-view"></div>
-    </div><svg class="definitions"
+<body><svg class="definitions"
         aria-hidden="true" width="0" height="0">
         <defs>
             <clipPath id="heart" clipPathUnits="objectBoundingBox">

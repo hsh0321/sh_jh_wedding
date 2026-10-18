@@ -11,7 +11,7 @@
   const slot = document.createElement('div');
   section.before(slot);
   const seenKey = 'sh-jh-rsvp-prompt-v1';
-  let seen = false, opener = null, savedOverflow = '', savedSlotHeight = '', queued = false;
+  let seen = false, opener = null, savedOverflow = '', savedSlotHeight = '', queued = false, closing = false;
   try { seen = sessionStorage.getItem(seenKey) === '1'; } catch {}
   function completed() { return status.dataset.state === 'success'; }
   function remember() { seen = true; try { sessionStorage.setItem(seenKey, '1'); } catch {} }
@@ -45,7 +45,22 @@
     name.focus({ preventScroll: true });
     try { name.setSelectionRange(name.value.length, name.value.length); } catch {}
   }
-  function closeForm() { modal.close(); }
+  function closeForm() {
+    if (!modal.open || closing) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { modal.close(); return; }
+    closing = true;
+    modal.classList.add('is-closing');
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      modal.classList.remove('is-closing');
+      closing = false;
+      modal.close();
+    };
+    modal.addEventListener('animationend', finish, { once: true });
+    setTimeout(finish, 340);
+  }
   modal.addEventListener('close', () => {
     slot.after(section); slot.style.height = savedSlotHeight;
     unlock(); paint();
@@ -55,10 +70,13 @@
   prompt.querySelector('[data-prompt-close]').addEventListener('click', () => prompt.close());
   document.getElementById('rsvp-prompt-confirm').addEventListener('click', openForm);
   document.getElementById('rsvp-modal-close').addEventListener('click', closeForm);
+  modal.addEventListener('cancel', event => { event.preventDefault(); closeForm(); });
   [prompt, modal].forEach(dialog => dialog.addEventListener('click', event => {
     if (event.target !== dialog) return;
     const r = dialog.getBoundingClientRect();
-    if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close();
+    if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) {
+      if (dialog === modal) closeForm(); else dialog.close();
+    }
   }));
   // A drag repositions the envelope; an ordinary click opens the form.
   let drag = null, suppressClick = false;

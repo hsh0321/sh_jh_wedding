@@ -13,8 +13,10 @@
 #rsvp-prompt-confirm { width: 100%; height: 47px; background: #2b2a27; color: #fff; font: 600 14px var(--kr); }
 .rsvp-close { position: absolute; top: 5px; right: 7px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: transparent; box-shadow: none; font-size: 23px; color: #898c85; }
 #rsvp-prompt:focus, #rsvp-modal:focus { outline: 0; }
-#rsvp-modal { width: min(430px, 100%); max-width: 100%; height: min(760px, calc(100dvh - 100px)); max-height: calc(100dvh - 24px); border-radius: 24px 24px 0 0; background: var(--paper); overflow: auto; overscroll-behavior: contain; margin: auto auto 18px; }
+#rsvp-modal { width: min(390px, calc(100% - 32px)); max-width: calc(100% - 32px); height: fit-content; max-height: calc(100dvh - 32px); border-radius: 18px; background: var(--paper); overflow: auto; overscroll-behavior: contain; margin: auto; box-shadow: 0 24px 60px #0004; }
 #rsvp-modal[open] { animation: rsvp-modal-in .4s cubic-bezier(.2,.8,.2,1); }
+#rsvp-modal.is-closing { animation: rsvp-modal-out .3s cubic-bezier(.4,0,1,1) both; }
+#rsvp-modal.is-closing::backdrop { animation: rsvp-backdrop-out .3s ease both; }
 .rsvp-modal-nav { position: sticky; top: 0; z-index: 3; height: 44px; background: var(--paper); }
 #rsvp-modal-back { padding: 10px 18px; color: #62655c; font: 14px var(--kr); }
 #rsvp-modal .reply { padding: 10px 24px 22px; background: var(--paper); text-align: left; min-height: 0; }
@@ -23,8 +25,7 @@
 #rsvp-modal .section-heading h2 { font: 11px var(--sans); letter-spacing: .3em; color: #8c8e88; margin: 0 0 14px; font-size: 0; }
 #rsvp-modal .section-heading h2::after { content: 'R.S.V.P'; font-size: 11px; }
 #rsvp-modal #rsvp-step-title { font-size: 22px; font-weight: 700; margin: 0; }
-#rsvp-modal #rsvp-intro { color: #85877e; font-size: 13px; line-height: 1.9; margin: 18px 0 26px; padding-bottom: 25px; border-bottom: 1px solid var(--line); }
-#rsvp-modal #rsvp-form { margin-top: 22px; }
+#rsvp-modal #rsvp-form { margin-top: 18px; }
 #rsvp-modal .rsvp-rows::after, #rsvp-modal .rsvp-row > i { display: none; }
 #rsvp-modal .rsvp-row:has([data-cycle]) { display: none; }
 #rsvp-modal .rsvp-row { display: block; height: auto; }
@@ -38,15 +39,16 @@
 #rsvp-modal .rsvp-modal-choices button[aria-pressed=true] { background: var(--powder); border-color: var(--cherry); color: var(--ink); }
 #rsvp-modal .rsvp-count { display: flex; height: 48px; border: 1px solid var(--line); padding: 0 12px; font-size: 15px; }
 #rsvp-modal .rsvp-count button { height: 46px; width: 40px; }
-#rsvp-modal .rsvp-footer { padding: 0; margin: 32px 0 0; }
+#rsvp-modal .rsvp-footer { padding: 0; margin: 28px 0 0; }
 #rsvp-modal[open] { display: flex; flex-direction: column; }
 #rsvp-modal .rsvp-modal-nav { flex: 0 0 44px; }
-#rsvp-modal-mount, #rsvp-modal .reply, #rsvp-modal #rsvp-form { display: flex; flex-direction: column; flex: 1; }
-#rsvp-modal .rsvp-footer { margin-top: auto; padding-top: 28px; }
+#rsvp-modal-mount, #rsvp-modal .reply, #rsvp-modal #rsvp-form { display: flex; flex-direction: column; }
 #rsvp-modal .rsvp-send { width: 100%; border-radius: 0; min-height: 48px; font-size: 15px; }
 #rsvp-modal #rsvp-cancel { width: 100%; min-height: 44px; border-radius: 0; }
 #rsvp-modal .scroll-reveal { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
 #rsvp-modal :focus-visible, #rsvp-prompt :focus-visible, #rsvp-float:focus-visible { outline: 2px solid var(--cherry); outline-offset: 3px; }
 @keyframes rsvp-paper-in { from { opacity: 0; transform: translateY(18px) scale(.94); } to { opacity: 1; transform: none; } }
 @keyframes rsvp-modal-in { from { opacity: 0; transform: translateY(40px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes rsvp-modal-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(40px) scale(.96); } }
+@keyframes rsvp-backdrop-out { to { opacity: 0; } }
 @media(prefers-reduced-motion:reduce) { #rsvp-prompt[open], #rsvp-modal[open], #rsvp-float i { animation: none; } }

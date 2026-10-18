@@ -1029,8 +1029,6 @@ details>p {
 .reply { padding: 65px 42px 70px; }
 .reply .section-heading h2 { font-size: 26px; line-height: 1.2; }
 .reply .section-heading > p { margin-top: 4px; font-size: 12px; }
-.reply #rsvp-intro { word-break: keep-all; }
-.reply #rsvp-intro { font-size: 13px; line-height: 1.9; margin: 38px 0 0; }
 .reply #rsvp-form { margin: 40px 0 0; padding: 0; }
 .reply fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .reply [hidden] { display: none !important; }

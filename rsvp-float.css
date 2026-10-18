@@ -43,7 +43,6 @@
 #rsvp-modal .rsvp-modal-nav { flex: 0 0 44px; }
 #rsvp-modal-mount, #rsvp-modal .reply, #rsvp-modal #rsvp-form { display: flex; flex-direction: column; flex: 1; }
 #rsvp-modal .rsvp-footer { margin-top: auto; padding-top: 28px; }
-#rsvp-modal .rsvp-footer #rsvp-back { display: none; }
 #rsvp-modal .rsvp-send { width: 100%; border-radius: 0; min-height: 48px; font-size: 15px; }
 #rsvp-modal #rsvp-cancel { width: 100%; min-height: 44px; border-radius: 0; }
 #rsvp-modal .scroll-reveal { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }

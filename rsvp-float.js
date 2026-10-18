@@ -40,8 +40,10 @@
     mount.append(section);
     lock(); modal.showModal();
     float.hidden = true;
-    // Keep the keyboard closed and avoid preselecting the close button.
-    modal.focus({ preventScroll: true });
+    // Keep this synchronous with the user's tap so iOS opens the keyboard.
+    const name = document.getElementById('rsvp-name');
+    name.focus({ preventScroll: true });
+    try { name.setSelectionRange(name.value.length, name.value.length); } catch {}
   }
   function closeForm() { modal.close(); }
   modal.addEventListener('close', () => {
@@ -53,10 +55,6 @@
   prompt.querySelector('[data-prompt-close]').addEventListener('click', () => prompt.close());
   document.getElementById('rsvp-prompt-confirm').addEventListener('click', openForm);
   document.getElementById('rsvp-modal-close').addEventListener('click', closeForm);
-  document.getElementById('rsvp-modal-back').addEventListener('click', () => {
-    const back = document.getElementById('rsvp-back');
-    if (!back.hidden && !back.disabled && !completed()) back.click(); else closeForm();
-  });
   [prompt, modal].forEach(dialog => dialog.addEventListener('click', event => {
     if (event.target !== dialog) return;
     const r = dialog.getBoundingClientRect();

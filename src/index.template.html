@@ -256,13 +256,9 @@
                             <input type="hidden" id="rsvp-guests" name="guests" value="1"><input type="hidden" name="meal" value="unknown">
                         </fieldset>
                     </div>
-                    <div id="rsvp-step-two" hidden>
-                        <details class="rsvp-privacy"><summary>개인정보 수집·이용 안내 <span aria-hidden="true">＋</span></summary><p>수집·이용자: 황성현 · 육지현<br>목적: 결혼식 참석 여부 확인<br>항목: 성함, 신랑·신부 측 구분, 참석 여부와 인원<br>보유 기간: 예식 종료 후 30일 이내(2027년 2월 16일까지) 삭제<br>입력 내용은 Google 스프레드시트에 저장됩니다. 동의를 거부할 수 있으며, 이 경우 신랑·신부에게 직접 알려주세요.</p></details>
-                        <label class="rsvp-consent"><input name="consent" type="checkbox" required><span>개인정보 수집·이용에 동의합니다.</span></label>
-                    </div>
                     <input type="hidden" name="message" value="">
                 </fieldset>
-                <div class="rsvp-footer"><button type="button" id="rsvp-back" hidden>이전</button><button type="button" class="rsvp-send" id="rsvp-next" disabled>다음 · 회신 확인</button><button type="submit" class="rsvp-send" hidden>회신 보내기</button></div>
+                <div class="rsvp-footer"><button type="submit" class="rsvp-send" disabled>참석 여부 전달하기</button></div>
                 <p id="rsvp-status" role="status" aria-live="polite" aria-atomic="true"></p>
                 <button type="button" id="rsvp-cancel" hidden>회신 취소</button>
             </form>
@@ -290,7 +286,7 @@
         <button type="button" id="rsvp-prompt-confirm">확인</button>
     </dialog>
     <dialog id="rsvp-modal" tabindex="-1" aria-labelledby="rsvp-step-title">
-        <div class="rsvp-modal-nav"><button type="button" id="rsvp-modal-back">← 이전</button><button type="button" class="rsvp-close" id="rsvp-modal-close" aria-label="참석 입력창 닫기">×</button></div>
+        <div class="rsvp-modal-nav"><button type="button" class="rsvp-close" id="rsvp-modal-close" aria-label="참석 입력창 닫기">×</button></div>
         <div id="rsvp-modal-mount"></div>
     </dialog>
     <div id="toast" role="status" aria-live="polite"></div><audio id="audio" src="assets/music1.mp3" loop

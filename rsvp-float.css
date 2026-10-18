@@ -29,9 +29,10 @@
 #rsvp-modal .rsvp-rows::after, #rsvp-modal .rsvp-row > i { display: none; }
 #rsvp-modal .rsvp-row:has([data-cycle]) { display: none; }
 #rsvp-modal .rsvp-row { display: block; height: auto; }
-#rsvp-modal .rsvp-row:has(#rsvp-name) > label { display: none; }
-#rsvp-modal #rsvp-name { height: 48px; border-bottom: 1px solid var(--line); margin: 0 0 18px; }
-#rsvp-modal #rsvp-name::placeholder { font-size: 15px; }
+#rsvp-modal .rsvp-row:has(#rsvp-name) > label { display: block; margin: 0 0 10px; color: #777a72; font-size: 12px; }
+#rsvp-modal #rsvp-name { height: 52px; margin: 0 0 22px; padding: 0 14px; border: 1px solid #a6a89f; border-radius: 8px; background: #fff; box-shadow: 0 2px 8px #0000000a; transition: border-color .2s, box-shadow .2s, background .2s; }
+#rsvp-modal #rsvp-name::placeholder { color: #999b94; font-size: 14px; }
+#rsvp-modal #rsvp-name:focus { border-color: var(--cherry); background: #fffefb; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cherry) 15%, transparent); outline: 0; }
 #rsvp-modal .rsvp-modal-choices { display: block; margin-bottom: 22px; }
 #rsvp-modal .rsvp-modal-choices > p, #rsvp-modal .rsvp-row > span { display: block; font-size: 12px; color: #8b8d84; margin: 0 0 10px; }
 #rsvp-modal .rsvp-modal-choices > div { display: flex; gap: 10px; }

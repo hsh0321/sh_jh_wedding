@@ -40,10 +40,8 @@
     mount.append(section);
     lock(); modal.showModal();
     float.hidden = true;
-    // Keep this synchronous with the user's tap so iOS opens the keyboard.
-    const name = document.getElementById('rsvp-name');
-    name.focus({ preventScroll: true });
-    try { name.setSelectionRange(name.value.length, name.value.length); } catch {}
+    // Keep the keyboard closed until the guest taps the name field.
+    modal.focus({ preventScroll: true });
   }
   function closeForm() {
     if (!modal.open || closing) return;

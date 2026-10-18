@@ -10,7 +10,7 @@
   const choices = {
     side: [['groom', '신랑측'], ['bride', '신부측']],
     attendance: [['yes', '참석할게요'], ['no', '마음으로 함께할게요']],
-    bus: [['yes', '탑승할게요'], ['no', '탑승하지 않아요']]
+    bus: [['yes', '이용할게요'], ['no', '이용하지 않을게요']]
   };
   let step = 1, bus = '', busCount = 1;
   const ready = () => form.elements.guestName.value.trim() && form.elements.side.value && form.elements.attendance.value;
@@ -29,7 +29,7 @@
       send.disabled = !form.elements.consent.checked || (form.elements.attendance.value === 'yes' && !bus);
     }
     form.elements.message.value = form.elements.attendance.value !== 'yes' ? '' :
-      bus === 'yes' ? `전세버스: 탑승 / ${busCount}명` : bus === 'no' ? '전세버스: 미탑승' : '';
+      bus === 'yes' ? `KTX: 이용 희망 / ${busCount}명` : bus === 'no' ? 'KTX: 이용 안 함' : '';
     form.querySelectorAll('[data-choice]').forEach(button => {
       const key = button.dataset.choice;
       button.setAttribute('aria-pressed', String(button.dataset.value === (key === 'bus' ? bus : form.elements[key].value)));
@@ -44,7 +44,7 @@
     back.hidden = send.hidden = step !== 2;
     $('rsvp-bus-rows').hidden = !attending;
     $('rsvp-intro').hidden = step === 2;
-    $('rsvp-step-title').textContent = step === 1 ? '참석 여부' : attending ? '전세버스 탑승 여부' : '회신 보내기';
+    $('rsvp-step-title').textContent = step === 1 ? '참석 여부 · KTX 이용 신청' : attending ? 'KTX 이용 희망 여부' : '회신 보내기';
     status.textContent = '';
     status.dataset.state = '';
     sync();
@@ -64,12 +64,12 @@
         form.elements[key].dispatchEvent(new Event('change', { bubbles: true }));
       }
       button.textContent = value[1];
-      next.textContent = form.elements.attendance.value === 'no' ? '다음 · 회신 확인' : '다음 · 전세버스';
+      next.textContent = form.elements.attendance.value === 'no' ? '다음 · 회신 확인' : '다음 · KTX';
       sync();
     });
   });
   // The modal uses direct choices; the inline form keeps its cycling controls.
-  [['attendance', '참석 여부', ['참석', '불참석']], ['side', '어느 측 하객이신가요?', ['신랑 측', '신부 측']], ['bus', '전세버스 탑승 여부', ['탑승', '미탑승']]].forEach(([key, title, labels]) => {
+  [['attendance', '참석 여부', ['참석', '불참석']], ['side', '어느 측 하객이신가요?', ['신랑 측', '신부 측']], ['bus', 'KTX 이용 희망 여부', ['이용 희망', '이용 안 함']]].forEach(([key, title, labels]) => {
     const group = document.createElement('div');
     group.className = 'rsvp-modal-choices';
     group.setAttribute('role', 'group');

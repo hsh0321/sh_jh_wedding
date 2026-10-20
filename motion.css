@@ -28,7 +28,7 @@ body.peel-tuning {
 
 .peel-sheet {
   z-index: 2;
-  background: #eee9dd;
+  background: #fff;
 }
 
 .peel-flat-film {
@@ -38,7 +38,7 @@ body.peel-tuning {
 
 .peel-flap {
   z-index: 4;
-  background: color-mix(in srgb, #eee9dd, #000 10%);
+  background: color-mix(in srgb, #fff, #000 10%);
 }
 
 .peel-flap-film {
@@ -257,7 +257,7 @@ img,
   margin-inline: auto;
   padding: 10px 10px 30px;
   border: 0;
-  background: #eee9dd;
+  background: #fff;
   box-shadow: 0 24px 52px rgba(53, 46, 37, .22), 0 7px 18px rgba(53, 46, 37, .13), 0 1px 0 rgba(255, 255, 255, .7) inset;
   transform: rotate(-.6deg);
   animation: heart-in 1.9s ease-out both;

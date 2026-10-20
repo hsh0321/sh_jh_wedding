@@ -3,27 +3,50 @@ html, body {
   touch-action: pan-x pan-y;
 }
 
-#channel-entry {
+#peel-entry {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  image-rendering: pixelated;
+  overflow: hidden;
   pointer-events: none;
 }
 
-body.channel-tuning {
+body.peel-tuning {
   overflow: hidden;
 }
 
-body.channel-tuning main,
-body.channel-tuning .music {
-  translate: var(--channel-jump, 0 0);
+#peel-entry > div {
+  position: absolute;
+  inset: 0;
+  will-change: clip-path, opacity;
 }
 
-body.channel-ready #channel-entry {
+.peel-under-film {
+  z-index: 1;
+  background: #000;
+}
+
+.peel-sheet {
+  z-index: 2;
+  background: #eee9dd;
+}
+
+.peel-flat-film {
+  z-index: 3;
+  background: #000;
+}
+
+.peel-flap {
+  z-index: 4;
+  background: color-mix(in srgb, #eee9dd, #000 10%);
+}
+
+.peel-flap-film {
+  z-index: 5;
+  background: #000;
+}
+
+body.peel-ready #peel-entry {
   display: none;
 }
 
@@ -441,11 +464,11 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #channel-entry {
+  #peel-entry {
     display: none;
   }
 
-  body.channel-tuning {
+  body.peel-tuning {
     overflow: auto;
   }
 

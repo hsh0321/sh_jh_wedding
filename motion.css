@@ -227,9 +227,50 @@ img,
 
 .heart-photo {
   height: auto;
-  aspect-ratio: 0.799;
+  aspect-ratio: auto;
+  padding: 17px 26px 25px;
+  border: 1px solid #30302e;
+  background: #090909;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .28), inset 0 0 0 1px #050505;
   transform: none;
   animation: heart-in 1.9s ease-out both;
+}
+
+.heart-photo img {
+  height: auto;
+  aspect-ratio: .799;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .12);
+}
+
+.film-edge {
+  position: absolute;
+  z-index: 1;
+  top: 9px;
+  bottom: 9px;
+  width: 9px;
+  background: repeating-linear-gradient(to bottom, #ddd9ce 0 7px, transparent 7px 15px);
+  opacity: .88;
+  pointer-events: none;
+}
+
+.film-edge-left {
+  left: 8px;
+}
+
+.film-edge-right {
+  right: 8px;
+}
+
+.film-code {
+  position: absolute;
+  right: 25px;
+  bottom: 5px;
+  color: #d1c696;
+  font: 500 7px/1 var(--sans);
+  letter-spacing: 1.3px;
+  white-space: nowrap;
+  opacity: .8;
+  pointer-events: none;
 }
 
 .opening-shade {

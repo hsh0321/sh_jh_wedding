@@ -18,6 +18,8 @@
 }
 
 html {
+    background: #fff;
+    color-scheme: only light;
     scroll-behavior: smooth;
     scroll-padding-top: 45px
 }

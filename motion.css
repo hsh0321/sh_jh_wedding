@@ -468,11 +468,6 @@ main {
 /* Mobile WebKit can briefly expose the sticky cover while repainting clipped
    reveal layers. Keep the cover in normal flow and paint content immediately. */
 @media (max-width: 699px), (hover: none) and (pointer: coarse) {
-  .opening {
-    position: relative;
-    top: auto;
-  }
-
   .opening-shade {
     display: none;
   }
@@ -489,13 +484,29 @@ main {
 
   .scroll-reveal,
   .scroll-reveal-up,
-  .scroll-reveal-wipe,
-  .scroll-reveal-center {
-    opacity: 1;
+  .scroll-reveal-wipe {
+    opacity: 0;
     filter: none;
-    transform: none;
+    transform: translate3d(0, 14px, 0);
     clip-path: none;
-    transition: none;
+    transition-property: opacity, transform;
+    transition-duration: .52s;
+    transition-timing-function: cubic-bezier(.2, .75, .25, 1);
+  }
+
+  .scroll-reveal-center {
+    opacity: 0;
+    filter: none;
+    transform: scale(1.035);
+    clip-path: none;
+    transition-property: opacity, transform;
+    transition-duration: .62s;
+    transition-timing-function: cubic-bezier(.2, .75, .25, 1);
+  }
+
+  .scroll-reveal.is-revealed {
+    opacity: 1;
+    transform: none;
   }
 }
 

@@ -229,8 +229,9 @@ function updateScrollEffects(time){
  }
  const eased=1-(1-renderedProgress)**2;
  const ready=[];
+ const revealLine=viewportHeight*(mobileLite?1.45:.92);
  pendingReveals.forEach((top,element)=>{
-  if(top-scrollY<viewportHeight*.92)ready.push(element);
+  if(top-scrollY<revealLine)ready.push(element);
  });
  // Local compositor properties avoid inherited CSS-variable invalidation.
  if(!mobileLite&&renderedProgress!==lastOpeningProgress){
@@ -262,7 +263,7 @@ document.addEventListener('toggle',invalidateScrollGeometry,true);
 if('ResizeObserver' in window)new ResizeObserver(invalidateScrollGeometry).observe(document.querySelector('main'));
 document.fonts?.ready.then(invalidateScrollGeometry);
 function setupScrollReveals(){
- if(reduced||mobileLite)return;
+ if(reduced)return;
  const targets=new Map();
  const add=(element,type,delay=0)=>{
   if(element.closest('[hidden]'))return;

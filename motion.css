@@ -122,13 +122,16 @@ img,
 
 .opening {
   position: sticky;
-  min-height: max(700px, calc(min(125.2vw, 538px) + 230px));
+  height: auto;
+  min-height: 100svh;
+  max-height: none;
+  padding: 48px 22px 32px;
+  justify-content: center;
   top: 0;
   z-index: 0;
   isolation: isolate;
-  background-color: var(--paper);
-  background-image: linear-gradient(rgba(251, 250, 247, .65), rgba(251, 250, 247, .65)), var(--paper-texture);
-  background-size: auto, 520px;
+  background: #111;
+  color: #fff;
 }
 
 .content-sheet,
@@ -163,12 +166,11 @@ img,
 }
 
 .opening-panel {
-  min-height: min(125.2vw, 538px);
+  flex: 0 0 auto;
+  min-height: 0;
   transform: scale(1);
   will-change: transform;
-  background: var(--paper);
-  background-image: linear-gradient(rgba(251, 250, 247, .65), rgba(251, 250, 247, .65)), var(--paper-texture);
-  background-size: auto, 520px;
+  background: transparent;
 }
 
 .opening > .confetti {
@@ -185,100 +187,7 @@ img,
 .opening-names {
   position: relative;
   z-index: 3;
-  animation: opening-caption .9s cubic-bezier(.2, .8, .2, 1) .9s backwards;
-  padding: 8px 16px 0;
-}
-
-.opening-script {
-  position: absolute;
-  z-index: 1;
-  bottom: 24px;
-  left: 7%;
-  width: 86%;
-  height: auto;
-  margin: 0;
-  color: #fff9eb;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 1px 2px rgba(35, 29, 22, .7));
-  transform: rotate(-3deg);
-  overflow: visible;
-  pointer-events: none;
-}
-
-.opening-script path {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-  animation: opening-handwrite var(--write-duration) linear var(--write-delay) both;
-}
-
-@keyframes opening-handwrite {
-  from { stroke-dashoffset: 1; }
-  to { stroke-dashoffset: 0; }
-}
-
-.heart-photo::after {
-  content: '';
-  position: absolute;
-  inset: 65% 0 0;
-  background: linear-gradient(transparent, rgba(34, 28, 20, .22));
-  pointer-events: none;
-}
-
-.opening-ribbon {
-  display: block;
-  width: 48px;
-  height: 31px;
-  margin: 0 auto 7px;
-  stroke: var(--cherry);
-  stroke-width: 1.3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.opening-names .opening-korean {
-  font: 400 17px/1.5 var(--kr);
-  letter-spacing: 3px;
-  margin-bottom: 7px;
-}
-
-.opening-korean span {
-  font-size: 11px;
-  letter-spacing: 1px;
-  margin: 0 6px;
-}
-
-.opening-names h1 {
-  font: 400 18px/1.3 'Cormorant Garamond', serif;
-  letter-spacing: 1.2px;
-  margin-bottom: 9px;
-}
-
-.opening-names h1 span {
-  font: 400 20px/1 'Pinyon Script', cursive;
-  color: var(--cherry);
-  margin: 0 3px;
-}
-
-.opening-names .opening-details {
-  font: 400 10px/1.5 var(--sans);
-  letter-spacing: 1.6px;
-  color: #686b60;
-}
-
-.opening-details span {
-  margin: 0 5px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .opening-script,
-  .opening-script path,
-  .opening-names {
-    animation: none;
-  }
+  animation: opening-caption .9s cubic-bezier(.2, .8, .2, 1) 2.2s backwards;
 }
 
 .heart-photo img {

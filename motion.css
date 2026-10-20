@@ -192,16 +192,40 @@ img,
 .opening-script {
   position: absolute;
   z-index: 1;
-  top: 24px;
-  left: 0;
-  width: 100%;
+  bottom: 24px;
+  left: 7%;
+  width: 86%;
+  height: auto;
   margin: 0;
   color: #fff9eb;
-  text-align: center;
-  font: 400 clamp(32px, 9vw, 40px)/1.5 'Pinyon Script', cursive;
-  text-shadow: 0 2px 14px rgba(35, 29, 22, .45);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 2px rgba(35, 29, 22, .7));
+  transform: rotate(-3deg);
+  overflow: visible;
   pointer-events: none;
-  animation: opening-caption 1.2s ease-out .65s backwards;
+}
+
+.opening-script path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: opening-handwrite var(--write-duration) linear var(--write-delay) both;
+}
+
+@keyframes opening-handwrite {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+.heart-photo::after {
+  content: '';
+  position: absolute;
+  inset: 65% 0 0;
+  background: linear-gradient(transparent, rgba(34, 28, 20, .22));
+  pointer-events: none;
 }
 
 .opening-ribbon {
@@ -251,6 +275,7 @@ img,
 
 @media (prefers-reduced-motion: reduce) {
   .opening-script,
+  .opening-script path,
   .opening-names {
     animation: none;
   }

@@ -395,7 +395,7 @@ summary:focus-visible {
     margin: auto;
     aspect-ratio: 4/5;
     object-fit: cover;
-    filter: none
+    filter: grayscale(1)
 }
 
 .date-caption {

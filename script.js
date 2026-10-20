@@ -11,7 +11,6 @@ for(const type of ['gesturestart','gesturechange']){
  document.addEventListener(type,event=>event.preventDefault(),{passive:false});
 }
 const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const mobileLite=matchMedia('(max-width: 699px), (hover: none) and (pointer: coarse)').matches;
 
 function playPeelEntry(){
  const entry=$('#peel-entry');
@@ -219,7 +218,7 @@ function updateScrollEffects(time){
  const dt=lastFrameTime?Math.min(time-lastFrameTime,64):16.67;
  const blend=1-Math.exp(-dt/55);
  lastFrameTime=time;
- if(mobileLite||renderedProgress===null||scrollY>=geometry.openingHeight)renderedProgress=progress;
+ if(renderedProgress===null||scrollY>=geometry.openingHeight)renderedProgress=progress;
  else renderedProgress+=(progress-renderedProgress)*blend;
  if(Math.abs(progress-renderedProgress)<.0001)renderedProgress=progress;
  if(offset!==null){
@@ -229,18 +228,17 @@ function updateScrollEffects(time){
  }
  const eased=1-(1-renderedProgress)**2;
  const ready=[];
- const revealLine=viewportHeight*(mobileLite?1.45:.92);
  pendingReveals.forEach((top,element)=>{
-  if(top-scrollY<revealLine)ready.push(element);
+  if(top-scrollY<viewportHeight*.92)ready.push(element);
  });
  // Local compositor properties avoid inherited CSS-variable invalidation.
- if(!mobileLite&&renderedProgress!==lastOpeningProgress){
+ if(renderedProgress!==lastOpeningProgress){
   openingShade.style.opacity=String((renderedProgress*.32).toFixed(4));
   openingPanel.style.transform=`scale(${(1-.07*eased).toFixed(5)})`;
   coverImage.style.transform=`translate3d(0,${(-70*eased).toFixed(3)}px,0) scale(${(1+.16*eased).toFixed(5)})`;
   lastOpeningProgress=renderedProgress;
  }
- if(!mobileLite)opening.classList.toggle('is-scattered',scrollY>threshold);
+ opening.classList.toggle('is-scattered',scrollY>threshold);
  if(offset!==null&&renderedOffset!==lastInterludeOffset){
   interludeTitle.style.transform=`translate3d(calc(-50% + ${renderedOffset.toFixed(3)}px),0,0)`;
   interludeSubtitle.style.transform=`translate3d(calc(-50% + ${(-renderedOffset).toFixed(3)}px),0,0)`;

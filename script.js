@@ -11,6 +11,87 @@ for(const type of ['gesturestart','gesturechange']){
  document.addEventListener(type,event=>event.preventDefault(),{passive:false});
 }
 const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function playChannelEntry(){
+ const canvas=$('#channel-entry');
+ if(!canvas||reduced){
+  document.body.classList.remove('channel-tuning');
+  document.body.classList.add('channel-ready');
+  return;
+ }
+ const context=canvas.getContext('2d',{alpha:false});
+ if(!context){
+  canvas.remove();
+  document.body.classList.remove('channel-tuning');
+  return;
+ }
+ const duration=1550,start=performance.now(),grainWidth=180;
+ let grainHeight=0,imageData,lastNoise=0;
+ function resize(){
+  const ratio=innerHeight/Math.max(innerWidth,1);
+  grainHeight=Math.max(100,Math.round(grainWidth*ratio));
+  canvas.width=grainWidth;
+  canvas.height=grainHeight;
+  imageData=context.createImageData(grainWidth,grainHeight);
+ }
+ function drawNoise(progress,now){
+  const pixels=imageData.data;
+  const quiet=Math.pow(progress,1.4);
+  const bandChance=Math.max(.06,1-quiet*1.08);
+  for(let y=0;y<grainHeight;y++){
+   const bandNoise=Math.random();
+   const bandOn=bandNoise<bandChance||Math.sin(y*.31+now*.035)>(.25+quiet*.9);
+   for(let x=0;x<grainWidth;x++){
+    const index=(y*grainWidth+x)*4;
+    if(bandOn){
+     const grain=30+Math.random()*205;
+     pixels[index]=grain;
+     pixels[index+1]=grain;
+     pixels[index+2]=grain;
+    }else{
+     pixels[index]=12;
+     pixels[index+1]=12;
+     pixels[index+2]=12;
+    }
+    pixels[index+3]=255;
+   }
+  }
+  context.putImageData(imageData,0,0);
+  context.globalAlpha=.25*(1-progress);
+  context.fillStyle='#000';
+  for(let y=1;y<grainHeight;y+=3)context.fillRect(0,y,grainWidth,1);
+  context.globalAlpha=Math.max(0,.75-progress*.5);
+  const barY=((progress*2.1)%1)*grainHeight;
+  const gradient=context.createLinearGradient(0,barY-10,0,barY+10);
+  gradient.addColorStop(0,'rgba(255,255,255,0)');
+  gradient.addColorStop(.5,'rgba(255,255,255,.9)');
+  gradient.addColorStop(1,'rgba(255,255,255,0)');
+  context.fillStyle=gradient;
+  context.fillRect(0,barY-10,grainWidth,20);
+  context.globalAlpha=1;
+ }
+ function finish(){
+  document.documentElement.style.removeProperty('--channel-jump');
+  document.body.classList.remove('channel-tuning');
+  document.body.classList.add('channel-ready');
+ }
+ function frame(now){
+  const progress=Math.min(1,(now-start)/duration);
+  if(now-lastNoise>33||!lastNoise){
+   drawNoise(progress,now);
+   lastNoise=now;
+  }
+  canvas.style.opacity=String(Math.max(0,1-Math.pow(progress,.72)));
+  const jump=(1-progress)*12;
+  document.documentElement.style.setProperty('--channel-jump',`${((Math.random()-.5)*jump).toFixed(2)}px`);
+  if(progress<1)requestAnimationFrame(frame);else finish();
+ }
+ resize();
+ addEventListener('resize',resize,{once:true});
+ requestAnimationFrame(frame);
+}
+
+playChannelEntry();
 let toastTimer;
 function notify(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4000);}
 const information=$('.information');

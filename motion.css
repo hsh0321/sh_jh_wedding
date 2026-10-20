@@ -9,7 +9,7 @@ html, body {
   z-index: 1000;
   width: 100%;
   height: 100%;
-  background: #111;
+  background: transparent;
   image-rendering: pixelated;
   pointer-events: none;
 }
@@ -20,7 +20,7 @@ body.channel-tuning {
 
 body.channel-tuning main,
 body.channel-tuning .music {
-  translate: var(--channel-jump, 0) 0;
+  translate: var(--channel-jump, 0 0);
 }
 
 body.channel-ready #channel-entry {
@@ -228,48 +228,41 @@ img,
 .heart-photo {
   height: auto;
   aspect-ratio: auto;
-  padding: 17px 26px 25px;
-  border: 1px solid #30302e;
-  background: #090909;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, .28), inset 0 0 0 1px #050505;
-  transform: none;
+  padding: 10px 10px 30px;
+  border: 0;
+  background: #eee9dd;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .38), 0 1px 0 rgba(255, 255, 255, .55) inset;
+  transform: rotate(-.6deg);
   animation: heart-in 1.9s ease-out both;
 }
 
 .heart-photo img {
   height: auto;
   aspect-ratio: .799;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .12);
+  filter: saturate(.86) contrast(.96) sepia(.06);
+  box-shadow: 0 0 0 1px rgba(54, 45, 35, .12);
 }
 
-.film-edge {
+.heart-photo::after {
+  content: '';
   position: absolute;
-  z-index: 1;
-  top: 9px;
-  bottom: 9px;
-  width: 9px;
-  background: repeating-linear-gradient(to bottom, #ddd9ce 0 7px, transparent 7px 15px);
-  opacity: .88;
+  inset: 10px 10px 30px;
+  background:
+    radial-gradient(circle at 90% 12%, rgba(255, 192, 125, .2), transparent 31%),
+    linear-gradient(112deg, rgba(255, 235, 205, .1), transparent 35%, rgba(72, 42, 22, .08));
+  mix-blend-mode: screen;
   pointer-events: none;
 }
 
-.film-edge-left {
-  left: 8px;
-}
-
-.film-edge-right {
-  right: 8px;
-}
-
-.film-code {
+.film-date {
   position: absolute;
-  right: 25px;
-  bottom: 5px;
-  color: #d1c696;
-  font: 500 7px/1 var(--sans);
-  letter-spacing: 1.3px;
+  right: 13px;
+  bottom: 9px;
+  color: #bf5b35;
+  font: 600 8px/1 var(--sans);
+  letter-spacing: 1.1px;
   white-space: nowrap;
-  opacity: .8;
+  opacity: .82;
   pointer-events: none;
 }
 

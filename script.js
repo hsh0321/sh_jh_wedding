@@ -19,75 +19,118 @@ function playChannelEntry(){
   document.body.classList.add('channel-ready');
   return;
  }
- const context=canvas.getContext('2d',{alpha:false});
- if(!context){
-  canvas.remove();
-  document.body.classList.remove('channel-tuning');
-  return;
- }
- const duration=1550,start=performance.now(),grainWidth=180;
- let grainHeight=0,imageData,lastNoise=0;
- function resize(){
-  const ratio=innerHeight/Math.max(innerWidth,1);
-  grainHeight=Math.max(100,Math.round(grainWidth*ratio));
-  canvas.width=grainWidth;
-  canvas.height=grainHeight;
-  imageData=context.createImageData(grainWidth,grainHeight);
- }
- function drawNoise(progress,now){
-  const pixels=imageData.data;
-  const quiet=Math.pow(progress,1.4);
-  const bandChance=Math.max(.06,1-quiet*1.08);
-  for(let y=0;y<grainHeight;y++){
-   const bandNoise=Math.random();
-   const bandOn=bandNoise<bandChance||Math.sin(y*.31+now*.035)>(.25+quiet*.9);
-   for(let x=0;x<grainWidth;x++){
-    const index=(y*grainWidth+x)*4;
-    if(bandOn){
-     const grain=30+Math.random()*205;
-     pixels[index]=grain;
-     pixels[index+1]=grain;
-     pixels[index+2]=grain;
-    }else{
-     pixels[index]=12;
-     pixels[index+1]=12;
-     pixels[index+2]=12;
-    }
-    pixels[index+3]=255;
-   }
+ const duration=500,start=performance.now();
+ const gl=canvas.getContext('webgl',{alpha:true,premultipliedAlpha:false,antialias:false});
+ let program,progressLocation,timeLocation,resolutionLocation;
+ const vertexSource=`
+  attribute vec2 position;
+  void main(){gl_Position=vec4(position,0.0,1.0);}
+ `;
+ const fragmentSource=`
+  precision highp float;
+  uniform vec2 resolution;
+  uniform float progress;
+  uniform float time;
+  float hash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+  void main(){
+   vec2 point=gl_FragCoord.xy/resolution;
+   float picture=mod(floor(time*30.0),97.0);
+   vec2 grain=floor(point*vec2(156.0,260.0));
+   float snow=mix(0.06,0.92,hash(grain+picture*vec2(13.7,7.3)));
+   float deal=mod(floor(time*14.0),97.0)+50.0;
+   float wide=hash(vec2(floor(point.y*6.0),deal));
+   float thin=hash(vec2(floor(point.y*40.0),deal+3.1));
+   float row=mix(wide,thin,0.5);
+   float level=progress*1.2-0.1;
+   float snowy=step(row,level);
+   float signal=smoothstep(0.0,0.2,progress);
+   float scan=step(0.5,fract(point.y*280.0))*0.12;
+   float roll=(point.y-fract(time*1.2))/0.08;
+   float bar=exp(-(roll*roll))*0.18;
+   float line=step(0.985,hash(vec2(floor(point.y*300.0),deal+7.0)));
+   float light=max(bar,line);
+   float overlay=max(scan,light)*signal;
+   float overlayColor=step(scan,light);
+   float alpha=mix(overlay,1.0,snowy);
+   vec3 color=mix(vec3(overlayColor),vec3(snow+bar*0.5),snowy);
+   gl_FragColor=vec4(color,alpha);
   }
-  context.putImageData(imageData,0,0);
-  context.globalAlpha=.25*(1-progress);
-  context.fillStyle='#000';
-  for(let y=1;y<grainHeight;y+=3)context.fillRect(0,y,grainWidth,1);
-  context.globalAlpha=Math.max(0,.75-progress*.5);
-  const barY=((progress*2.1)%1)*grainHeight;
-  const gradient=context.createLinearGradient(0,barY-10,0,barY+10);
-  gradient.addColorStop(0,'rgba(255,255,255,0)');
-  gradient.addColorStop(.5,'rgba(255,255,255,.9)');
-  gradient.addColorStop(1,'rgba(255,255,255,0)');
-  context.fillStyle=gradient;
-  context.fillRect(0,barY-10,grainWidth,20);
-  context.globalAlpha=1;
+ `;
+ function compile(type,source){
+  const shader=gl.createShader(type);
+  gl.shaderSource(shader,source);
+  gl.compileShader(shader);
+  if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(shader));
+  return shader;
+ }
+ function setupWebGL(){
+  if(!gl)return false;
+  try{
+   program=gl.createProgram();
+   gl.attachShader(program,compile(gl.VERTEX_SHADER,vertexSource));
+   gl.attachShader(program,compile(gl.FRAGMENT_SHADER,fragmentSource));
+   gl.linkProgram(program);
+   if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));
+   gl.useProgram(program);
+   const buffer=gl.createBuffer();
+   gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+   const position=gl.getAttribLocation(program,'position');
+   gl.enableVertexAttribArray(position);
+   gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);
+   progressLocation=gl.getUniformLocation(program,'progress');
+   timeLocation=gl.getUniformLocation(program,'time');
+   resolutionLocation=gl.getUniformLocation(program,'resolution');
+   gl.enable(gl.BLEND);
+   gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+   return true;
+  }catch(error){
+   console.warn('Channel effect fell back to a fade.',error);
+   return false;
+  }
+ }
+ const webglReady=setupWebGL();
+ let jumpTimer;
+ function resize(){
+  const ratio=Math.min(devicePixelRatio||1,2);
+  canvas.width=Math.round(innerWidth*ratio);
+  canvas.height=Math.round(innerHeight*ratio);
+  if(webglReady)gl.viewport(0,0,canvas.width,canvas.height);
  }
  function finish(){
+  clearInterval(jumpTimer);
   document.documentElement.style.removeProperty('--channel-jump');
   document.body.classList.remove('channel-tuning');
   document.body.classList.add('channel-ready');
  }
  function frame(now){
-  const progress=Math.min(1,(now-start)/duration);
-  if(now-lastNoise>33||!lastNoise){
-   drawNoise(progress,now);
-   lastNoise=now;
+  const elapsed=Math.min(1,(now-start)/duration);
+  const progress=(1-elapsed)*(1-elapsed);
+  if(webglReady){
+   gl.clearColor(0,0,0,0);
+   gl.clear(gl.COLOR_BUFFER_BIT);
+   gl.uniform1f(progressLocation,progress);
+   gl.uniform1f(timeLocation,now/1000);
+   gl.uniform2f(resolutionLocation,canvas.width,canvas.height);
+   gl.drawArrays(gl.TRIANGLES,0,6);
+  }else{
+   canvas.style.background='#111';
+   canvas.style.opacity=String(progress);
   }
-  canvas.style.opacity=String(Math.max(0,1-Math.pow(progress,.72)));
-  const jump=(1-progress)*12;
-  document.documentElement.style.setProperty('--channel-jump',`${((Math.random()-.5)*jump).toFixed(2)}px`);
-  if(progress<1)requestAnimationFrame(frame);else finish();
+  if(elapsed<1)requestAnimationFrame(frame);else finish();
  }
  resize();
- addEventListener('resize',resize,{once:true});
+ jumpTimer=setInterval(()=>{
+  const jumpDuration=duration*.8;
+  const elapsed=Math.min(1,(performance.now()-start)/jumpDuration);
+  const amount=1-elapsed;
+  const big=Math.random()<.3;
+  const x=(Math.random()*2-1)*innerWidth*.04*amount*(big?1:.3);
+  const y=big?(Math.random()*2-1)*innerHeight*.02*amount:0;
+  document.documentElement.style.setProperty('--channel-jump',`${x.toFixed(2)}px ${y.toFixed(2)}px`);
+  if(elapsed>=1)clearInterval(jumpTimer);
+ },50);
+ addEventListener('resize',resize,{passive:true,once:true});
  requestAnimationFrame(frame);
 }
 

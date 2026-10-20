@@ -465,6 +465,40 @@ main {
   letter-spacing: .14em;
 }
 
+/* Mobile WebKit can briefly expose the sticky cover while repainting clipped
+   reveal layers. Keep the cover in normal flow and paint content immediately. */
+@media (max-width: 699px), (hover: none) and (pointer: coarse) {
+  .opening {
+    position: relative;
+    top: auto;
+  }
+
+  .opening-shade {
+    display: none;
+  }
+
+  .content-sheet,
+  .content-sheet > * {
+    isolation: auto;
+  }
+
+  .opening-panel,
+  .heart-photo img {
+    will-change: auto;
+  }
+
+  .scroll-reveal,
+  .scroll-reveal-up,
+  .scroll-reveal-wipe,
+  .scroll-reveal-center {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #peel-entry {
     display: none;

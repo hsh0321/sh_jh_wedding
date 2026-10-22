@@ -813,7 +813,8 @@ button.text-button {
 
 .information {
     padding-top: 45px;
-    padding-inline: 50px
+    padding-inline: 50px;
+    overflow-anchor: none
 }
 
 .information details {

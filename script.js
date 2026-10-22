@@ -77,16 +77,19 @@ let toastTimer;
 function notify(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4000);}
 const information=$('.information');
 const detailAnimations=new WeakMap(),detailTargets=new WeakMap();
+const animatingDetails=new Set();
 function setInformationOpen(details,open){
  const previous=detailAnimations.get(details);
  const fromHeight=details.getBoundingClientRect().height;
  previous?.cancel();
  detailAnimations.delete(details);
+ animatingDetails.delete(details);
  if(reduced||typeof details.animate!=='function'){
   details.open=open;
   details.style.removeProperty('height');
   details.style.removeProperty('overflow');
   detailTargets.delete(details);
+  invalidateScrollGeometry();
   return;
  }
  if(open)details.open=true;
@@ -113,6 +116,7 @@ function setInformationOpen(details,open){
   {duration:340,easing:'cubic-bezier(.22,.61,.36,1)',fill:'both'}
  );
  detailAnimations.set(details,animation);
+ animatingDetails.add(details);
  animation.onfinish=()=>{
   if(detailAnimations.get(details)!==animation)return;
   if(!detailTargets.get(details))details.open=false;
@@ -120,7 +124,9 @@ function setInformationOpen(details,open){
   details.style.removeProperty('overflow');
   detailAnimations.delete(details);
   detailTargets.delete(details);
+  animatingDetails.delete(details);
   animation.cancel();
+  if(!animatingDetails.size)invalidateScrollGeometry();
  };
 }
 information.addEventListener('click',event=>{
@@ -258,7 +264,9 @@ window.addEventListener('resize',invalidateScrollGeometry);
 window.addEventListener('pageshow',invalidateScrollGeometry);
 document.addEventListener('load',invalidateScrollGeometry,true);
 document.addEventListener('toggle',invalidateScrollGeometry,true);
-if('ResizeObserver' in window)new ResizeObserver(invalidateScrollGeometry).observe(document.querySelector('main'));
+if('ResizeObserver' in window)new ResizeObserver(()=>{
+ if(!animatingDetails.size)invalidateScrollGeometry();
+}).observe(document.querySelector('main'));
 document.fonts?.ready.then(invalidateScrollGeometry);
 function setupScrollReveals(){
  if(reduced)return;

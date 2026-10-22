@@ -119,12 +119,18 @@ function setInformationOpen(details,open){
  animatingDetails.add(details);
  animation.onfinish=()=>{
   if(detailAnimations.get(details)!==animation)return;
-  if(!detailTargets.get(details))details.open=false;
-  details.style.removeProperty('height');
-  details.style.removeProperty('overflow');
+  const staysOpen=detailTargets.get(details);
   detailAnimations.delete(details);
   detailTargets.delete(details);
   animatingDetails.delete(details);
+  if(staysOpen){
+   details.style.height=`${toHeight}px`;
+   details.style.removeProperty('overflow');
+  }else{
+   details.open=false;
+   details.style.removeProperty('height');
+   details.style.removeProperty('overflow');
+  }
   animation.cancel();
   if(!animatingDetails.size)invalidateScrollGeometry();
  };
@@ -141,6 +147,15 @@ information.addEventListener('click',event=>{
   });
  }
  setInformationOpen(details,open);
+});
+let informationWidth=information.getBoundingClientRect().width;
+window.addEventListener('resize',()=>{
+ const nextWidth=information.getBoundingClientRect().width;
+ if(Math.abs(nextWidth-informationWidth)<.5)return;
+ informationWidth=nextWidth;
+ information.querySelectorAll('details[open]').forEach(details=>{
+  if(!detailAnimations.has(details))details.style.removeProperty('height');
+ });
 });
 const mapElement=$('#naver-map');
 const mapStatus=$('#map-status');

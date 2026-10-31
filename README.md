@@ -12,6 +12,6 @@ HTML 생성 소스는 `src/index.template.html`입니다. HTML을 수정한 뒤 
 - `server.cjs`: 로컬 미리보기 서버 (`node server.cjs`)
 - `wrangler.jsonc`: Cloudflare 정적 에셋 설정
 
-사진 모음은 좌우 드래그와 이전/다음 버튼으로 탐색하며, 원본 사진 비율을 유지합니다. 확대 보기 기능은 제공하지 않습니다.
+갤러리 사진을 추가하거나 삭제한 뒤 `node generate-gallery-manifest.cjs`를 실행하면 실제 파일을 이름순으로 정렬한 목록이 생성됩니다. 로컬 서버 시작 및 Cloudflare 배포 전에도 이 목록이 자동 갱신됩니다. 사진 모음은 좌우 드래그와 이전/다음 버튼으로 탐색하며, 원본 사진 비율을 유지합니다. 확대 보기 기능은 제공하지 않습니다.
 
 기존 디자인과 사용하지 않는 프로젝트 자료는 `archive/`의 ZIP 파일로 보관합니다. Cloudflare Pages에서 프로젝트 루트를 정적 에셋 디렉터리로 배포하면 됩니다.

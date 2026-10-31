@@ -1,6 +1,9 @@
 {
   "name": "shjhwedding",
   "compatibility_date": "2026-10-13",
+  "build": {
+    "command": "node generate-gallery-manifest.cjs"
+  },
   "assets": {
     "directory": ".",
     "not_found_handling": "404-page"

@@ -308,14 +308,29 @@ function setupScrollReveals(){
 }
 setupScrollReveals();
 scheduleScrollEffects();
-const photos=[1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18];
+let photos=[];
 const gallery=$('#gallery-viewport');
 let currentPhoto=$('#gallery-photo');
 let nextPhoto=$('#gallery-next-photo');
 let activePhoto=0,drag=null,animating=false,animationTimer=0,neighborLoadToken=0,readyNeighborIndex=-1,galleryReady=false;
 const photoLoads=new Map();
-function photoSource(index){return `assets/gallery-preload/gallery-${photos[(index+photos.length)%photos.length]}.jpg`;}
-function updatePhotoCount(){$('#gallery-count').textContent=`${String(activePhoto+1).padStart(2,'0')} / ${String(photos.length).padStart(2,'0')}`;}
+function photoSource(index){return `assets/gallery-preload/${encodeURIComponent(photos[(index+photos.length)%photos.length])}`;}
+function updatePhotoCount(){
+ const current=photos.length?activePhoto+1:0;
+ $('#gallery-count').textContent=`${String(current).padStart(2,'0')} / ${String(photos.length).padStart(2,'0')}`;
+}
+async function loadGalleryPhotos(){
+ const response=await fetch('assets/gallery-preload/gallery-manifest.json',{cache:'no-cache'});
+ if(!response.ok)throw new Error(`Gallery manifest returned ${response.status}.`);
+ const manifest=await response.json();
+ if(!Array.isArray(manifest))throw new Error('Gallery manifest is invalid.');
+ const validName=/^gallery-[^/\\]+\.(?:avif|jpe?g|png|webp)$/i;
+ photos=manifest.filter(name=>typeof name==='string'&&validName.test(name));
+ photos.sort(new Intl.Collator('en',{numeric:true,sensitivity:'base'}).compare);
+ if(!photos.length)throw new Error('Gallery manifest contains no photos.');
+ activePhoto=0;
+ updatePhotoCount();
+}
 function preloadPhoto(index){
  const normalized=(index+photos.length)%photos.length;
  if(photoLoads.has(normalized))return photoLoads.get(normalized);
@@ -414,6 +429,7 @@ function preloadAdjacent(){
 }
 async function prepareGallery(){
  try{
+  await loadGalleryPhotos();
   await preloadPhoto(activePhoto);
   currentPhoto.src=photoSource(activePhoto);
   if(currentPhoto.decode)await currentPhoto.decode();

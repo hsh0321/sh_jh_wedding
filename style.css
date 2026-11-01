@@ -591,13 +591,6 @@ summary:focus-visible {
     transform: rotate(4deg)
 }
 
-.bride-nowrap {
-    display: inline-block;
-    font-size: 10px;
-    letter-spacing: -.35px;
-    white-space: nowrap
-}
-
 .couple-note {
     font-size: calc(12px + 2pt);
     line-height: 2;

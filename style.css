@@ -563,7 +563,7 @@ summary:focus-visible {
 
 .profile p:not(:first-child) {
     font-family: 'IBM Plex Sans KR', sans-serif;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 400;
     line-height: 22.5px;
     letter-spacing: -0.13px;
@@ -593,8 +593,8 @@ summary:focus-visible {
 
 .bride-nowrap {
     display: inline-block;
-    font-size: 10px;
-    letter-spacing: -.35px;
+    font-size: inherit;
+    letter-spacing: -.4px;
     white-space: nowrap
 }
 
